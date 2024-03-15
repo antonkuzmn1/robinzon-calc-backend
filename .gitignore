@@ -8,3 +8,8 @@ build/
 .vscode/
 
 src/main/resources/application.properties
+
+ssh_check.sh
+ssh_stop.sh
+ssh_upload.sh
+start.sh
