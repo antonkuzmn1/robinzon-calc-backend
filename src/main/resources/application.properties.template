@@ -1,0 +1,19 @@
+# rootpath
+server.servlet.context-path=/api
+
+# mysql
+spring.jpa.hibernate.ddl-auto=create
+spring.datasource.url=jdbc:mysql://192.168.100.150:3306/calc
+spring.datasource.username=calc
+spring.datasource.password=etwaPass1488
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.show-sql=true
+
+# session
+spring.session.jdbc.initialize-schema=always
+# server.servlet.session.timeout=
+
+# ssh
+fmadmin.login=etwaLogin
+fmadmin.password=etwaPass1488
+fmadmin.command=powershell.exe "C:\\Distrib\\calc\\calc_v23.12.17.ps1"
