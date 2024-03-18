@@ -107,6 +107,7 @@ public final class VpnServerEntityManager
 	 * @since 2024.03.13
 	 * @author Anton Kuzmin
 	 */
+	@SuppressWarnings("null")
 	public ResponseForm insert(
 			String title,
 			String description,
@@ -277,6 +278,7 @@ public final class VpnServerEntityManager
 	 * @since 2024.03.13
 	 * @author Anton Kuzmin
 	 */
+	@SuppressWarnings("null")
 	public ResponseForm update(
 			Long id,
 			String title,

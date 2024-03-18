@@ -38,7 +38,7 @@ public class ClientHistory {
     private int discount;
 
     @Column
-    private Double contractNumber;
+    private int contractNumber;
 
     @Column
     private Date contractDate;
@@ -56,12 +56,26 @@ public class ClientHistory {
     @Column(nullable = false)
     private boolean deleted;
 
+    /**
+     * <h3>New entity</h3>
+     *
+     * @param clientEntity
+     * @param name
+     * @param inn
+     * @param discount
+     * @param contractNumber
+     * @param contractDate
+     * @param title
+     * @param description
+     * @param changeBy
+     * @param deleted
+     */
     public ClientHistory(
             ClientEntity clientEntity,
             String name,
             String inn,
             int discount,
-            Double contractNumber,
+            int contractNumber,
             Date contractDate,
             String title,
             String description,
@@ -78,6 +92,27 @@ public class ClientHistory {
         this.changeBy = changeBy;
         this.deleted = deleted;
     }
+
+    /**
+     * <h3>Delete entity</h3>
+     *
+     * @param clientEntity
+     * @param changeBy
+     */
+    public ClientHistory(
+        ClientEntity clientEntity,
+        UserEntity changeBy) {
+            this.clientEntity = clientEntity;
+            this.name = clientEntity.getName();
+            this.inn = clientEntity.getInn();
+            this.discount =clientEntity.getDiscount();
+            this.contractNumber = clientEntity.getContractNumber();
+            this.contractDate = clientEntity.getContractDate();
+            this.title = clientEntity.getTitle();
+            this.description = clientEntity.getDescription();
+            this.changeBy = changeBy;
+            this.deleted = true;
+        }
 
     public ClientEntity getClientEntity() {
         return clientEntity;
@@ -119,11 +154,11 @@ public class ClientHistory {
         this.discount = discount;
     }
 
-    public Double getContractNumber() {
+    public int getContractNumber() {
         return contractNumber;
     }
 
-    public void setContractNumber(Double contractNumber) {
+    public void setContractNumber(int contractNumber) {
         this.contractNumber = contractNumber;
     }
 
@@ -192,7 +227,7 @@ public class ClientHistory {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((inn == null) ? 0 : inn.hashCode());
         result = prime * result + discount;
-        result = prime * result + ((contractNumber == null) ? 0 : contractNumber.hashCode());
+        result = prime * result + contractNumber;
         result = prime * result + ((contractDate == null) ? 0 : contractDate.hashCode());
         result = prime * result + ((title == null) ? 0 : title.hashCode());
         result = prime * result + ((description == null) ? 0 : description.hashCode());
@@ -232,10 +267,7 @@ public class ClientHistory {
             return false;
         if (discount != other.discount)
             return false;
-        if (contractNumber == null) {
-            if (other.contractNumber != null)
-                return false;
-        } else if (!contractNumber.equals(other.contractNumber))
+        if (contractNumber != other.contractNumber)
             return false;
         if (contractDate == null) {
             if (other.contractDate != null)

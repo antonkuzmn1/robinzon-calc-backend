@@ -35,7 +35,7 @@ public class ClientEntity {
     private int discount;
 
     @Column
-    private Double contractNumber;
+    private int contractNumber;
 
     @Column
     private Date contractDate;
@@ -57,7 +57,7 @@ public class ClientEntity {
             String name,
             String inn,
             int discount,
-            Double contractNumber,
+            int contractNumber,
             Date contractDate,
             String title,
             String description,
@@ -79,7 +79,7 @@ public class ClientEntity {
             String name,
             String inn,
             int discount,
-            Double contractNumber,
+            int contractNumber,
             Date contractDate,
             String title,
             int balance,
@@ -92,6 +92,23 @@ public class ClientEntity {
         this.title = title;
         this.description = description;
         this.balance = balance;
+    }
+
+    public void update(
+            String name,
+            String inn,
+            int discount,
+            int contractNumber,
+            Date contractDate,
+            String title,
+            String description) {
+        this.name = name;
+        this.inn = inn;
+        this.discount = discount;
+        this.contractNumber = contractNumber;
+        this.contractDate = contractDate;
+        this.title = title;
+        this.description = description;
     }
 
     public Long getId() {
@@ -134,11 +151,11 @@ public class ClientEntity {
         this.discount = discount;
     }
 
-    public Double getContractNumber() {
+    public int getContractNumber() {
         return contractNumber;
     }
 
-    public void setContractNumber(Double contractNumber) {
+    public void setContractNumber(int contractNumber) {
         this.contractNumber = contractNumber;
     }
 
@@ -173,7 +190,7 @@ public class ClientEntity {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
-    
+
     public int getBalance() {
         return balance;
     }
@@ -207,7 +224,7 @@ public class ClientEntity {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((inn == null) ? 0 : inn.hashCode());
         result = prime * result + discount;
-        result = prime * result + ((contractNumber == null) ? 0 : contractNumber.hashCode());
+        result = prime * result + contractNumber;
         result = prime * result + ((contractDate == null) ? 0 : contractDate.hashCode());
         result = prime * result + ((title == null) ? 0 : title.hashCode());
         result = prime * result + ((description == null) ? 0 : description.hashCode());
@@ -247,10 +264,7 @@ public class ClientEntity {
             return false;
         if (discount != other.discount)
             return false;
-        if (contractNumber == null) {
-            if (other.contractNumber != null)
-                return false;
-        } else if (!contractNumber.equals(other.contractNumber))
+        if (contractNumber != other.contractNumber)
             return false;
         if (contractDate == null) {
             if (other.contractDate != null)

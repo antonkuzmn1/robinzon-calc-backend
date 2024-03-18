@@ -11,6 +11,6 @@ public interface ClientEntityRepository extends JpaRepository<ClientEntity, Long
     boolean checkUniqueInn(String inn);
 
     @Query("SELECT COUNT(c) > 0 FROM ClientEntity c WHERE c.contractNumber = :contractNumber AND c.deleted = false")
-    boolean checkUniqueContractNumber(Double contractNumber);
+    boolean checkUniqueContractNumber(int contractNumber);
 
 }
