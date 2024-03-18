@@ -6,7 +6,8 @@ build/
 !**/src/test/**/build/
 bin
 
-.vscode/
+.idea
+.vscode
 
 src/main/resources/application.properties
 
