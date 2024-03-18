@@ -167,7 +167,7 @@ public final class VpnServerEntityManager
 									? setNull("IP")
 									: "")
 					.append(
-							ip.length() > 15
+							ip != null && ip.length() > 15
 									? setChar("IP", 15)
 									: "")
 					.append(
@@ -179,9 +179,10 @@ public final class VpnServerEntityManager
 									? setNull("Net entity")
 									: "")
 					.append(
-							netEntityRepository.findById(netEntity.getId()) == null
-									? String.format("Net with ID %d not found", netEntity.getId())
-									: "")
+							netEntity != null && netEntity.getId() != null &&
+									netEntityRepository.findById(netEntity.getId()) == null
+											? String.format("Net with ID %d not found", netEntity.getId())
+											: "")
 					.append(
 							vpnTypeEntity.size() == 0
 									? setLess("VPN type entities", 1)
@@ -289,9 +290,11 @@ public final class VpnServerEntityManager
 		super.function(update);
 
 		// Searching for an entity by ID in the repository.
-		VpnServerEntity entity = entityRepository
-				.findById(id)
-				.orElse(null);
+		VpnServerEntity entity = id != null
+				? entityRepository
+						.findById(id)
+						.orElse(null)
+				: null;
 
 		/**
 		 * This block checks each parameter
@@ -342,7 +345,7 @@ public final class VpnServerEntityManager
 									? setNull("IP")
 									: "")
 					.append(
-							ip.length() > 15
+							ip != null && ip.length() > 15
 									? setChar("IP", 15)
 									: "")
 					.append(
@@ -354,9 +357,10 @@ public final class VpnServerEntityManager
 									? setNull("Net entity")
 									: "")
 					.append(
-							netEntityRepository.findById(netEntity.getId()) == null
-									? String.format("Net with ID %d not found", netEntity.getId())
-									: "")
+							netEntity != null && netEntity.getId() != null &&
+									netEntityRepository.findById(netEntity.getId()) == null
+											? String.format("Net with ID %d not found", netEntity.getId())
+											: "")
 					.append(
 							vpnTypeEntity.size() == 0
 									? setLess("VPN type entities", 1)
@@ -381,7 +385,8 @@ public final class VpnServerEntityManager
 					 * so a new message will be added about this event as an error.
 					 */
 					.append(
-							entity.getTitle().equals(title)
+							entity != null && netEntity != null
+									&& entity.getTitle().equals(title)
 									&& entity.getDescription().equals(description)
 									&& entity.getIp().equals(ip)
 									&& entity.getPublicKey().equals(publicKey)
@@ -413,6 +418,9 @@ public final class VpnServerEntityManager
 		 * and no errors have been detected.
 		 */
 		try {
+
+			if (entity == null)
+				throw new Exception("Entity cannot be null in this block");
 
 			// Setting new values.
 			entity.setTitle(title);
@@ -478,9 +486,11 @@ public final class VpnServerEntityManager
 		super.function(delete);
 
 		// Searching for an entity by ID in the repository.
-		VpnServerEntity entity = entityRepository
-				.findById(id)
-				.orElse(null);
+		VpnServerEntity entity = id != null
+				? entityRepository
+						.findById(id)
+						.orElse(null)
+				: null;
 
 		/**
 		 * This block checks each parameter
@@ -499,7 +509,7 @@ public final class VpnServerEntityManager
 									? setNull("ID")
 									: "")
 					.append(
-							id < 1
+							id != null && id < 1
 									? setLess("ID", 1)
 									: "")
 
@@ -522,7 +532,7 @@ public final class VpnServerEntityManager
 					 * so a new message will be added about this event as an error.
 					 */
 					.append(
-							entity.isDeleted() == true
+							entity != null && entity.isDeleted() == true
 									? String.format("Entity with ID %d already deleted", entity.getId())
 									: "");
 
@@ -550,15 +560,18 @@ public final class VpnServerEntityManager
 		 */
 		try {
 
+			if (entity == null)
+				throw new Exception("Entity cannot be null in this block");
+
 			// Setting new values.
 			entity.setDeleted(true);
 			entityRepository.save(entity);
 
 			// Adding a new entry to the entity editing history.
 			historyRepository.save(
-				new VpnServerHistory(
-					entity,
-					null)); // spring security system required
+					new VpnServerHistory(
+							entity,
+							null)); // spring security system required
 
 			// The function execution was successful!
 			return super.success(
