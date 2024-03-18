@@ -1,44 +1,44 @@
 # Progress list (est. 40%)
 
 > [!TIP]
-> - ✅ Ready
-> - 🛑 Not ready
+> - [X] Ready
+> - [ ] Not ready
 
-- ### ⏳ Architecture
-  - ✅ Entities
-  - ✅ Keys
-  - ✅ Repositories
-  - ✅ Services
-  - ✅ Controllers
-  - ⏳ Listeners
-    - ✅ Logging-form
-    - ✅ Response-for
-    - ✅ Pre/postPersist
-    - ✅ Pre/postUpdate
-    - ✅ Pre/postDelete
-    - ⏳ Template adaptation
-      - ✅ client
-      - ✅ fm
-      - ✅ net
-      - ✅ reg
-      - ✅ vm
-      - 🛑 vpn
-        - ✅ server
-        - 🛑 user
-      - 🛑 security
-        - 🛑 group
-        - 🛑 user
-      - 🛑 settings
-        - 🛑 vm
-          - 🛑 price
-        - 🛑 vpn
-          - 🛑 type
-- ### 🛑 Security
-  - 🛑 Authorization
-  - 🛑 Cryptography
-  - 🛑 Sessions
-  - 🛑 Groups
-- ### 🛑 Other services
-  - 🛑 FM request via SSH
-- ### 🛑 Cache management
-  - 🛑 Real time tables for virtual DOM
+- [ ] Architecture
+  - [X] Entities
+  - [X] Keys
+  - [X] Repositories
+  - [X] Services
+  - [X] Controllers
+  - [ ] Listeners
+    - [X] Logging-form
+    - [X] Response-for
+    - [X] Pre/postPersist
+    - [X] Pre/postUpdate
+    - [X] Pre/postDelete
+    - [ ] Template adaptation
+      - [X] client
+      - [X] fm
+      - [X] net
+      - [X] reg
+      - [X] vm
+      - [ ] vpn
+        - [X] server
+        - [ ] user
+      - [ ] security
+        - [ ] group
+        - [ ] user
+      - [ ] settings
+        - [ ] vm
+          - [ ] price
+        - [ ] vpn
+          - [ ] type
+- [ ] Security
+  - [ ] Authorization
+  - [ ] Cryptography
+  - [ ] Sessions
+  - [ ] Groups
+- [ ] Other services
+  - [ ] FM request via SSH
+- [ ] Cache management
+  - [ ] Real time tables for virtual DOM
