@@ -102,8 +102,6 @@ public final class ClientEntityManager
             String title,
             int balance,
             String description) {
-
-        // Setting the function name for the logging class.
         super.function(insert);
 
         // Checking strings for null value.
@@ -111,7 +109,7 @@ public final class ClientEntityManager
         description = Objects.requireNonNullElse(description, "");
 
         // Checking strings for compliance with entity requirements
-        err.append(String.join("",
+        String err = String.join("",
                 setNull(name, "name"),
                 setChar(name, "name", 100),
                 setUnique(entityRepository.checkUniqueInn(inn), "inn", inn),
@@ -121,22 +119,19 @@ public final class ClientEntityManager
                 setLess(contractNumber, "contractNumber", 1),
                 setUnique(entityRepository.checkUniqueContractNumber(contractNumber), "contractNumber", contractNumber),
                 setChar(title, "Title", 50),
-                setChar(description, "Description", 255)));
+                setChar(description, "Description", 255));
 
         // Termination of the function if errors were detected.
-        if (!err.isEmpty()) return super.error(err.toString());
+        if (!err.isEmpty()) return super.error(err);
 
-        // Creating a new entity
+        // else: all test successfully passed!
+
         ClientEntity entity = new ClientEntity(name, inn, discount, contractNumber, contractDate, title, balance, description);
+
         entityRepository.save(entity);
-
-        // Adding a new entry to the entity editing history.
         historyRepository.save(new ClientHistory(entity, name, inn, discount, contractNumber, contractDate, title, description, null, false));
-
-        // Adding a new entry to the entity payments history.
         paymentRepository.save(new ClientPayment(entity, balance, null));
 
-        // The function execution was successful!
         return super.success(inserted(entity.getName()));
     }
 
@@ -175,11 +170,8 @@ public final class ClientEntityManager
             String title,
             String description
     ) throws NullPointerException {
-
-        // Setting the function name for the logging class.
         super.function(update);
 
-        // Searching for an entity by ID in the repository.
         ClientEntity entity = entityRepository.findById(id).orElse(null);
 
         // Checking strings for null value.
@@ -187,7 +179,7 @@ public final class ClientEntityManager
         description = Objects.requireNonNullElse(description, "");
 
         // Checking strings for compliance with entity requirements
-        err.append(String.join("",
+        String err = String.join("",
                 setNull(name, "name"),
                 setChar(name, "name", 100),
                 setUnique(entityRepository.checkUniqueInn(inn), "inn", inn),
@@ -206,19 +198,18 @@ public final class ClientEntityManager
                         && entity.getContractNumber() == contractNumber
                         && entity.getContractDate().equals(contractDate)
                         && entity.getTitle().equals(title)
-                        && entity.getDescription().equals(description), name)));
+                        && entity.getDescription().equals(description), name));
 
         // Termination of the function if errors were detected.
-        if (!err.isEmpty()) return super.error(err.toString());
+        if (!err.isEmpty()) return super.error(err);
 
-        // Setting new values.
+        // else: all test successfully passed!
+
         Objects.requireNonNull(entity).update(name, inn, discount, contractNumber, contractDate, title, description);
-        entityRepository.save(entity);
 
-        // Insert new value into history.
+        entityRepository.save(entity);
         historyRepository.save(new ClientHistory(entity, name, inn, discount, contractNumber, contractDate, title, description, null, false));
 
-        // The function execution was successful!
         return super.success(updated(entity.getName()));
     }
 
@@ -240,32 +231,24 @@ public final class ClientEntityManager
      * @author Anton Kuzmin
      * @since 2024.03.18
      */
-    public ResponseForm delete(Long id) throws NullPointerException {
-
-        // Setting the function name for the logging class.
+    public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
         super.function(delete);
 
-        // Searching for an entity by ID in the repository.
         ClientEntity entity = entityRepository.findById(id).orElse(null);
 
         // Checking strings for compliance with entity requirements
-        err.append(String.join("",
-                setNull(id, "id"),
-                setLongLess(id, "ID", 1),
-                setFound(entity, id),
-                setDeleted(entity != null && entity.isDeleted(), id)));
+        String err = deleteChecks(entity, id);
 
         // Termination of the function if errors were detected.
-        if (!err.isEmpty()) return super.error(err.toString());
+        if (!err.isEmpty()) return super.error(err);
 
-        // Setting new values.
+        // else: all test successfully passed!
+
         Objects.requireNonNull(entity).setDeleted(true);
-        entityRepository.save(entity);
 
-        // Adding a new entry to the entity editing history.
+        entityRepository.save(entity);
         historyRepository.save(new ClientHistory(entity, null));
 
-        // The function execution was successful!
         return super.success(deleted(entity.getName()));
     }
 }

@@ -1,19 +1,10 @@
 package cloud.robinzon.backend.db.fm;
 
-import java.sql.Timestamp;
-
+import cloud.robinzon.backend.db.client.ClientEntity;
+import jakarta.persistence.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import cloud.robinzon.backend.db.client.ClientEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "fm_entity")
@@ -95,6 +86,23 @@ public class FmEntity {
         this.price = price;
         this.vm = vm;
         this.client = client;
+    }
+
+    public void update(
+            String name,
+            String ip,
+            String title,
+            String specifications,
+            String description,
+            int price,
+            boolean vm) {
+        this.name = name;
+        this.ip = ip;
+        this.title = title;
+        this.specifications = specifications;
+        this.description = description;
+        this.price = price;
+        this.vm = vm;
     }
 
     public Long getId() {
