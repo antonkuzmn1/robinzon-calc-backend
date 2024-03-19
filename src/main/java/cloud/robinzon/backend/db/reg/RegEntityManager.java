@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 Anton Kuzmin (http://github.com/antonkuzmn1)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,12 +16,12 @@
 
 package cloud.robinzon.backend.db.reg;
 
-import java.util.Date;
-
-import org.springframework.stereotype.Service;
-
 import cloud.robinzon.backend.tools.ResponseForm;
 import cloud.robinzon.backend.tools.ResponseStringTemplates;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * <h3>Entity Management Tools</h3>
@@ -29,7 +29,7 @@ import cloud.robinzon.backend.tools.ResponseStringTemplates;
  * This class handles the management of Reg entities in the database.
  * </p>
  * <p>
- * Contains the next methonds:
+ * Contains the next methods:
  * </p>
  * <p>
  * {@code insert} - for insert new entity
@@ -44,607 +44,229 @@ import cloud.robinzon.backend.tools.ResponseStringTemplates;
  * Read more in the attached documents for each method.
  * </p>
  *
- * @since 2024.03.14
  * @author Anton Kuzmin
+ * @since 2024.03.14
+ * @since 2024.03.19
  */
 
 @Service
 public class RegEntityManager
-                extends ResponseForm
-                implements ResponseStringTemplates {
+        extends ResponseForm
+        implements ResponseStringTemplates {
 
-        /**
-         * <h3>Initialize string builder for error collector.</h3>
-         * <p>
-         * During checks, all error messages will be accumulated here,
-         * at the end of the checks the length of this object
-         * will be checked and if it is greater than zero,
-         * the response form will be returned with the status error
-         * </p>
-         */
-        final StringBuilder err = new StringBuilder();
+    private final RegEntityRepository entityRepository;
+    private final RegHistoryRepository historyRepository;
 
-        // Injecting required repositories.
-        private final RegEntityRepository entityRepository;
-        private final RegHistoryRepository historyRepository;
+    public RegEntityManager(
+            RegEntityRepository entityRepository,
+            RegHistoryRepository historyRepository) {
+        this.entityRepository = entityRepository;
+        this.historyRepository = historyRepository;
+        super.set(getClass().getSimpleName());
+    }
 
-        public RegEntityManager(
-                        RegEntityRepository entityRepository,
-                        RegHistoryRepository historyRepository) {
-                this.entityRepository = entityRepository;
-                this.historyRepository = historyRepository;
+    /**
+     * <h3>Inserts a new entry into the database.</h3>
+     * <p>
+     * The function implements all the necessary checks
+     * for compliance with data types,allowed string lengths, etc.
+     * The function will also perform all necessary actions
+     * with the edit history repository
+     * and the rental history repository (if present),
+     * just pass the new entity parameters and it will be updated.
+     * </p>
+     *
+     * @param brand          Name of the brand {@code 100 chars};
+     * @param name           Name of the entity {@code 100 chars};
+     * @param part           The part {@code 50 chars};
+     * @param serial         Serial number of the entity {@code 50 chars};
+     * @param buyDate        Entity purchase date;
+     * @param warrantyMonths Amount of warranty months;
+     * @param provider       Name of the provider (dealer) {@code 50 chars};
+     * @param title          Short description of the entry {@code 50 chars};
+     * @param description    Full description of the entry {@code 255 chars};
+     * @return A standard response form
+     * that contains the class name,
+     * functions, status and text.
+     * @author Anton Kuzmin
+     * @since 2024.03.14
+     * @since 2024.03.19
+     */
+    @SuppressWarnings({"unused", "DuplicatedCode"})
+    public ResponseForm insert(
+            String brand,
+            String name,
+            String part,
+            String serial,
+            Date buyDate,
+            int warrantyMonths,
+            String provider,
+            String title,
+            String description) {
+        super.function("insert");
 
-                // Setting the class name for the logging class
-                super.set(getClass().getSimpleName());
-        }
+        // Checking strings for null value.
+        brand = Objects.requireNonNullElse(brand, "");
+        part = Objects.requireNonNullElse(part, "");
+        serial = Objects.requireNonNullElse(serial, "");
+        provider = Objects.requireNonNullElse(provider, "");
+        title = Objects.requireNonNullElse(title, "");
+        description = Objects.requireNonNullElse(description, "");
 
-        /**
-         * <h3>Inserts a new entry into the database.</h3>
-         * <p>
-         * The function implements all the necessary checks
-         * for compliance with data types,allowed string lengths, etc.
-         * The function will also perform all necessary actions
-         * with the edit history repository
-         * and the rental history repository (if present),
-         * just pass the new entity parameters and it will be updated.
-         * </p>
-         *
-         * @param brand          - name of the brand {@code 100 chars};
-         * @param name           - name of the entity {@code 100 chars};
-         * @param part           - the part {@code 50 chars};
-         * @param serial         - serial number of the entity {@code 50 chars};
-         * @param buyDate        - entity purchase date;
-         * @param warrantyMonths - amount of warranty months;
-         * @param provider       - name of the provider (dealer) {@code 50 chars};
-         * @param title          - the short description of the entry {@code 50 chars};
-         * @param description    - the full description of the entiy {@code 255 chars};
-         * @return A standard response form
-         *         that contains the class name,
-         *         functions, status and text.
-         * @since 2024.03.14
-         * @author Anton Kuzmin
-         */
-        public ResponseForm insert(
-                        String brand,
-                        String name,
-                        String part,
-                        String serial,
-                        Date buyDate,
-                        int warrantyMonths,
-                        String provider,
-                        String title,
-                        String description) {
+        // Checking strings for compliance with entity requirements
+        String err = String.join("",
+                setChar(brand, "brand", 100),
+                setNull(brand, "brand"),
+                setChar(name, "name", 100),
+                setChar(part, "part", 50),
+                setChar(serial, "serial", 50),
+                setNull(buyDate, "buyDate"),
+                setLess(warrantyMonths, "warrantyMonths", 0),
+                setChar(provider, "provider", 50),
+                setChar(title, "title", 50),
+                setChar(description, "description", 255));
 
-                // Setting the function name for the logging class.
-                super.function(insert);
+        // Termination of the function if errors were detected.
+        if (!err.isEmpty()) return super.error(err);
 
-                /**
-                 * This block checks each parameter
-                 * whether it meets the given requirements.
-                 */
-                try {
+        // else: all test successfully passed!
 
-                        /**
-                         * Checking strings for null value.
-                         * If the string is null,
-                         * it will be replaced with "" (an empty string).
-                         *
-                         * IMPORTANT:
-                         * Don't delete this part of the code!
-                         * Despite the fact that an empty string takes up more resources than a null
-                         * and using it in code is less preferable than a null,
-                         * in this case it is the empty string that is used,
-                         * since for the database there is no difference
-                         * between an empty string and a null.
-                         * For this reason, in entity annotations the default nullable is set to false.
-                         */
-                        brand = brand == null
-                                        ? ""
-                                        : brand;
-                        part = part == null
-                                        ? ""
-                                        : part;
-                        serial = serial == null
-                                        ? ""
-                                        : serial;
-                        provider = provider == null
-                                        ? ""
-                                        : provider;
-                        title = title == null
-                                        ? ""
-                                        : title;
-                        description = description == null
-                                        ? ""
-                                        : description;
+        RegEntity entity = new RegEntity(brand, name, part, serial, buyDate, warrantyMonths, provider, title, description);
 
-                        /**
-                         * Checking strings for compliance with entity requirements
-                         * and collecting error messages in the stringbuilder
-                         * initialized at the beginning of the class.
-                         */
-                        err
-                                        .append(
-                                                        brand.length() > 50
-                                                                        ? setChar("Brand", 100)
-                                                                        : "")
-                                        .append(
-                                                        name == null
-                                                                        ? setNull("Name")
-                                                                        : "")
-                                        .append(
-                                                        name != null && name.length() > 50
-                                                                        ? setChar("Name", 100)
-                                                                        : "")
-                                        .append(
-                                                        part.length() > 50
-                                                                        ? setChar("Part", 50)
-                                                                        : "")
-                                        .append(
-                                                        serial.length() > 50
-                                                                        ? setChar("Serial", 50)
-                                                                        : "")
-                                        .append(
-                                                        buyDate == null
-                                                                        ? setNull("Buy date")
-                                                                        : "")
-                                        .append(
-                                                        warrantyMonths < 0
-                                                                        ? setLess("Warranty months", 0)
-                                                                        : "")
-                                        .append(
-                                                        provider.length() > 50
-                                                                        ? setChar("Provider", 50)
-                                                                        : "")
-                                        .append(
-                                                        title.length() > 50
-                                                                        ? setChar("Title", 50)
-                                                                        : "")
-                                        .append(
-                                                        description.length() > 255
-                                                                        ? setChar("Description", 255)
-                                                                        : "");
-                        // Termination of the function if errors were detected.
-                        if (err.length() > 0)
-                                return super.error(
-                                                err.toString());
+        entityRepository.save(entity);
+        historyRepository.save(new RegHistory(entity, brand, name, part, serial, buyDate, warrantyMonths, provider, title, description, null, false));
 
-                } catch (Exception e) {
-                        /**
-                         * This block of code should not be called at all!
-                         * If it was called,
-                         * then the error is guaranteed to be in the code itself,
-                         * and not in the input data.
-                         */
+        return super.success(inserted(entity.getName()));
+    }
 
-                        e.printStackTrace();
-                        return super.error("An unspecified error occurred during checks");
-                }
+    /**
+     * <h3>Updates an existing entry in the database.</h3>
+     * <p>
+     * The function implements all the necessary checks
+     * for compliance with data types,allowed string lengths, etc.
+     * The function will also perform all necessary actions
+     * with the edit history repository
+     * and the rental history repository (if present),
+     * just pass the entity ID and new parameters and it will be updated.
+     * </p>
+     *
+     * @param id             Unique identifier of the entity;
+     * @param brand          Name of the brand {@code 100 chars};
+     * @param name           Name of the entity {@code 100 chars};
+     * @param part           The part {@code 50 chars};
+     * @param serial         Serial number of the entity {@code 50 chars};
+     * @param buyDate        Entity purchase date;
+     * @param warrantyMonths Amount of warranty months;
+     * @param provider       Name of the provider (dealer) {@code 50 chars};
+     * @param title          Short description of the entry {@code 50 chars};
+     * @param description    Full description of the entry {@code 255 chars};
+     * @return A standard response form
+     * that contains the class name,
+     * functions, status and text.
+     * @author Anton Kuzmin
+     * @since 2024.03.14
+     * @since 2024.03.19
+     */
+    @SuppressWarnings("DuplicatedCode")
+    public ResponseForm update(
+            Long id,
+            String brand,
+            String name,
+            String part,
+            String serial,
+            Date buyDate,
+            int warrantyMonths,
+            String provider,
+            String title,
+            String description
+    ) throws NullPointerException {
+        super.function("update");
 
-                /**
-                 * This part of the function is executed
-                 * only if all checks have passed successfully
-                 * and no errors have been detected.
-                 */
-                try {
+        RegEntity entity = entityRepository.findById(id).orElse(null);
 
-                        // Creating a new entity
-                        RegEntity entity = new RegEntity(
-                                        brand,
-                                        name,
-                                        part,
-                                        serial,
-                                        buyDate,
-                                        warrantyMonths,
-                                        provider,
-                                        title,
-                                        description);
-                        entityRepository.save(entity);
+        // Checking strings for null value.
+        brand = Objects.requireNonNullElse(brand, "");
+        part = Objects.requireNonNullElse(part, "");
+        serial = Objects.requireNonNullElse(serial, "");
+        provider = Objects.requireNonNullElse(provider, "");
+        title = Objects.requireNonNullElse(title, "");
+        description = Objects.requireNonNullElse(description, "");
 
-                        // Adding a new entry to the entity editing history.
-                        historyRepository.save(
-                                        new RegHistory(
-                                                        entity,
-                                                        brand,
-                                                        name,
-                                                        part,
-                                                        serial,
-                                                        buyDate,
-                                                        warrantyMonths,
-                                                        provider,
-                                                        title,
-                                                        description,
-                                                        null, // spring security system required
-                                                        false));
+        // Checking strings for compliance with entity requirements
+        String err = String.join("",
+                setChar(brand, "brand", 100),
+                setNull(brand, "brand"),
+                setChar(name, "name", 100),
+                setChar(part, "part", 50),
+                setChar(serial, "serial", 50),
+                setNull(buyDate, "buyDate"),
+                setLess(warrantyMonths, "warrantyMonths", 0),
+                setChar(provider, "provider", 50),
+                setChar(title, "title", 50),
+                setChar(description, "description", 255),
+                setFound(entity, id),
+                setEquals(entity != null
+                        && entity.getBrand().equals(brand)
+                        && entity.getName().equals(name)
+                        && entity.getPart().equals(part)
+                        && entity.getSerial().equals(serial)
+                        && entity.getBuyDate().equals(buyDate)
+                        && entity.getWarrantyMonths() == warrantyMonths
+                        && entity.getProvider().equals(provider)
+                        && entity.getTitle().equals(title)
+                        && entity.getDescription().equals(description), name));
 
-                        // The function execution was successful!
-                        return super.success(
-                                        inserted(entity.getName()));
+        // Termination of the function if errors were detected.
+        if (!err.isEmpty()) return super.error(err);
 
-                } catch (Exception e) {
-                        /**
-                         * This block of code should not be called at all!
-                         * If it was called,
-                         * then the error is guaranteed to be in the code itself,
-                         * and not in the input data.
-                         */
+        // else: all test successfully passed!
 
-                        e.printStackTrace();
-                        return super.error(
-                                        "An unspecified error occurred while making changes to the repositories");
-                }
-        }
+        Objects.requireNonNull(entity).update(brand, name, part, serial, buyDate, warrantyMonths, title, description, provider);
 
-        /**
-         * <h3>Updates an existing entry in the database.</h3>
-         * <p>
-         * The function implements all the necessary checks
-         * for compliance with data types,allowed string lengths, etc.
-         * The function will also perform all necessary actions
-         * with the edit history repository
-         * and the rental history repository (if present),
-         * just pass the entity ID and new parameters and it will be updated.
-         * </p>
-         *
-         * @param id             - the unique identifier of the entity;
-         * @param brand          - name of the brand {@code 100 chars};
-         * @param name           - name of the entity {@code 100 chars};
-         * @param part           - the part {@code 50 chars};
-         * @param serial         - serial number of the entity {@code 50 chars};
-         * @param buyDate        - entity purchase date;
-         * @param warrantyMonths - amount of warranty months;
-         * @param provider       - name of the provider (dealer) {@code 50 chars};
-         * @param title          - the short description of the entry {@code 50 chars};
-         * @param description    - the full description of the entiy {@code 255 chars};
-         * @return A standard response form
-         *         that contains the class name,
-         *         functions, status and text.
-         * @since 2024.03.14
-         * @author Anton Kuzmin
-         */
-        public ResponseForm update(
-                        Long id,
-                        String brand,
-                        String name,
-                        String part,
-                        String serial,
-                        Date buyDate,
-                        int warrantyMonths,
-                        String provider,
-                        String title,
-                        String description) {
+        entityRepository.save(entity);
+        historyRepository.save(new RegHistory(entity, brand, name, part, serial, buyDate, warrantyMonths, provider, title, description, null, false));
 
-                // Setting the function name for the logging class.
-                super.function(update);
+        return super.success(updated(entity.getName()));
+    }
 
-                // Searching for an entity by ID in the repository.
-                RegEntity entity = id != null
-                                ? entityRepository
-                                                .findById(id)
-                                                .orElse(null)
-                                : null;
+    /**
+     * <h3>Deleting an existing entry in the database.</h3>
+     * <p>
+     * The function implements all the necessary checks
+     * for compliance with data types,allowed string lengths, etc.
+     * The function will also perform all necessary actions
+     * with the edit history repository
+     * and the rental history repository (if present),
+     * just pass the entity ID and new parameters and it will be updated.
+     * </p>
+     *
+     * @param id Unique identifier of the entity;
+     * @return A standard response form
+     * that contains the class name,
+     * functions, status and text.
+     * @author Anton Kuzmin
+     * @since 2024.03.14
+     * @since 2024.03.19
+     */
+    public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
+        super.function("delete");
 
-                /**
-                 * This block checks each parameter
-                 * whether it meets the given requirements.
-                 */
-                try {
+        RegEntity entity = entityRepository.findById(id).orElse(null);
 
-                        /**
-                         * Checking strings for null value.
-                         * If the string is null,
-                         * it will be replaced with "" (an empty string).
-                         *
-                         * IMPORTANT:
-                         * Don't delete this part of the code!
-                         * Despite the fact that an empty string takes up more resources than a null
-                         * and using it in code is less preferable than a null,
-                         * in this case it is the empty string that is used,
-                         * since for the database there is no difference
-                         * between an empty string and a null.
-                         * For this reason, in entity annotations the default nullable is set to false.
-                         */
-                        brand = brand == null
-                                        ? ""
-                                        : brand;
-                        part = part == null
-                                        ? ""
-                                        : part;
-                        serial = serial == null
-                                        ? ""
-                                        : serial;
-                        provider = provider == null
-                                        ? ""
-                                        : provider;
-                        title = title == null
-                                        ? ""
-                                        : title;
-                        description = description == null
-                                        ? ""
-                                        : description;
+        // Checking strings for compliance with entity requirements
+        String err = deleteChecks(entity, id);
 
-                        /**
-                         * Checking strings for compliance with entity requirements
-                         * and collecting error messages in the stringbuilder
-                         * initialized at the beginning of the class.
-                         */
-                        err
-                                        .append(
-                                                        brand.length() > 50
-                                                                        ? setChar("Brand", 100)
-                                                                        : "")
-                                        .append(
-                                                        name == null
-                                                                        ? setNull("Name")
-                                                                        : "")
-                                        .append(
-                                                        title.length() > 50
-                                                                        ? setChar("Name", 100)
-                                                                        : "")
-                                        .append(
-                                                        part.length() > 50
-                                                                        ? setChar("Part", 50)
-                                                                        : "")
-                                        .append(
-                                                        serial.length() > 50
-                                                                        ? setChar("Serial", 50)
-                                                                        : "")
-                                        .append(
-                                                        buyDate == null
-                                                                        ? setNull("Buy date")
-                                                                        : "")
-                                        .append(
-                                                        warrantyMonths < 0
-                                                                        ? setLess("Warranty months", 0)
-                                                                        : "")
-                                        .append(
-                                                        provider.length() > 50
-                                                                        ? setChar("Provider", 50)
-                                                                        : "")
-                                        .append(
-                                                        title.length() > 50
-                                                                        ? setChar("Title", 50)
-                                                                        : "")
-                                        .append(
-                                                        description.length() > 255
-                                                                        ? setChar("Description", 255)
-                                                                        : "")
+        // Termination of the function if errors were detected.
+        if (!err.isEmpty()) return super.error(err);
 
-                                        /**
-                                         * Checking for the presence of an entity in the database.
-                                         * If the entity is not in the database,
-                                         * a message about a non-existent entity will be added to the error list
-                                         * and the function will be interrupted.
-                                         */
-                                        .append(
-                                                        entity == null
-                                                                        ? String.format("Entity with ID %d not found",
-                                                                                        id)
-                                                                        : "")
+        // else: all test successfully passed!
 
-                                        /**
-                                         * Compare each entity parameter with the new input data.
-                                         * If all the data is the same,
-                                         * then there is no point in making changes
-                                         * and adding a new entry to the history,
-                                         * so a new message will be added about this event as an error.
-                                         */
-                                        .append(
-                                                        entity != null
-                                                                        && entity.getBrand().equals(brand)
-                                                                        && entity.getName().equals(name)
-                                                                        && entity.getPart().equals(part)
-                                                                        && entity.getSerial().equals(serial)
-                                                                        && entity.getBuyDate().equals(buyDate)
-                                                                        && entity.getWarrantyMonths() == warrantyMonths
-                                                                        && entity.getProvider().equals(provider)
-                                                                        && entity.getTitle().equals(title)
-                                                                        && entity.getDescription().equals(description)
-                                                                                        ? String.format("All params of %s is equal",
-                                                                                                        entity.getName())
-                                                                                        : "");
+        Objects.requireNonNull(entity).setDeleted(true);
 
-                        // Termination of the function if errors were detected.
-                        if (err.length() > 0)
-                                return super.error(
-                                                err.toString());
+        entityRepository.save(entity);
+        historyRepository.save(new RegHistory(entity, null));
 
-                } catch (Exception e) {
-                        /**
-                         * This block of code should not be called at all!
-                         * If it was called,
-                         * then the error is guaranteed to be in the code itself,
-                         * and not in the input data.
-                         */
-
-                        e.printStackTrace();
-                        return super.error("An unspecified error occurred during checks");
-                }
-
-                /**
-                 * This part of the function is executed
-                 * only if all checks have passed successfully
-                 * and no errors have been detected.
-                 */
-                try {
-
-                        if (entity == null)
-                                throw new Exception("Entity cannot be null in this block");
-
-                        // Setting new values.
-                        entity.setBrand(brand);
-                        entity.setName(name);
-                        entity.setPart(part);
-                        entity.setSerial(serial);
-                        entity.setBuyDate(buyDate);
-                        entity.setWarrantyMonths(warrantyMonths);
-                        entity.setProvider(provider);
-                        entity.setTitle(title);
-                        entity.setDescription(description);
-                        entityRepository.save(entity);
-
-                        // Adding a new entry to the entity editing history.
-                        historyRepository.save(
-                                        new RegHistory(
-                                                        entity,
-                                                        brand,
-                                                        name,
-                                                        part,
-                                                        serial,
-                                                        buyDate,
-                                                        warrantyMonths,
-                                                        provider,
-                                                        title,
-                                                        description,
-                                                        null, // spring security system required
-                                                        false));
-
-                        // The function execution was successful!
-                        return super.success(
-                                        updated(entity.getName()));
-
-                } catch (Exception e) {
-                        /**
-                         * This block of code should not be called at all!
-                         * If it was called,
-                         * then the error is guaranteed to be in the code itself,
-                         * and not in the input data.
-                         */
-
-                        e.printStackTrace();
-                        return super.error(
-                                        "An unspecified error occurred while making changes to the repositories");
-                }
-        }
-
-        /**
-         * <h3>Deleting an existing entry in the database.</h3>
-         * <p>
-         * The function implements all the necessary checks
-         * for compliance with data types,allowed string lengths, etc.
-         * The function will also perform all necessary actions
-         * with the edit history repository
-         * and the rental history repository (if present),
-         * just pass the entity ID and new parameters and it will be updated.
-         * </p>
-         *
-         * @param id - the unique identifier of the entity;
-         * @return A standard response form
-         *         that contains the class name,
-         *         functions, status and text.
-         * @since 2024.03.14
-         * @author Anton Kuzmin
-         */
-        public ResponseForm delete(Long id) {
-
-                // Setting the function name for the logging class.
-                super.function(delete);
-
-                // Searching for an entity by ID in the repository.
-                RegEntity entity = id != null
-                                ? entityRepository
-                                                .findById(id)
-                                                .orElse(null)
-                                : null;
-
-                /**
-                 * This block checks each parameter
-                 * whether it meets the given requirements.
-                 */
-                try {
-
-                        /**
-                         * Checking strings for compliance with entity requirements
-                         * and collecting error messages in the stringbuilder
-                         * initialized at the beginning of the class.
-                         */
-                        err
-                                        .append(
-                                                        id == null
-                                                                        ? setNull("ID")
-                                                                        : "")
-                                        .append(
-                                                        id != null && id < 1
-                                                                        ? setLess("ID", 1)
-                                                                        : "")
-
-                                        /**
-                                         * Checking for the presence of an entity in the database.
-                                         * If the entity is not in the database,
-                                         * a message about a non-existent entity will be added to the error list
-                                         * and the function will be interrupted.
-                                         */
-                                        .append(
-                                                        entity == null
-                                                                        ? String.format("Entity with ID %d not found",
-                                                                                        id)
-                                                                        : "")
-
-                                        /**
-                                         * Compare each entity parameter with the new input data.
-                                         * If all the data is the same,
-                                         * then there is no point in making changes
-                                         * and adding a new entry to the history,
-                                         * so a new message will be added about this event as an error.
-                                         */
-                                        .append(
-                                                        entity != null && entity.isDeleted() == true
-                                                                        ? String.format("Entity with ID %d already deleted",
-                                                                                        entity.getId())
-                                                                        : "");
-
-                        // Termination of the function if errors were detected.
-                        if (err.length() > 0)
-                                return super.error(
-                                                err.toString());
-
-                } catch (Exception e) {
-                        /**
-                         * This block of code should not be called at all!
-                         * If it was called,
-                         * then the error is guaranteed to be in the code itself,
-                         * and not in the input data.
-                         */
-
-                        e.printStackTrace();
-                        return super.error("An unspecified error occurred during checks");
-                }
-
-                /**
-                 * This part of the function is executed
-                 * only if all checks have passed successfully
-                 * and no errors have been detected.
-                 */
-                try {
-
-                        if (entity == null)
-                                throw new Exception("Entity cannot be null in this block");
-
-                        // Setting new values.
-                        entity.setDeleted(true);
-                        entityRepository.save(entity);
-
-                        // Adding a new entry to the entity editing history.
-                        historyRepository.save(
-                                        new RegHistory(
-                                                        entity,
-                                                        null)); // spring security system required
-
-                        // The function execution was successful!
-                        return super.success(
-                                        deleted(entity.getName()));
-
-                } catch (Exception e) {
-                        /**
-                         * This block of code should not be called at all!
-                         * If it was called,
-                         * then the error is guaranteed to be in the code itself,
-                         * and not in the input data.
-                         */
-
-                        e.printStackTrace();
-                        return super.error(
-                                        "An unspecified error occurred while making changes to the repositories");
-                }
-        }
+        return super.success(deleted(entity.getName()));
+    }
 
 }

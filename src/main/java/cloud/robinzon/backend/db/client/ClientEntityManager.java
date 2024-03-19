@@ -102,7 +102,7 @@ public final class ClientEntityManager
             String title,
             int balance,
             String description) {
-        super.function(insert);
+        super.function("insert");
 
         // Checking strings for null value.
         title = Objects.requireNonNullElse(title, "");
@@ -170,7 +170,7 @@ public final class ClientEntityManager
             String title,
             String description
     ) throws NullPointerException {
-        super.function(update);
+        super.function("update");
 
         ClientEntity entity = entityRepository.findById(id).orElse(null);
 
@@ -232,7 +232,7 @@ public final class ClientEntityManager
      * @since 2024.03.18
      */
     public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
-        super.function(delete);
+        super.function("delete");
 
         ClientEntity entity = entityRepository.findById(id).orElse(null);
 

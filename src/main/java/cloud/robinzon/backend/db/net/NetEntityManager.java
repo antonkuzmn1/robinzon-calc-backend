@@ -96,7 +96,7 @@ public class NetEntityManager
      * @since 2024.03.14
      * @since 2024.03.19
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "DuplicatedCode"})
     public ResponseForm insert(
             String domain,
             String subnet,
@@ -108,7 +108,7 @@ public class NetEntityManager
             String title,
             String description,
             ClientEntity clientEntity) {
-        super.function(insert);
+        super.function("insert");
 
         // Checking strings for null value.
         domain = Objects.requireNonNullElse(domain, "");
@@ -189,7 +189,7 @@ public class NetEntityManager
             String title,
             String description
     ) throws NullPointerException {
-        super.function(insert);
+        super.function("update");
 
         NetEntity entity = entityRepository.findById(id).orElse(null);
 
@@ -263,7 +263,7 @@ public class NetEntityManager
      */
     @SuppressWarnings("DuplicatedCode")
     public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
-        super.function(delete);
+        super.function("delete");
 
         NetEntity entity = entityRepository.findById(id).orElse(null);
 

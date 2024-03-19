@@ -104,7 +104,7 @@ public class FmEntityManager
             int price,
             boolean vm,
             ClientEntity clientEntity) {
-        super.function(insert);
+        super.function("insert");
 
         // Checking strings for null value.
         ip = Objects.requireNonNullElse(ip, "");
@@ -171,7 +171,7 @@ public class FmEntityManager
             int price,
             boolean vm
     ) throws NullPointerException {
-        super.function(insert);
+        super.function("update");
 
         FmEntity entity = entityRepository.findById(id).orElse(null);
 
@@ -236,7 +236,7 @@ public class FmEntityManager
      */
     @SuppressWarnings("DuplicatedCode")
     public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
-        super.function(delete);
+        super.function("delete");
 
         FmEntity entity = entityRepository.findById(id).orElse(null);
 
