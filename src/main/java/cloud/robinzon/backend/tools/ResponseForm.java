@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 Anton Kuzmin http://github.com/antonkuzmn1
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,8 +55,8 @@ package cloud.robinzon.backend.tools;
  * {@code success} - Returns the status SUCCESS;
  * </p>
  *
- * @since 2024.03.13
  * @author Anton Kuzmin
+ * @since 2024.03.13
  */
 
 public class ResponseForm {
@@ -67,36 +67,6 @@ public class ResponseForm {
     private String text; // response message
 
     public ResponseForm() {
-    }
-
-    /**
-     * @deprecated
-     *             <p>
-     *             This implementation method is deprecated.
-     *             </p>
-     *             <p>
-     *             Recommended to be used via class extension.
-     *             </p>
-     *
-     *             <p>
-     *             For example:
-     *             </p>
-     *             <blockquote>
-     *
-     *             <pre>
-     * public final class VpnServerEntityManager
-     *         extends ResponseForm
-     *         implements ResponseStringTemplates {
-     *     // ...
-     * }
-     * </blockquote>
-     *             </pre>
-     *
-     * @since 2024.03.13
-     * @author Anton Kuzmin
-     */
-    public ResponseForm(String className) {
-        this.className = className;
     }
 
     /**
@@ -118,8 +88,8 @@ public class ResponseForm {
      * </pre>
      *
      * @param className - the class name;
-     * @since 2024.03.13
      * @author Anton Kuzmin
+     * @since 2024.03.13
      */
     public void set(String className) {
         this.className = className;
@@ -132,8 +102,8 @@ public class ResponseForm {
      * </p>
      *
      * @param functionName - the function name;
-     * @since 2024.03.13
      * @author Anton Kuzmin
+     * @since 2024.03.13
      */
     public void function(String functionName) {
         this.functionName = functionName;
@@ -148,8 +118,8 @@ public class ResponseForm {
      *
      * @param text - Error message text;
      * @return Form with status "ERROR"
-     * @since 2024.03.13
      * @author Anton Kuzmin
+     * @since 2024.03.13
      */
     public ResponseForm error(String text) {
         this.status = "ERROR";
@@ -166,8 +136,8 @@ public class ResponseForm {
      *
      * @param text - Success message text;
      * @return Form with status "ERROR"
-     * @since 2024.03.13
      * @author Anton Kuzmin
+     * @since 2024.03.13
      */
     public ResponseForm success(String text) {
         this.status = "SUCCESS";
@@ -187,41 +157,24 @@ public class ResponseForm {
      * and also a function using {@code function()}
      * </p>
      *
+     * @author Anton Kuzmin
      * @since 2024.03.13
      * @since 2024.03.15
-     * @author Anton Kuzmin
      */
     private void log() {
-        if (this.className == null)
-            throw new IllegalArgumentException(
-                    "[ResponseForm] className cannot be null");
-        if (this.functionName == null)
-            throw new IllegalArgumentException(
-                    String.format(
-                            "[ResponseForm][%s] functionName cannot be null",
-                            this.className));
-        if (this.status == null
-                && this.text != null)
-            throw new IllegalArgumentException(
-                    String.format(
-                            "[ResponseForm][%s] status cannot be null if the text is not null",
-                            this.className));
+        if (this.className == null) throw new IllegalArgumentException(
+                "[ResponseForm] className cannot be null");
+        if (this.functionName == null) throw new IllegalArgumentException(
+                String.format("[ResponseForm][%s] functionName cannot be null", this.className));
+        if (this.status == null && this.text != null) throw new IllegalArgumentException(
+                String.format("[ResponseForm][%s] status cannot be null if the text is not null", this.className));
 
-        System.out.println(
-                String.format(
-                        "[%s][%s]%s%s",
-                        this.className,
-                        this.functionName,
-                        (this.status == null
-                                ? ""
-                                : String.format(
-                                        "[%s]",
-                                        this.status)),
-                        (this.text == null
-                                ? ""
-                                : String.format(
-                                        " %s",
-                                        this.text))));
+        System.out.printf(
+                "[%s][%s]%s%s%n",
+                this.className,
+                this.functionName,
+                (this.status == null ? "" : String.format("[%s]", this.status)),
+                (this.text == null ? "" : String.format(" %s", this.text)));
     }
 
     @Override

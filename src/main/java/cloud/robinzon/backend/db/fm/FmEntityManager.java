@@ -112,6 +112,7 @@ public class FmEntityManager
         specifications = Objects.requireNonNullElse(specifications, "");
         description = Objects.requireNonNullElse(description, "");
 
+        // Checking strings for compliance with entity requirements
         String err = String.join("",
                 setNull(name, "name"),
                 setChar(name, "name", 50),
@@ -225,7 +226,7 @@ public class FmEntityManager
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id - the unique identifier of the entity;
+     * @param id Unique identifier of the entity;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
@@ -233,6 +234,7 @@ public class FmEntityManager
      * @since 2024.03.14
      * @since 2024.03.19
      */
+    @SuppressWarnings("DuplicatedCode")
     public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
         super.function(delete);
 

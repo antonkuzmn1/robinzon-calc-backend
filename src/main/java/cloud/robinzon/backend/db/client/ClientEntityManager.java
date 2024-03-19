@@ -83,9 +83,9 @@ public final class ClientEntityManager
      * @param discount       Customer discount amount;
      * @param contractNumber Contract number;
      * @param contractDate   Date of conclusion of the contract;
-     * @param title          The short description of the entry {@code 50 chars};
+     * @param title          Short description of the entry {@code 50 chars};
      * @param balance        Client balance;
-     * @param description    The full description of the entry {@code 255 chars};
+     * @param description    Full description of the entry {@code 255 chars};
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
@@ -146,14 +146,14 @@ public final class ClientEntityManager
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id             The unique identifier of the entity;
+     * @param id             Unique identifier of the entity;
      * @param name           Client name {@code 50 chars};
      * @param inn            Client's TIN (INN) {@code 12 chars};
      * @param discount       Customer discount amount;
      * @param contractNumber Contract number;
      * @param contractDate   Date of conclusion of the contract;
-     * @param title          The short description of the entry {@code 50 chars};
-     * @param description    The full description of the entry {@code 255 chars};
+     * @param title          Short description of the entry {@code 50 chars};
+     * @param description    Full description of the entry {@code 255 chars};
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
@@ -224,7 +224,7 @@ public final class ClientEntityManager
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id The unique identifier of the entity;
+     * @param id Unique identifier of the entity;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.

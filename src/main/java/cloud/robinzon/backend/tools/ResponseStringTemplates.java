@@ -62,7 +62,7 @@ public interface ResponseStringTemplates {
      * String builder is used in each of the functions of this class,
      * so it is based at the root.
      */
-    final StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder();
 
     /**
      * <h3>insert</h3>
@@ -70,7 +70,7 @@ public interface ResponseStringTemplates {
      * Prepared variable for auto-completion when specifying a function name.
      * </p>
      */
-    public final String insert = "insert";
+    String insert = "insert";
 
     /**
      * <h3>update</h3>
@@ -78,7 +78,7 @@ public interface ResponseStringTemplates {
      * Prepared variable for auto-completion when specifying a function name.
      * </p>
      */
-    public final String update = "update";
+    String update = "update";
 
     /**
      * <h3>delete</h3>
@@ -86,26 +86,26 @@ public interface ResponseStringTemplates {
      * Prepared variable for auto-completion when specifying a function name.
      * </p>
      */
-    public final String delete = "delete";
+    String delete = "delete";
 
-    /**
-     * <h3>check error</h3>
-     * <p>
-     * This block of code should not be called at all!
-     * If it was called,
-     * then the error is guaranteed to be in the code itself,
-     * and not in the input data.
-     * </p>
+    /*
+      <h3>check error</h3>
+      <p>
+      This block of code should not be called at all!
+      If it was called,
+      then the error is guaranteed to be in the code itself,
+      and not in the input data.
+      </p>
      */
-    public final String textError = "An unspecified error occurred during checks";
+//    final String textError = "An unspecified error occurred during checks";
 
-    /**
-     * <h3>entity cannot be null</h3>
-     * <p>
-     * Prepared variable for auto-completion when specifying a function name.
-     * </p>
+    /*
+      <h3>entity cannot be null</h3>
+      <p>
+      Prepared variable for auto-completion when specifying a function name.
+      </p>
      */
-    public final String cannotBeNull = "Entity cannot be null in this block";
+//    String cannotBeNull = "Entity cannot be null in this block";
 
     /**
      * <h3>Object cannot be null</h3>
@@ -113,7 +113,7 @@ public interface ResponseStringTemplates {
      * Use this pattern if the object must not be null
      * </p>
      *
-     * @param column - enter column name;
+     * @param columnName - enter column name;
      * @return A ready template string.
      * @author Anton Kuzmin
      * @since 2024.03.13
@@ -134,8 +134,8 @@ public interface ResponseStringTemplates {
      * Use this pattern if the string must cannot contain more than X characters
      * </p>
      *
-     * @param column - the column name;
-     * @param limit  - the line length limit;
+     * @param columnName - the column name;
+     * @param limit      - the line length limit;
      * @return A ready template string.
      * @author Anton Kuzmin
      * @since 2024.03.13
@@ -158,8 +158,8 @@ public interface ResponseStringTemplates {
      * Use this pattern if the value must cannot be more than X
      * </p>
      *
-     * @param column - the column name;
-     * @param limit  - maximum value;
+     * @param columnName - the column name;
+     * @param limit      - maximum value;
      * @return A ready template string.
      * @author Anton Kuzmin
      * @since 2024.03.13
@@ -181,8 +181,8 @@ public interface ResponseStringTemplates {
      * Use this pattern if the value must cannot be less than X
      * </p>
      *
-     * @param column - the column name;
-     * @param limit  - minimum value;
+     * @param columnName - the column name;
+     * @param limit      - minimum value;
      * @return A ready template string.
      * @author Anton Kuzmin
      * @since 2024.03.13
@@ -204,8 +204,8 @@ public interface ResponseStringTemplates {
      * Use this pattern if the value must cannot be less than X
      * </p>
      *
-     * @param column - the column name;
-     * @param limit  - minimum value;
+     * @param columnName - the column name;
+     * @param limit      - minimum value;
      * @return A ready template string.
      * @author Anton Kuzmin
      * @since 2024.03.18
@@ -240,9 +240,9 @@ public interface ResponseStringTemplates {
      * </p>
      * </p>
      *
-     * @param result - result of checking;
-     * @param column - the column name;
-     * @param value  - the value;
+     * @param result     - result of checking;
+     * @param columnName - the column name;
+     * @param value      - the value;
      * @return A ready template string.
      * @author Anton Kuzmin
      * @since 2024.03.18
@@ -279,8 +279,6 @@ public interface ResponseStringTemplates {
      * </p>
      *
      * @param result - result of checking;
-     * @param column - the column name;
-     * @param value  - the value;
      * @return A ready template string.
      * @author Anton Kuzmin
      * @since 2024.03.18
@@ -300,9 +298,8 @@ public interface ResponseStringTemplates {
      * Use this method along with {@code super.success(here)};
      * </p>
      *
-     * @param entity - inserted entity;
-     * @param name   - information about the entity that will be displayed in the
-     *               logs (name for example);
+     * @param name - information about the entity that will be displayed in the
+     *             logs (name for example);
      * @return A ready template string.
      * @author Anton Kuzmin
      * @since 2024.03.13
@@ -320,9 +317,8 @@ public interface ResponseStringTemplates {
      * Use this method along with {@code super.success(here)};
      * </p>
      *
-     * @param entity - updated entity;
-     * @param name   - information about the entity that will be displayed in the
-     *               logs (name for example);
+     * @param name - information about the entity that will be displayed in the
+     *             logs (name for example);
      * @return A ready template string.
      * @author Anton Kuzmin
      * @since 2024.03.13
@@ -340,9 +336,8 @@ public interface ResponseStringTemplates {
      * Use this method along with {@code super.success(here)};
      * </p>
      *
-     * @param entity - deleted entity;
-     * @param name   - information about the entity that will be displayed in the
-     *               logs (name for example);
+     * @param name - information about the entity that will be displayed in the
+     *             logs (name for example);
      * @return A ready template string.
      * @author Anton Kuzmin
      * @since 2024.03.13
@@ -366,9 +361,6 @@ public interface ResponseStringTemplates {
      * and the function will be interrupted.
      * </p>
      *
-     * @param result - result of checking;
-     * @param column - the column name;
-     * @param value  - the value;
      * @return A ready template string.
      * @author Anton Kuzmin
      * @since 2024.03.18
@@ -395,9 +387,6 @@ public interface ResponseStringTemplates {
      * so a new message will be added about this event as an error.
      * </p>
      *
-     * @param result - result of checking;
-     * @param column - the column name;
-     * @param value  - the value;
      * @return A ready template string.
      * @author Anton Kuzmin
      * @since 2024.03.18
