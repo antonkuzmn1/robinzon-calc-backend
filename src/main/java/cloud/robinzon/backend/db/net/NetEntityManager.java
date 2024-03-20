@@ -29,6 +29,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+
 /**
  * <h3>Entity Management Tools</h3>
  * <p>
@@ -149,7 +151,7 @@ public class NetEntityManager
 
         rentRepository.save(new NetRent(entity, clientEntity, null));
 
-        return super.success(inserted(entity.getSubnet()));
+        return super.success(format("Inserted: %s", subnet));
     }
 
     /**
@@ -209,11 +211,33 @@ public class NetEntityManager
 
         if (!err.isEmpty()) return super.error(err);
 
-        entity.update(domain, subnet, mask, dns1, dns2, dns3, cloud, title, description);
+        entity.update(
+                domain,
+                subnet,
+                mask,
+                dns1,
+                dns2,
+                dns3,
+                cloud,
+                title,
+                description);
         entityRepository.save(entity);
-        historyRepository.save(new NetHistory(entity, null, domain, subnet, mask, dns1, dns2, dns3, cloud, title, description, false));
 
-        return super.success(updated(entity.getSubnet()));
+        historyRepository.save(new NetHistory(
+                entity,
+                null,
+                domain,
+                subnet,
+                mask,
+                dns1,
+                dns2,
+                dns3,
+                cloud,
+                title,
+                description,
+                false));
+
+        return super.success(format("Updated: %s", subnet));
     }
 
     /**
@@ -250,7 +274,7 @@ public class NetEntityManager
         entityRepository.save(entity);
         historyRepository.save(new NetHistory(entity, null));
 
-        return super.success(deleted(entity.getSubnet()));
+        return super.success(format("Deleted: %s", entity.getSubnet()));
     }
 
 

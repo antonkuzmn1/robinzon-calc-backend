@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Objects;
 
+import static java.lang.String.format;
+
 /**
  * <h3>Entity Management Tools</h3>
  * <p>
@@ -135,7 +137,7 @@ public class RegEntityManager
                 null,
                 false));
 
-        return super.success(inserted(entity.getName()));
+        return super.success(format("Inserted: %s", name));
     }
 
     /**
@@ -220,7 +222,7 @@ public class RegEntityManager
                 null,
                 false));
 
-        return super.success(updated(entity.getName()));
+        return super.success(format("Updated: %s", name));
     }
 
     /**
@@ -257,7 +259,7 @@ public class RegEntityManager
         entityRepository.save(entity);
         historyRepository.save(new RegHistory(entity, null));
 
-        return super.success(deleted(entity.getName()));
+        return super.success(format("Deleted: %s", entity.getName()));
     }
 
 }

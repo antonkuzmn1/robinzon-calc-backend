@@ -22,7 +22,7 @@ package cloud.robinzon.backend.tools;
  * This class has main tools for Entity-Management-Logging for all occasions.
  * </p>
  * <p>
- * Contains the next methonds:
+ * Contains the next methods:
  * </p>
  * <p>
  * {@code set} - Setting the class name;
@@ -175,15 +175,6 @@ public class ResponseForm {
                 this.functionName,
                 (this.status == null ? "" : String.format("[%s]", this.status)),
                 (this.text == null ? "" : String.format(" %s", this.text)));
-    }
-
-    @Override
-    public String toString() {
-        return "ResponseForm [className=" + className
-                + ", functionName=" + functionName
-                + ", status=" + status
-                + ", text=" + text
-                + "]";
     }
 
 }

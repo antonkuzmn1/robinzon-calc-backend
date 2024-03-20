@@ -25,6 +25,8 @@ import cloud.robinzon.backend.tools.ResponseStringTemplates;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+
 /**
  * <h3>Entity Management Tools</h3>
  * <p>
@@ -48,6 +50,7 @@ import java.util.Objects;
  * @since 2024.03.20
  */
 
+@SuppressWarnings("unused")
 public class UserEntityManager
         extends ResponseForm
         implements ResponseStringTemplates {
@@ -102,7 +105,7 @@ public class UserEntityManager
                 description,
                 null));
 
-        return super.success(inserted(username));
+        return super.success(format("Inserted: %s", username));
     }
 
     /**
@@ -158,7 +161,7 @@ public class UserEntityManager
                 description,
                 null));
 
-        return super.success(updated(username));
+        return super.success(format("Updated: %s", username));
     }
 
     /**
@@ -186,7 +189,7 @@ public class UserEntityManager
         entityRepository.save(entity);
         historyRepository.save(new UserHistory(entity, null));
 
-        return super.success(deleted(entity.getUsername()));
+        return super.success(format("Deleted: %s", entity.getUsername()));
     }
 
 }

@@ -25,6 +25,8 @@ import cloud.robinzon.backend.tools.ResponseStringTemplates;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+
 /**
  * <h3>Entity Management Tools</h3>
  * <p>
@@ -95,7 +97,7 @@ public class GroupEntityManager
                 description,
                 null));
 
-        return super.success(inserted(name));
+        return super.success(format("Inserted: %s", name));
     }
 
     /**
@@ -141,7 +143,7 @@ public class GroupEntityManager
                 description,
                 null));
 
-        return super.success(updated(name));
+        return super.success(format("Updated: %s", name));
     }
 
     /**
@@ -169,6 +171,6 @@ public class GroupEntityManager
         entityRepository.save(entity);
         historyRepository.save(new GroupHistory(entity, null));
 
-        return super.success(deleted(entity.getName()));
+        return super.success(format("Deleted: %s", entity.getName()));
     }
 }

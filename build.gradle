@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'cloud.robinzon'
-version = '2024.03.20-SNAPSHOT'
+version = '2024.03.21-SNAPSHOT'
 
 java {
 	sourceCompatibility = '21'

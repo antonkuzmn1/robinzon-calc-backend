@@ -29,6 +29,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+
 /**
  * <h3>Entity Management Tools</h3>
  * <p>
@@ -138,14 +140,14 @@ public class VmEntityManager
             historyRepository.save(new VmHistory(entity, name, cpu, ram, ssd, hdd, running, fmEntity, null, true));
             rentRepository.save(new VmRent(entity, null, null));
 
-            return super.success(inserted(name));
+            return super.success(format("Inserted: %s", name));
         } else {
 
             entity.update(name, cpu, ram, ssd, hdd, running, fmEntity);
             entityRepository.save(entity);
             historyRepository.save(new VmHistory(entity, name, cpu, ram, ssd, hdd, running, fmEntity, null, false));
 
-            return super.success(updated(name));
+            return super.success(format("Updated: %s", name));
         }
     }
 
@@ -187,7 +189,7 @@ public class VmEntityManager
         entityRepository.save(entity);
         historyRepository.save(new VmHistory(entity, title, description, null));
 
-        return super.success(updated(entity.getName()));
+        return super.success(format("Updated: %s", entity.getName()));
     }
 
     /**

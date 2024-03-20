@@ -29,6 +29,8 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 import java.util.Set;
 
+import static java.lang.String.format;
+
 /**
  * <h3>Entity Management Tools</h3>
  * <p>
@@ -122,7 +124,7 @@ public final class VpnServerEntityManager
                 vpnTypeEntity,
                 null));
 
-        return super.success(inserted(ip));
+        return super.success(format("Inserted: %s", ip));
     }
 
     /**
@@ -190,7 +192,7 @@ public final class VpnServerEntityManager
                 vpnTypeEntity,
                 null));
 
-        return super.success(updated(ip));
+        return super.success(format("Updated: %s", ip));
     }
 
     /**
@@ -226,7 +228,7 @@ public final class VpnServerEntityManager
         entityRepository.save(entity);
         historyRepository.save(new VpnServerHistory(entity, null));
 
-        return super.success(deleted(entity.getIp()));
+        return super.success(format("Deleted: %s", entity.getIp()));
     }
 
 }

@@ -28,6 +28,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+
 /**
  * <h3>Entity Management Tools</h3>
  * <p>
@@ -127,7 +129,7 @@ public class VpnUserEntityManager
                 description,
                 null));
 
-        return super.success(inserted(username));
+        return super.success(format("Inserted: %s", username));
     }
 
     /**
@@ -203,7 +205,7 @@ public class VpnUserEntityManager
                 description,
                 null));
 
-        return super.success(updated(ip));
+        return super.success(format("Updated: %s", username));
     }
 
     /**
@@ -238,7 +240,7 @@ public class VpnUserEntityManager
         entityRepository.save(entity);
         historyRepository.save(new VpnUserHistory(entity, null));
 
-        return super.success(deleted(entity.getIp()));
+        return super.success(format("Deleted: %s", entity.getIp()));
     }
 
 }
