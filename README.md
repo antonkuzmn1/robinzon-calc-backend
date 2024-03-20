@@ -23,9 +23,7 @@
       - [X] reg
       - [X] vm
       - [X] vpn
-      - [ ] security
-        - [ ] group
-        - [ ] user
+      - [X] security
       - [ ] settings
         - [ ] vm
           - [ ] price
