@@ -16,6 +16,12 @@
 
 package cloud.robinzon.backend.db.client;
 
+import cloud.robinzon.backend.db.client.resources.ClientEntity;
+import cloud.robinzon.backend.db.client.resources.ClientEntityRepository;
+import cloud.robinzon.backend.db.client.resources.history.ClientHistory;
+import cloud.robinzon.backend.db.client.resources.history.ClientHistoryRepository;
+import cloud.robinzon.backend.db.client.resources.payment.ClientPayment;
+import cloud.robinzon.backend.db.client.resources.payment.ClientPaymentRepository;
 import cloud.robinzon.backend.tools.ResponseForm;
 import cloud.robinzon.backend.tools.ResponseStringTemplates;
 import org.springframework.stereotype.Service;
@@ -46,8 +52,10 @@ import java.util.Objects;
  *
  * @author Anton Kuzmin
  * @since 2024.03.18
+ * @since 2024.03.20
  */
 
+@SuppressWarnings("unused")
 @Service
 public final class ClientEntityManager
         extends ResponseForm
@@ -57,10 +65,9 @@ public final class ClientEntityManager
     private final ClientHistoryRepository historyRepository;
     private final ClientPaymentRepository paymentRepository;
 
-    private ClientEntityManager(
-            ClientEntityRepository entityRepository,
-            ClientHistoryRepository historyRepository,
-            ClientPaymentRepository paymentRepository) {
+    private ClientEntityManager(ClientEntityRepository entityRepository,
+                                ClientHistoryRepository historyRepository,
+                                ClientPaymentRepository paymentRepository) {
         this.entityRepository = entityRepository;
         this.historyRepository = historyRepository;
         this.paymentRepository = paymentRepository;
@@ -91,46 +98,48 @@ public final class ClientEntityManager
      * functions, status and text.
      * @author Anton Kuzmin
      * @since 2024.03.18
+     * @since 2024.03.20
      */
-    @SuppressWarnings({"RedundantThrows", "unused"})
-    public ResponseForm insert(
-            String name,
-            String inn,
-            int discount,
-            int contractNumber,
-            Date contractDate,
-            String title,
-            int balance,
-            String description) {
+    public ResponseForm insert(String name,
+                               String inn,
+                               int discount,
+                               int contractNumber,
+                               Date contractDate,
+                               String title,
+                               int balance,
+                               String description) {
         super.function("insert");
 
-        // Checking strings for null value.
-        title = Objects.requireNonNullElse(title, "");
-        description = Objects.requireNonNullElse(description, "");
-
-        // Checking strings for compliance with entity requirements
         String err = String.join("",
-                setNull(name, "name"),
-                setChar(name, "name", 100),
                 setUnique(entityRepository.checkUniqueInn(inn), "inn", inn),
-                setChar(inn, "inn", 12),
-                setLess(discount, "discount", 0),
-                setMore(discount, "discount", 100),
-                setLess(contractNumber, "contractNumber", 1),
-                setUnique(entityRepository.checkUniqueContractNumber(contractNumber), "contractNumber", contractNumber),
-                setChar(title, "Title", 50),
-                setChar(description, "Description", 255));
+                setUnique(entityRepository.checkUniqueContractNumber(contractNumber), "contractNumber", contractNumber));
 
-        // Termination of the function if errors were detected.
         if (!err.isEmpty()) return super.error(err);
 
-        // else: all test successfully passed!
-
-        ClientEntity entity = new ClientEntity(name, inn, discount, contractNumber, contractDate, title, balance, description);
-
+        ClientEntity entity = new ClientEntity(
+                name,
+                inn,
+                discount,
+                contractNumber,
+                contractDate,
+                title,
+                balance,
+                description);
         entityRepository.save(entity);
-        historyRepository.save(new ClientHistory(entity, name, inn, discount, contractNumber, contractDate, title, description, null, false));
-        paymentRepository.save(new ClientPayment(entity, balance, null));
+
+        historyRepository.save(new ClientHistory(
+                entity,
+                name,
+                inn,
+                discount,
+                contractNumber,
+                contractDate,
+                title,
+                description,
+                null,
+                false));
+
+        paymentRepository.save(new ClientPayment(entity,balance,null));
 
         return super.success(inserted(entity.getName()));
     }
@@ -160,39 +169,22 @@ public final class ClientEntityManager
      * @author Anton Kuzmin
      * @since 2024.03.18
      */
-    public ResponseForm update(
-            Long id,
-            String name,
-            String inn,
-            int discount,
-            int contractNumber,
-            Date contractDate,
-            String title,
-            String description
-    ) throws NullPointerException {
+    public ResponseForm update(Long id,
+                               String name,
+                               String inn,
+                               int discount,
+                               int contractNumber,
+                               Date contractDate,
+                               String title,
+                               String description) throws NullPointerException {
         super.function("update");
 
-        ClientEntity entity = entityRepository.findById(id).orElse(null);
+        ClientEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
 
-        // Checking strings for null value.
-        title = Objects.requireNonNullElse(title, "");
-        description = Objects.requireNonNullElse(description, "");
-
-        // Checking strings for compliance with entity requirements
         String err = String.join("",
-                setNull(name, "name"),
-                setChar(name, "name", 100),
                 setUnique(entityRepository.checkUniqueInn(inn), "inn", inn),
-                setChar(inn, "inn", 12),
-                setLess(discount, "discount", 0),
-                setMore(discount, "discount", 100),
-                setLess(contractNumber, "contractNumber", 1),
                 setUnique(entityRepository.checkUniqueContractNumber(contractNumber), "contractNumber", contractNumber),
-                setChar(title, "Title", 50),
-                setChar(description, "Description", 255),
-                setUnique(entity == null, "id", id),
-                setEquals(entity != null
-                        && entity.getName().equals(name)
+                setEquals(entity.getName().equals(name)
                         && entity.getInn().equals(inn)
                         && entity.getDiscount() == discount
                         && entity.getContractNumber() == contractNumber
@@ -200,15 +192,29 @@ public final class ClientEntityManager
                         && entity.getTitle().equals(title)
                         && entity.getDescription().equals(description), name));
 
-        // Termination of the function if errors were detected.
         if (!err.isEmpty()) return super.error(err);
 
-        // else: all test successfully passed!
-
-        Objects.requireNonNull(entity).update(name, inn, discount, contractNumber, contractDate, title, description);
-
+        entity.update(
+                name,
+                inn,
+                discount,
+                contractNumber,
+                contractDate,
+                title,
+                description);
         entityRepository.save(entity);
-        historyRepository.save(new ClientHistory(entity, name, inn, discount, contractNumber, contractDate, title, description, null, false));
+
+        historyRepository.save(new ClientHistory(
+                entity,
+                name,
+                inn,
+                discount,
+                contractNumber,
+                contractDate,
+                title,
+                description,
+                null,
+                false));
 
         return super.success(updated(entity.getName()));
     }
@@ -234,18 +240,13 @@ public final class ClientEntityManager
     public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
         super.function("delete");
 
-        ClientEntity entity = entityRepository.findById(id).orElse(null);
+        ClientEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
 
-        // Checking strings for compliance with entity requirements
         String err = deleteChecks(entity, id);
 
-        // Termination of the function if errors were detected.
         if (!err.isEmpty()) return super.error(err);
 
-        // else: all test successfully passed!
-
-        Objects.requireNonNull(entity).setDeleted(true);
-
+        entity.setDeleted(true);
         entityRepository.save(entity);
         historyRepository.save(new ClientHistory(entity, null));
 

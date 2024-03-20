@@ -8,8 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import cloud.robinzon.backend.db.vpn.server.VpnServerEntity;
-import cloud.robinzon.backend.db.vpn.server.VpnServerHistory;
+import cloud.robinzon.backend.db.vpn.server.resources.VpnServerEntity;
+import cloud.robinzon.backend.db.vpn.server.resources.history.VpnServerHistory;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;

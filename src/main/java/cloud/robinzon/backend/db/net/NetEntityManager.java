@@ -16,7 +16,13 @@
 
 package cloud.robinzon.backend.db.net;
 
-import cloud.robinzon.backend.db.client.ClientEntity;
+import cloud.robinzon.backend.db.client.resources.ClientEntity;
+import cloud.robinzon.backend.db.net.resources.NetEntity;
+import cloud.robinzon.backend.db.net.resources.NetEntityRepository;
+import cloud.robinzon.backend.db.net.resources.history.NetHistory;
+import cloud.robinzon.backend.db.net.resources.history.NetHistoryRepository;
+import cloud.robinzon.backend.db.net.resources.rent.NetRent;
+import cloud.robinzon.backend.db.net.resources.rent.NetRentRepository;
 import cloud.robinzon.backend.tools.ResponseForm;
 import cloud.robinzon.backend.tools.ResponseStringTemplates;
 import org.springframework.stereotype.Service;
@@ -47,8 +53,10 @@ import java.util.Objects;
  * @author Anton Kuzmin
  * @since 2024.03.14
  * @since 2024.03.19
+ * @since 2024.03.20
  */
 
+@SuppressWarnings("unused")
 @Service
 public class NetEntityManager
         extends ResponseForm
@@ -58,10 +66,9 @@ public class NetEntityManager
     private final NetHistoryRepository historyRepository;
     private final NetRentRepository rentRepository;
 
-    public NetEntityManager(
-            NetEntityRepository entityRepository,
-            NetHistoryRepository historyRepository,
-            NetRentRepository rentRepository) {
+    public NetEntityManager(NetEntityRepository entityRepository,
+                            NetHistoryRepository historyRepository,
+                            NetRentRepository rentRepository) {
         this.entityRepository = entityRepository;
         this.historyRepository = historyRepository;
         this.rentRepository = rentRepository;
@@ -95,55 +102,51 @@ public class NetEntityManager
      * @author Anton Kuzmin
      * @since 2024.03.14
      * @since 2024.03.19
+     * @since 2024.03.20
      */
-    @SuppressWarnings({"unused", "DuplicatedCode"})
-    public ResponseForm insert(
-            String domain,
-            String subnet,
-            String mask,
-            String dns1,
-            String dns2,
-            String dns3,
-            boolean cloud,
-            String title,
-            String description,
-            ClientEntity clientEntity) {
+    public ResponseForm insert(String domain,
+                               String subnet,
+                               String mask,
+                               String dns1,
+                               String dns2,
+                               String dns3,
+                               boolean cloud,
+                               String title,
+                               String description,
+                               ClientEntity clientEntity) {
         super.function("insert");
 
-        // Checking strings for null value.
-        domain = Objects.requireNonNullElse(domain, "");
-        dns1 = Objects.requireNonNullElse(dns1, "");
-        dns2 = Objects.requireNonNullElse(dns2, "");
-        dns3 = Objects.requireNonNullElse(dns3, "");
-        title = Objects.requireNonNullElse(title, "");
-        description = Objects.requireNonNullElse(description, "");
+        String err = setUnique(entityRepository.checkUniqueSubnet(subnet), "subnet", subnet);
 
-        // Checking strings for compliance with entity requirements
-        String err = String.join("",
-                setChar(domain, "domain", 50),
-                setNull(subnet, "subnet"),
-                setUnique(entityRepository.checkUniqueSubnet(subnet), "subnet", subnet),
-                setChar(subnet, "subnet", 15),
-                setNull(mask, "mask"),
-                setChar(mask, "mask", 15),
-                setNull(dns1, "dns1"),
-                setChar(dns1, "dns1", 15),
-                setNull(dns2, "dns2"),
-                setChar(dns2, "dns2", 15),
-                setNull(dns3, "dns3"),
-                setChar(dns3, "dns3", 15),
-                setChar(title, "title", 50),
-                setChar(description, "description", 255));
-
-        // Termination of the function if errors were detected.
         if (!err.isEmpty()) return super.error(err);
 
-        // else: all test successfully passed!
-
-        NetEntity entity = new NetEntity(clientEntity, domain, subnet, mask, dns1, dns2, dns3, cloud, title, description);
-
+        NetEntity entity = new NetEntity(
+                clientEntity,
+                domain,
+                subnet,
+                mask,
+                dns1,
+                dns2,
+                dns3,
+                cloud,
+                title,
+                description);
         entityRepository.save(entity);
-        historyRepository.save(new NetHistory(entity, null, domain, subnet, mask, dns1, dns2, dns3, cloud, title, description, false));
+
+        historyRepository.save(new NetHistory(
+                entity,
+                null,
+                domain,
+                subnet,
+                mask,
+                dns1,
+                dns2,
+                dns3,
+                cloud,
+                title,
+                description,
+                false));
+
         rentRepository.save(new NetRent(entity, clientEntity, null));
 
         return super.success(inserted(entity.getSubnet()));
@@ -175,51 +178,25 @@ public class NetEntityManager
      * @author Anton Kuzmin
      * @since 2024.03.14
      * @since 2024.03.19
+     * @since 2024.03.20
      */
-    @SuppressWarnings("DuplicatedCode")
-    public ResponseForm update(
-            Long id,
-            String domain,
-            String subnet,
-            String mask,
-            String dns1,
-            String dns2,
-            String dns3,
-            boolean cloud,
-            String title,
-            String description
-    ) throws NullPointerException {
+    public ResponseForm update(Long id,
+                               String domain,
+                               String subnet,
+                               String mask,
+                               String dns1,
+                               String dns2,
+                               String dns3,
+                               boolean cloud,
+                               String title,
+                               String description) throws NullPointerException {
         super.function("update");
 
-        NetEntity entity = entityRepository.findById(id).orElse(null);
+        NetEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
 
-        // Checking strings for null value.
-        domain = Objects.requireNonNullElse(domain, "");
-        dns1 = Objects.requireNonNullElse(dns1, "");
-        dns2 = Objects.requireNonNullElse(dns2, "");
-        dns3 = Objects.requireNonNullElse(dns3, "");
-        title = Objects.requireNonNullElse(title, "");
-        description = Objects.requireNonNullElse(description, "");
-
-        // Checking strings for compliance with entity requirements
         String err = String.join("",
-                setChar(domain, "domain", 50),
-                setNull(subnet, "subnet"),
                 setUnique(entityRepository.checkUniqueSubnet(subnet), "subnet", subnet),
-                setChar(subnet, "subnet", 15),
-                setNull(mask, "mask"),
-                setChar(mask, "mask", 15),
-                setNull(dns1, "dns1"),
-                setChar(dns1, "dns1", 15),
-                setNull(dns2, "dns2"),
-                setChar(dns2, "dns2", 15),
-                setNull(dns3, "dns3"),
-                setChar(dns3, "dns3", 15),
-                setChar(title, "title", 50),
-                setChar(description, "description", 255),
-                setFound(entity, id),
-                setEquals(entity != null
-                        && entity.getDomain().equals(domain)
+                setEquals(entity.getDomain().equals(domain)
                         && entity.getSubnet().equals(subnet)
                         && entity.getMask().equals(mask)
                         && entity.getDns1().equals(dns1)
@@ -229,15 +206,33 @@ public class NetEntityManager
                         && entity.getTitle().equals(title)
                         && entity.getDescription().equals(description), subnet));
 
-        // Termination of the function if errors were detected.
         if (!err.isEmpty()) return super.error(err);
 
-        // else: all test successfully passed!
-
-        Objects.requireNonNull(entity).update(domain, subnet, mask, dns1, dns2, dns3, cloud, title, description);
-
+        entity.update(
+                domain,
+                subnet,
+                mask,
+                dns1,
+                dns2,
+                dns3,
+                cloud,
+                title,
+                description);
         entityRepository.save(entity);
-        historyRepository.save(new NetHistory(entity, null, domain, subnet, mask, dns1, dns2, dns3, cloud, title, description, false));
+
+        historyRepository.save(new NetHistory(
+                entity,
+                null,
+                domain,
+                subnet,
+                mask,
+                dns1,
+                dns2,
+                dns3,
+                cloud,
+                title,
+                description,
+                false));
 
         return super.success(updated(entity.getSubnet()));
     }
@@ -260,23 +255,18 @@ public class NetEntityManager
      * @author Anton Kuzmin
      * @since 2024.03.14
      * @since 2024.03.19
+     * @since 2024.03.20
      */
-    @SuppressWarnings("DuplicatedCode")
     public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
         super.function("delete");
 
-        NetEntity entity = entityRepository.findById(id).orElse(null);
+        NetEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
 
-        // Checking strings for compliance with entity requirements
         String err = deleteChecks(entity, id);
 
-        // Termination of the function if errors were detected.
         if (!err.isEmpty()) return super.error(err);
 
-        // else: all test successfully passed!
-
-        Objects.requireNonNull(entity).setDeleted(true);
-
+        entity.setDeleted(true);
         entityRepository.save(entity);
         historyRepository.save(new NetHistory(entity, null));
 

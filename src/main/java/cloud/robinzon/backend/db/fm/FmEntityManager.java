@@ -16,7 +16,13 @@
 
 package cloud.robinzon.backend.db.fm;
 
-import cloud.robinzon.backend.db.client.ClientEntity;
+import cloud.robinzon.backend.db.client.resources.ClientEntity;
+import cloud.robinzon.backend.db.fm.resources.FmEntity;
+import cloud.robinzon.backend.db.fm.resources.FmEntityRepository;
+import cloud.robinzon.backend.db.fm.resources.history.FmHistory;
+import cloud.robinzon.backend.db.fm.resources.history.FmHistoryRepository;
+import cloud.robinzon.backend.db.fm.resources.rent.FmRent;
+import cloud.robinzon.backend.db.fm.resources.rent.FmRentRepository;
 import cloud.robinzon.backend.tools.ResponseForm;
 import cloud.robinzon.backend.tools.ResponseStringTemplates;
 import org.springframework.stereotype.Service;
@@ -47,8 +53,10 @@ import java.util.Objects;
  * @author Anton Kuzmin
  * @since 2024.03.14
  * @since 2024.03.19
+ * @since 2024.03.20
  */
 
+@SuppressWarnings("unused")
 @Service
 public class FmEntityManager
         extends ResponseForm
@@ -58,10 +66,9 @@ public class FmEntityManager
     private final FmHistoryRepository historyRepository;
     private final FmRentRepository rentRepository;
 
-    public FmEntityManager(
-            FmEntityRepository entityRepository,
-            FmHistoryRepository historyRepository,
-            FmRentRepository rentRepository) {
+    public FmEntityManager(FmEntityRepository entityRepository,
+                           FmHistoryRepository historyRepository,
+                           FmRentRepository rentRepository) {
         this.entityRepository = entityRepository;
         this.historyRepository = historyRepository;
         this.rentRepository = rentRepository;
@@ -94,43 +101,43 @@ public class FmEntityManager
      * @since 2024.03.14
      * @since 2024.03.19
      */
-    @SuppressWarnings("unused")
-    public ResponseForm insert(
-            String name,
-            String ip,
-            String title,
-            String specifications,
-            String description,
-            int price,
-            boolean vm,
-            ClientEntity clientEntity) {
+    public ResponseForm insert(String name,
+                               String ip,
+                               String title,
+                               String specifications,
+                               String description,
+                               int price,
+                               boolean vm,
+                               ClientEntity clientEntity) {
         super.function("insert");
 
-        // Checking strings for null value.
-        ip = Objects.requireNonNullElse(ip, "");
-        title = Objects.requireNonNullElse(title, "");
-        specifications = Objects.requireNonNullElse(specifications, "");
-        description = Objects.requireNonNullElse(description, "");
+        String err = setUnique(entityRepository.checkUniqueIp(ip), "ip", ip);
 
-        // Checking strings for compliance with entity requirements
-        String err = String.join("",
-                setNull(name, "name"),
-                setChar(name, "name", 50),
-                setChar(ip, "ip", 15),
-                setLess(price, "price", 0),
-                setChar(title, "title", 50),
-                setChar(specifications, "specifications", 255),
-                setChar(description, "description", 255));
-
-        // Termination of the function if errors were detected.
         if (!err.isEmpty()) return super.error(err);
 
-        // else: all test successfully passed!
-
-        FmEntity entity = new FmEntity(name, ip, title, specifications, description, price, vm, clientEntity);
-
+        FmEntity entity = new FmEntity(
+                name,
+                ip,
+                title,
+                specifications,
+                description,
+                price,
+                vm,
+                clientEntity);
         entityRepository.save(entity);
-        historyRepository.save(new FmHistory(entity, name, ip, title, specifications, description, price, vm, null, false));
+
+        historyRepository.save(new FmHistory(
+                entity,
+                name,
+                ip,
+                title,
+                specifications,
+                description,
+                price,
+                vm,
+                null,
+                false));
+
         rentRepository.save(new FmRent(entity, clientEntity, null));
 
         return super.success(inserted(entity.getName()));
@@ -161,39 +168,21 @@ public class FmEntityManager
      * @since 2024.03.14
      * @since 2024.03.19
      */
-    public ResponseForm update(
-            Long id,
-            String name,
-            String ip,
-            String title,
-            String specifications,
-            String description,
-            int price,
-            boolean vm
-    ) throws NullPointerException {
+    public ResponseForm update(Long id,
+                               String name,
+                               String ip,
+                               String title,
+                               String specifications,
+                               String description,
+                               int price,
+                               boolean vm) throws NullPointerException {
         super.function("update");
 
-        FmEntity entity = entityRepository.findById(id).orElse(null);
+        FmEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
 
-        // Checking strings for null value.
-        ip = Objects.requireNonNullElse(ip, "");
-        title = Objects.requireNonNullElse(title, "");
-        specifications = Objects.requireNonNullElse(specifications, "");
-        description = Objects.requireNonNullElse(description, "");
-
-        // Checking strings for compliance with entity requirements
         String err = String.join("",
-                setNull(name, "name"),
-                setChar(name, "name", 50),
-                setChar(ip, "ip", 15),
                 setUnique(entityRepository.checkUniqueIp(ip), "ip", ip),
-                setLess(price, "price", 0),
-                setChar(title, "title", 50),
-                setChar(specifications, "specifications", 255),
-                setChar(description, "description", 255),
-                setFound(entity, id),
-                setEquals(entity != null
-                        && entity.getName().equals(name)
+                setEquals(entity.getName().equals(name)
                         && entity.getIp().equals(ip)
                         && entity.getTitle().equals(title)
                         && entity.getSpecifications()
@@ -202,15 +191,29 @@ public class FmEntityManager
                         && entity.getPrice() == price
                         && entity.getVm() == vm, name));
 
-        // Termination of the function if errors were detected.
         if (!err.isEmpty()) return super.error(err);
 
-        // else: all test successfully passed!
-
-        Objects.requireNonNull(entity).update(name, ip, title, specifications, description, price, vm);
-
+        entity.update(
+                name,
+                ip,
+                title,
+                specifications,
+                description,
+                price,
+                vm);
         entityRepository.save(entity);
-        historyRepository.save(new FmHistory(entity, name, ip, title, specifications, description, price, vm, null, false));
+
+        historyRepository.save(new FmHistory(
+                entity,
+                name,
+                ip,
+                title,
+                specifications,
+                description,
+                price,
+                vm,
+                null,
+                false));
 
         return super.success(updated(entity.getName()));
     }
@@ -234,22 +237,16 @@ public class FmEntityManager
      * @since 2024.03.14
      * @since 2024.03.19
      */
-    @SuppressWarnings("DuplicatedCode")
     public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
         super.function("delete");
 
-        FmEntity entity = entityRepository.findById(id).orElse(null);
+        FmEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
 
-        // Checking strings for compliance with entity requirements
         String err = deleteChecks(entity, id);
 
-        // Termination of the function if errors were detected.
         if (!err.isEmpty()) return super.error(err);
 
-        // else: all test successfully passed!
-
-        Objects.requireNonNull(entity).setDeleted(true);
-
+        entity.setDeleted(true);
         entityRepository.save(entity);
         historyRepository.save(new FmHistory(entity, null));
 

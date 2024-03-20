@@ -22,9 +22,7 @@
       - [X] net
       - [X] reg
       - [X] vm
-      - [ ] vpn
-        - [X] server
-        - [ ] user
+      - [X] vpn
       - [ ] security
         - [ ] group
         - [ ] user
