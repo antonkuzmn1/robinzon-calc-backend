@@ -1,7 +1,7 @@
 package cloud.robinzon.backend.db.vpn.server.resources;
 
 import cloud.robinzon.backend.db.net.resources.NetEntity;
-import cloud.robinzon.backend.settings.vpn.type.VpnTypeEntity;
+import cloud.robinzon.backend.settings.vpn.type.resources.VpnTypeEntity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UpdateTimestamp;

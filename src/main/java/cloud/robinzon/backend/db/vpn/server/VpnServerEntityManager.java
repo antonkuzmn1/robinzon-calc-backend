@@ -21,7 +21,7 @@ import cloud.robinzon.backend.db.vpn.server.resources.VpnServerEntity;
 import cloud.robinzon.backend.db.vpn.server.resources.VpnServerEntityRepository;
 import cloud.robinzon.backend.db.vpn.server.resources.history.VpnServerHistory;
 import cloud.robinzon.backend.db.vpn.server.resources.history.VpnServerHistoryRepository;
-import cloud.robinzon.backend.settings.vpn.type.VpnTypeEntity;
+import cloud.robinzon.backend.settings.vpn.type.resources.VpnTypeEntity;
 import cloud.robinzon.backend.tools.ResponseForm;
 import cloud.robinzon.backend.tools.ResponseStringTemplates;
 import org.springframework.stereotype.Service;

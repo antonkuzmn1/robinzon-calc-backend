@@ -1,34 +1,10 @@
-# Progress list (est. 40%)
+# Progress list (est. 50%)
 
 > [!TIP]
 > - [X] Ready
 > - [ ] Not ready
 
-- [ ] Architecture
-  - [X] Entities
-  - [X] Keys
-  - [X] Repositories
-  - [X] Services
-  - [X] Controllers
-  - [ ] Listeners
-    - [X] Logging-form
-    - [X] Response-for
-    - [X] Pre/postPersist
-    - [X] Pre/postUpdate
-    - [X] Pre/postDelete
-    - [ ] Template adaptation
-      - [X] client
-      - [X] fm
-      - [X] net
-      - [X] reg
-      - [X] vm
-      - [X] vpn
-      - [X] security
-      - [ ] settings
-        - [ ] vm
-          - [ ] price
-        - [ ] vpn
-          - [ ] type
+- [X] Architecture
 - [ ] Security
   - [ ] Authorization
   - [ ] Cryptography
