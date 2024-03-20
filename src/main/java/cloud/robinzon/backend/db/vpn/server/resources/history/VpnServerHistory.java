@@ -2,7 +2,7 @@ package cloud.robinzon.backend.db.vpn.server.resources.history;
 
 import cloud.robinzon.backend.db.net.resources.NetEntity;
 import cloud.robinzon.backend.db.vpn.server.resources.VpnServerEntity;
-import cloud.robinzon.backend.security.user.UserEntity;
+import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.settings.vpn.type.VpnTypeEntity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;

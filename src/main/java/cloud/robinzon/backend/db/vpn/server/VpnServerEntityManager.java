@@ -156,7 +156,8 @@ public final class VpnServerEntityManager
                                String ip,
                                String publicKey,
                                NetEntity netEntity,
-                               Set<VpnTypeEntity> vpnTypeEntity) throws NullPointerException {
+                               Set<VpnTypeEntity> vpnTypeEntity)
+            throws NullPointerException {
         super.function("update");
 
         VpnServerEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
@@ -170,7 +171,7 @@ public final class VpnServerEntityManager
 
         if (!err.isEmpty()) return super.error(err);
 
-        Objects.requireNonNull(entity).update(
+        entity.update(
                 title,
                 description,
                 ip,
@@ -211,7 +212,8 @@ public final class VpnServerEntityManager
      * @since 2024.03.13
      * @since 2024.03.20
      */
-    public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
+    public ResponseForm delete(Long id)
+            throws NullPointerException, NoSuchMethodException {
         super.function("delete");
 
         VpnServerEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));

@@ -163,7 +163,8 @@ public class VpnUserEntityManager
                                String password,
                                String fullName,
                                String title,
-                               String description) throws NullPointerException {
+                               String description)
+            throws NullPointerException {
         super.function("update");
 
         VpnUserEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
@@ -223,7 +224,8 @@ public class VpnUserEntityManager
      * @author Anton Kuzmin
      * @since 2024.03.20
      */
-    public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
+    public ResponseForm delete(Long id)
+            throws NullPointerException, NoSuchMethodException {
         super.function("delete");
 
         VpnUserEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));

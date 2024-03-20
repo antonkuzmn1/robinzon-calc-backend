@@ -2,7 +2,7 @@ package cloud.robinzon.backend.db.vm.resources.history;
 
 import cloud.robinzon.backend.db.fm.resources.FmEntity;
 import cloud.robinzon.backend.db.vm.resources.VmEntity;
-import cloud.robinzon.backend.security.user.UserEntity;
+import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 

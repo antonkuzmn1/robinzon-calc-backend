@@ -176,7 +176,8 @@ public final class ClientEntityManager
                                int contractNumber,
                                Date contractDate,
                                String title,
-                               String description) throws NullPointerException {
+                               String description)
+            throws NullPointerException {
         super.function("update");
 
         ClientEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
@@ -237,7 +238,8 @@ public final class ClientEntityManager
      * @author Anton Kuzmin
      * @since 2024.03.18
      */
-    public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
+    public ResponseForm delete(Long id)
+            throws NullPointerException, NoSuchMethodException {
         super.function("delete");
 
         ClientEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));

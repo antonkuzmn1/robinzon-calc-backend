@@ -2,7 +2,7 @@ package cloud.robinzon.backend.db.vpn.user.resources.history;
 
 import cloud.robinzon.backend.db.vpn.server.resources.VpnServerEntity;
 import cloud.robinzon.backend.db.vpn.user.resources.VpnUserEntity;
-import cloud.robinzon.backend.security.user.UserEntity;
+import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.settings.vpn.type.VpnTypeEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;

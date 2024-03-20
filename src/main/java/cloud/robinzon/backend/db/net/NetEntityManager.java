@@ -189,7 +189,8 @@ public class NetEntityManager
                                String dns3,
                                boolean cloud,
                                String title,
-                               String description) throws NullPointerException {
+                               String description)
+            throws NullPointerException {
         super.function("update");
 
         NetEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
@@ -208,31 +209,9 @@ public class NetEntityManager
 
         if (!err.isEmpty()) return super.error(err);
 
-        entity.update(
-                domain,
-                subnet,
-                mask,
-                dns1,
-                dns2,
-                dns3,
-                cloud,
-                title,
-                description);
+        entity.update(domain, subnet, mask, dns1, dns2, dns3, cloud, title, description);
         entityRepository.save(entity);
-
-        historyRepository.save(new NetHistory(
-                entity,
-                null,
-                domain,
-                subnet,
-                mask,
-                dns1,
-                dns2,
-                dns3,
-                cloud,
-                title,
-                description,
-                false));
+        historyRepository.save(new NetHistory(entity, null, domain, subnet, mask, dns1, dns2, dns3, cloud, title, description, false));
 
         return super.success(updated(entity.getSubnet()));
     }
@@ -257,7 +236,8 @@ public class NetEntityManager
      * @since 2024.03.19
      * @since 2024.03.20
      */
-    public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
+    public ResponseForm delete(Long id)
+            throws NullPointerException, NoSuchMethodException {
         super.function("delete");
 
         NetEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));

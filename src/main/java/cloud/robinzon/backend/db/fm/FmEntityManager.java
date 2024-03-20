@@ -175,7 +175,8 @@ public class FmEntityManager
                                String specifications,
                                String description,
                                int price,
-                               boolean vm) throws NullPointerException {
+                               boolean vm)
+            throws NullPointerException {
         super.function("update");
 
         FmEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
@@ -237,7 +238,8 @@ public class FmEntityManager
      * @since 2024.03.14
      * @since 2024.03.19
      */
-    public ResponseForm delete(Long id) throws NullPointerException, NoSuchMethodException {
+    public ResponseForm delete(Long id)
+            throws NullPointerException, NoSuchMethodException {
         super.function("delete");
 
         FmEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));

@@ -108,7 +108,14 @@ public class VmEntityManager
      * @since 2024.03.14
      * @since 2024.03.20
      */
-    public ResponseForm insert(String id, String name, int cpu, int ram, int ssd, int hdd, boolean running, FmEntity fmEntity) {
+    public ResponseForm insert(String id,
+                               String name,
+                               int cpu,
+                               int ram,
+                               int ssd,
+                               int hdd,
+                               boolean running,
+                               FmEntity fmEntity) {
         super.function("insert");
 
         VmEntity entity = entityRepository.findById(id).orElse(null);
@@ -163,7 +170,10 @@ public class VmEntityManager
      * @since 2024.03.14
      * @since 2024.03.20
      */
-    public ResponseForm update(String id, String title, String description) {
+    public ResponseForm update(String id,
+                               String title,
+                               String description)
+            throws NullPointerException {
         super.function("update");
 
         VmEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));

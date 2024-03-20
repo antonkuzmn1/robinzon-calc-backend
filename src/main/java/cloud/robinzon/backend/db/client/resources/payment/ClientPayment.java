@@ -1,7 +1,7 @@
 package cloud.robinzon.backend.db.client.resources.payment;
 
 import cloud.robinzon.backend.db.client.resources.ClientEntity;
-import cloud.robinzon.backend.security.user.UserEntity;
+import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
