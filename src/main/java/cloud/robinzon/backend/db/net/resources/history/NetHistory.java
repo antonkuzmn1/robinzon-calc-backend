@@ -3,12 +3,16 @@ package cloud.robinzon.backend.db.net.resources.history;
 import cloud.robinzon.backend.db.net.resources.NetEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(NetHistoryKey.class)
 public class NetHistory {
 
@@ -94,61 +98,6 @@ public class NetHistory {
         this.title = netEntity.getTitle();
         this.description = netEntity.getDescription();
         this.deleted = true;
-    }
-
-    public NetHistory() {
-    }
-
-    public NetEntity getNetEntity() {
-        return netEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
-    }
-
-    public String getDomain() {
-        return domain;
-    }
-
-    public String getSubnet() {
-        return subnet;
-    }
-
-    public String getMask() {
-        return mask;
-    }
-
-    public String getDns1() {
-        return dns1;
-    }
-
-    public String getDns2() {
-        return dns2;
-    }
-
-    public String getDns3() {
-        return dns3;
-    }
-
-    public boolean isCloud() {
-        return cloud;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
     }
 
 }

@@ -3,12 +3,17 @@ package cloud.robinzon.backend.db.vpn.user.resources;
 import cloud.robinzon.backend.db.vpn.server.resources.VpnServerEntity;
 import cloud.robinzon.backend.settings.vpn.type.resources.VpnTypeEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 public class VpnUserEntity {
 
     @Id
@@ -44,30 +49,9 @@ public class VpnUserEntity {
     @Column(nullable = false)
     private String description;
 
+    @Setter
     @Column(nullable = false)
     private boolean deleted;
-
-    public VpnUserEntity(Long id,
-                         VpnServerEntity vpnServerEntity,
-                         VpnTypeEntity vpnTypeEntity,
-                         String ip,
-                         String username,
-                         String password,
-                         String fullName,
-                         String title,
-                         String description,
-                         boolean deleted) {
-        this.id = id;
-        this.vpnServerEntity = vpnServerEntity;
-        this.vpnTypeEntity = vpnTypeEntity;
-        this.ip = ip;
-        this.username = username;
-        this.password = password;
-        this.fullName = fullName;
-        this.title = title;
-        this.description = description;
-        this.deleted = deleted;
-    }
 
     public VpnUserEntity(VpnServerEntity vpnServerEntity,
                          VpnTypeEntity vpnTypeEntity,
@@ -88,9 +72,6 @@ public class VpnUserEntity {
         this.deleted = false;
     }
 
-    public VpnUserEntity() {
-    }
-
     public void update(VpnServerEntity vpnServerEntity,
                        VpnTypeEntity vpnTypeEntity,
                        String ip,
@@ -107,54 +88,6 @@ public class VpnUserEntity {
         this.fullName = fullName;
         this.title = title;
         this.description = description;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public VpnServerEntity getVpnServerEntity() {
-        return vpnServerEntity;
-    }
-
-    public VpnTypeEntity getVpnTypeEntity() {
-        return vpnTypeEntity;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
 }

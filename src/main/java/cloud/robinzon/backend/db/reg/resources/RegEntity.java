@@ -1,6 +1,9 @@
 package cloud.robinzon.backend.db.reg.resources;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
@@ -8,6 +11,8 @@ import java.util.Date;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 public class RegEntity {
 
     @Id
@@ -44,32 +49,9 @@ public class RegEntity {
     @Column(nullable = false)
     private String description;
 
+    @Setter
     @Column(nullable = false)
     private boolean deleted;
-
-    public RegEntity(Long id,
-                     String brand,
-                     String name,
-                     String part,
-                     String serial,
-                     Date buyDate,
-                     int warrantyMonths,
-                     String provider,
-                     String title,
-                     String description,
-                     boolean deleted) {
-        this.id = id;
-        this.brand = brand;
-        this.name = name;
-        this.part = part;
-        this.serial = serial;
-        this.buyDate = buyDate;
-        this.warrantyMonths = warrantyMonths;
-        this.provider = provider;
-        this.title = title;
-        this.description = description;
-        this.deleted = deleted;
-    }
 
     public RegEntity(String brand,
                      String name,
@@ -91,9 +73,6 @@ public class RegEntity {
         this.provider = provider;
     }
 
-    public RegEntity() {
-    }
-
     public void update(String brand,
                        String name,
                        String part,
@@ -112,58 +91,6 @@ public class RegEntity {
         this.title = title;
         this.description = description;
         this.provider = provider;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPart() {
-        return part;
-    }
-
-    public String getSerial() {
-        return serial;
-    }
-
-    public Date getBuyDate() {
-        return buyDate;
-    }
-
-    public int getWarrantyMonths() {
-        return warrantyMonths;
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
 }

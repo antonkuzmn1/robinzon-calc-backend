@@ -5,12 +5,16 @@ import cloud.robinzon.backend.db.vpn.user.resources.VpnUserEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.settings.vpn.type.resources.VpnTypeEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(VpnUserHistoryKey.class)
 public class VpnUserHistory {
 
@@ -94,54 +98,4 @@ public class VpnUserHistory {
         this.deleted = true;
     }
 
-    public VpnUserHistory() {
-    }
-
-    public VpnUserEntity getVpnUserEntity() {
-        return vpnUserEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public VpnServerEntity getVpnServerEntity() {
-        return vpnServerEntity;
-    }
-
-    public VpnTypeEntity getVpnTypeEntity() {
-        return vpnTypeEntity;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
 }

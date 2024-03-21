@@ -3,6 +3,9 @@ package cloud.robinzon.backend.security.user.resources;
 import cloud.robinzon.backend.security.group.resources.GroupEntity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
@@ -11,6 +14,8 @@ import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 public class UserEntity {
 
     @Id
@@ -35,6 +40,7 @@ public class UserEntity {
     @UpdateTimestamp
     private Timestamp timestamp;
 
+    @Setter
     @Column(nullable = false)
     private boolean deleted;
 
@@ -57,9 +63,6 @@ public class UserEntity {
         this.deleted = false;
     }
 
-    public UserEntity() {
-    }
-
     public void update(String username,
                        String password,
                        String fullName,
@@ -71,46 +74,6 @@ public class UserEntity {
         this.title = title;
         this.description = description;
         this.deleted = false;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Set<GroupEntity> getGroups() {
-        return groups;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
 }

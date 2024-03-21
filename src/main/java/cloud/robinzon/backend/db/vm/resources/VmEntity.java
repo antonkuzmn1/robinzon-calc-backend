@@ -3,12 +3,16 @@ package cloud.robinzon.backend.db.vm.resources;
 import cloud.robinzon.backend.db.client.resources.ClientEntity;
 import cloud.robinzon.backend.db.fm.resources.FmEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 public class VmEntity {
 
     @Id
@@ -71,9 +75,6 @@ public class VmEntity {
         this.fmEntity = fmEntity;
     }
 
-    public VmEntity() {
-    }
-
     public void update(String name,
                        int cpu,
                        int ram,
@@ -94,58 +95,6 @@ public class VmEntity {
                         String description) {
         this.title = title;
         this.description = description;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getCpu() {
-        return cpu;
-    }
-
-    public int getRam() {
-        return ram;
-    }
-
-    public int getSsd() {
-        return ssd;
-    }
-
-    public int getHdd() {
-        return hdd;
-    }
-
-    public boolean isRunning() {
-        return running;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public FmEntity getFmEntity() {
-        return fmEntity;
-    }
-
-    public ClientEntity getClientEntity() {
-        return clientEntity;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
     }
 
 }

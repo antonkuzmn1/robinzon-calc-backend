@@ -3,6 +3,8 @@ package cloud.robinzon.backend.db.client.resources.history;
 import cloud.robinzon.backend.db.client.resources.ClientEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -10,6 +12,8 @@ import java.util.Date;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(ClientHistoryKey.class)
 public class ClientHistory {
 
@@ -84,53 +88,6 @@ public class ClientHistory {
         this.description = clientEntity.getDescription();
         this.changeBy = changeBy;
         this.deleted = true;
-    }
-
-    public ClientHistory() {
-    }
-
-    public ClientEntity getClientEntity() {
-        return clientEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getInn() {
-        return inn;
-    }
-
-    public int getDiscount() {
-        return discount;
-    }
-
-    public int getContractNumber() {
-        return contractNumber;
-    }
-
-    public Date getContractDate() {
-        return contractDate;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
     }
 
 }

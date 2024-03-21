@@ -3,12 +3,16 @@ package cloud.robinzon.backend.db.client.resources.payment;
 import cloud.robinzon.backend.db.client.resources.ClientEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(ClientPaymentKey.class)
 public class ClientPayment {
 
@@ -34,25 +38,6 @@ public class ClientPayment {
         this.clientEntity = clientEntity;
         this.balance = balance;
         this.changeBy = changeBy;
-    }
-
-    public ClientPayment() {
-    }
-
-    public ClientEntity getClientEntity() {
-        return clientEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public int getBalance() {
-        return balance;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
     }
 
 }

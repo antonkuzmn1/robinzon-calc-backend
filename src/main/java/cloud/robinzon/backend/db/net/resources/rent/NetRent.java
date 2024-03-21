@@ -4,12 +4,16 @@ import cloud.robinzon.backend.db.client.resources.ClientEntity;
 import cloud.robinzon.backend.db.net.resources.NetEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(NetRentKey.class)
 public class NetRent {
 
@@ -37,25 +41,6 @@ public class NetRent {
         this.netEntity = netEntity;
         this.clientEntity = clientEntity;
         this.changeBy = changeBy;
-    }
-
-    public NetRent() {
-    }
-
-    public NetEntity getNetEntity() {
-        return netEntity;
-    }
-
-    public ClientEntity getClientEntity() {
-        return clientEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
     }
 
 }

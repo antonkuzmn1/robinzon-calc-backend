@@ -4,12 +4,16 @@ import cloud.robinzon.backend.db.client.resources.ClientEntity;
 import cloud.robinzon.backend.db.fm.resources.FmEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(FmRentKey.class)
 public class FmRent {
 
@@ -37,25 +41,6 @@ public class FmRent {
         this.fmEntity = fmEntity;
         this.clientEntity = clientEntity;
         this.changeBy = changeBy;
-    }
-
-    public FmRent() {
-    }
-
-    public FmEntity getFmEntity() {
-        return fmEntity;
-    }
-
-    public ClientEntity getClientEntity() {
-        return clientEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
     }
 
 }

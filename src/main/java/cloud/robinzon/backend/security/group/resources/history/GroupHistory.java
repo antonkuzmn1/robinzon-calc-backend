@@ -3,12 +3,16 @@ package cloud.robinzon.backend.security.group.resources.history;
 import cloud.robinzon.backend.security.group.resources.GroupEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(GroupHistoryKey.class)
 public class GroupHistory {
 
@@ -58,33 +62,6 @@ public class GroupHistory {
         this.description = groupEntity.getDescription();
         this.changeBy = changeBy;
         deleted = false;
-    }
-
-    public GroupHistory() {
-    }
-
-    public GroupEntity getGroupEntity() {
-        return groupEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
     }
 
 }

@@ -3,12 +3,16 @@ package cloud.robinzon.backend.settings.vpn.type.resources.history;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.settings.vpn.type.resources.VpnTypeEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(VpnTypeHistoryKey.class)
 public class VpnTypeHistory {
 
@@ -46,25 +50,6 @@ public class VpnTypeHistory {
         this.name = vpnTypeEntity.getName();
         this.changeBy = changeBy;
         this.deleted = true;
-    }
-
-    public VpnTypeHistory() {
-    }
-
-    public VpnTypeEntity getVpnTypeEntity() {
-        return vpnTypeEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
     }
 
 }

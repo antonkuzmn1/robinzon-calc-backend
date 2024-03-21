@@ -192,7 +192,7 @@ public class FmEntityManager
                         .equals(specifications)
                         && entity.getDescription().equals(description)
                         && entity.getPrice() == price
-                        && entity.getVm() == vm, name));
+                        && entity.isVm() == vm, name));
 
         if (!err.isEmpty()) return super.error(err);
 

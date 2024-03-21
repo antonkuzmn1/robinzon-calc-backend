@@ -4,12 +4,16 @@ import cloud.robinzon.backend.db.client.resources.ClientEntity;
 import cloud.robinzon.backend.db.vm.resources.VmEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(VmRentKey.class)
 public class VmRent {
 
@@ -38,25 +42,6 @@ public class VmRent {
         this.vmEntity = vmEntity;
         this.clientEntity = clientEntity;
         this.changeBy = changeBy;
-    }
-
-    public VmRent() {
-    }
-
-    public VmEntity getVmEntity() {
-        return vmEntity;
-    }
-
-    public ClientEntity getClientEntity() {
-        return clientEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
     }
 
 }

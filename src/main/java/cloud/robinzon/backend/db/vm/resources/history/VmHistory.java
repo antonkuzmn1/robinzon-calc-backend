@@ -4,12 +4,16 @@ import cloud.robinzon.backend.db.fm.resources.FmEntity;
 import cloud.robinzon.backend.db.vm.resources.VmEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(VmHistoryKey.class)
 public class VmHistory {
 
@@ -113,61 +117,6 @@ public class VmHistory {
         this.fmEntity = vmEntity.getFmEntity();
         this.changeBy = changeBy;
         this.deleted = true;
-    }
-
-    public VmHistory() {
-    }
-
-    public VmEntity getVmEntity() {
-        return vmEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getCpu() {
-        return cpu;
-    }
-
-    public int getRam() {
-        return ram;
-    }
-
-    public int getSsd() {
-        return ssd;
-    }
-
-    public int getHdd() {
-        return hdd;
-    }
-
-    public boolean isRunning() {
-        return running;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public FmEntity getFmEntity() {
-        return fmEntity;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
     }
 
 }

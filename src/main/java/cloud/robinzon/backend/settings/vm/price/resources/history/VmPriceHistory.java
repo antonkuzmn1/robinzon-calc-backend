@@ -3,12 +3,16 @@ package cloud.robinzon.backend.settings.vm.price.resources.history;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.settings.vm.price.resources.VmPriceEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(VmPriceHistoryKey.class)
 public class VmPriceHistory {
 
@@ -52,29 +56,6 @@ public class VmPriceHistory {
         this.cost = vmPriceEntity.getCost();
         this.changeBy = changeBy;
         this.deleted = true;
-    }
-
-    public VmPriceHistory() {
-    }
-
-    public VmPriceEntity getVmPriceEntity() {
-        return vmPriceEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public String getParam() {
-        return param;
-    }
-
-    public int getCost() {
-        return cost;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
     }
 
 }

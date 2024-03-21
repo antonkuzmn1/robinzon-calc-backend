@@ -3,6 +3,8 @@ package cloud.robinzon.backend.db.reg.resources.history;
 import cloud.robinzon.backend.db.reg.resources.RegEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -10,6 +12,8 @@ import java.util.Date;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(RegHistoryKey.class)
 public class RegHistory {
 
@@ -96,61 +100,6 @@ public class RegHistory {
         this.title = regEntity.getTitle();
         this.description = regEntity.getDescription();
         this.deleted = true;
-    }
-
-    public RegHistory() {
-    }
-
-    public RegEntity getRegEntity() {
-        return regEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public String getBrand() {
-        return brand;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPart() {
-        return part;
-    }
-
-    public String getSerial() {
-        return serial;
-    }
-
-    public Date getBuyDate() {
-        return buyDate;
-    }
-
-    public int getWarrantyMonths() {
-        return warrantyMonths;
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
 }

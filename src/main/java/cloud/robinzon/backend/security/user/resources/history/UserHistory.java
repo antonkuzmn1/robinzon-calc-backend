@@ -2,12 +2,16 @@ package cloud.robinzon.backend.security.user.resources.history;
 
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 @IdClass(UserHistoryKey.class)
 public class UserHistory {
 
@@ -69,41 +73,6 @@ public class UserHistory {
         this.description = userEntity.getDescription();
         this.changeBy = changeBy;
         this.deleted = false;
-    }
-
-    public UserHistory() {
-    }
-
-    public UserEntity getUserEntity() {
-        return userEntity;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public UserEntity getChangeBy() {
-        return changeBy;
     }
 
 }

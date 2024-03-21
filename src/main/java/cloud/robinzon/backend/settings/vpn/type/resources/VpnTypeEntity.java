@@ -4,6 +4,9 @@ import cloud.robinzon.backend.db.vpn.server.resources.VpnServerEntity;
 import cloud.robinzon.backend.db.vpn.server.resources.history.VpnServerHistory;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.security.Timestamp;
@@ -12,6 +15,8 @@ import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 public class VpnTypeEntity {
 
     @Id
@@ -23,6 +28,7 @@ public class VpnTypeEntity {
     @UpdateTimestamp
     private Timestamp timestamp;
 
+    @Setter
     @Column(nullable = false)
     private boolean deleted;
 
@@ -39,35 +45,8 @@ public class VpnTypeEntity {
         this.deleted = false;
     }
 
-    public VpnTypeEntity() {
-    }
-
     public void update(String name) {
         this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Set<VpnServerEntity> getVpnServerEntity() {
-        return vpnServerEntity;
     }
 
 }

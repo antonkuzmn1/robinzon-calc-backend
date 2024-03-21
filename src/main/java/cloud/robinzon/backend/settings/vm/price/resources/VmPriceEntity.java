@@ -1,12 +1,17 @@
 package cloud.robinzon.backend.settings.vm.price.resources;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.security.Timestamp;
 
 @SuppressWarnings("unused")
 @Entity
+@Getter
+@NoArgsConstructor
 public class VmPriceEntity {
 
     @Id
@@ -22,6 +27,7 @@ public class VmPriceEntity {
     @UpdateTimestamp
     private Timestamp timestamp;
 
+    @Setter
     @Column(nullable = false)
     private boolean deleted;
 
@@ -31,37 +37,10 @@ public class VmPriceEntity {
         this.cost = cost;
     }
 
-    public VmPriceEntity() {
-    }
-
     public void update(String param,
                        int cost) {
         this.param = param;
         this.cost = cost;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getParam() {
-        return param;
-    }
-
-    public int getCost() {
-        return cost;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
 }
