@@ -16,19 +16,35 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security.user.resources.history;
+package cloud.robinzon.backend.security;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * standard JPA repository implement for history entity
+ * The simple REST controller
  *
  * @author Anton Kuzmin
  * @since 2024.03.23
  */
 
-@Repository
-public interface UserHistoryRepository
-        extends JpaRepository<UserHistory, UserHistoryKey> {
+@RestController
+public class
+AuthController {
+
+    private final
+    AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping("/auth")
+    public ResponseEntity<?>
+    auth(@RequestBody AuthRequest request) {
+        return authService.auth(request);
+    }
+
 }

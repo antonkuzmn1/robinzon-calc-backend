@@ -1,16 +1,26 @@
-# Progress list (est. 50%)
+# Progress list (est. 60%)
 
 > [!TIP]
-> - [X] Ready
-> - [ ] Not ready
-
-- [X] Architecture
-- [ ] Security
-  - [ ] Authorization
-  - [ ] Cryptography
-  - [ ] Sessions
-  - [ ] Groups
-- [ ] Other services
-  - [ ] FM request via SSH
-- [ ] Cache management
-  - [ ] Real time tables for virtual DOM
+> ###### 🔷 Ready
+> ###### 🔶 Not ready
+### 🔷 Architecture (est. 100%)
+### 🔶 Security (est. 50%)
+- 🔷 Authorization
+- 🔷 Cryptography
+- 🔷 Groups
+- 🔶 Sessions
+- 🔶 Tokens
+- 🔶 Integration
+  - 🔶 client
+  - 🔶 fm
+  - 🔶 net
+  - 🔶 reg
+  - 🔶 vm
+  - 🔶 vpn.server
+  - 🔶 vpn.user
+  - 🔶 settings.vm.price
+  - 🔶 settings.vpn.type
+### 🔶 Other services (est. 0%)
+- 🔶 FM requests via SSH
+### 🔶 Cache management (est. 0%)
+- 🔶 Real-tile display

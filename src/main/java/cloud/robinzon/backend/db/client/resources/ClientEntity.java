@@ -1,5 +1,7 @@
 package cloud.robinzon.backend.db.client.resources;
 
+import cloud.robinzon.backend.security.user.resources.UserEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +10,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
@@ -49,6 +53,11 @@ public class ClientEntity {
     @Setter
     @Column(nullable = false)
     private boolean deleted;
+
+    @Setter
+    @ManyToMany(mappedBy = "clients")
+    @JsonIgnoreProperties("clients")
+    private Set<UserEntity> users = new HashSet<>();
 
     public ClientEntity(String name,
                         String inn,

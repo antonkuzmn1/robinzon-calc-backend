@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'cloud.robinzon'
-version = '2024.03.21-SNAPSHOT'
+version = '2024.03.23-SNAPSHOT'
 
 java {
     sourceCompatibility = '21'
@@ -27,6 +27,7 @@ dependencies {
     implementation 'org.springframework.security:spring-security-web:6.2.3'
     implementation 'org.springframework.security:spring-security-config:6.2.3'
     implementation 'org.springframework.security:spring-security-crypto:6.2.3'
+//    implementation 'com.auth0:java-jwt:4.4.0'
 
     // ssh
     implementation 'com.jcraft:jsch:0.1.55'

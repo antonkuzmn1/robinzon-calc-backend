@@ -16,19 +16,26 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security.user.resources.history;
+package cloud.robinzon.backend.security;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
- * standard JPA repository implement for history entity
+ * The simple form
  *
  * @author Anton Kuzmin
  * @since 2024.03.23
  */
 
-@Repository
-public interface UserHistoryRepository
-        extends JpaRepository<UserHistory, UserHistoryKey> {
+@Getter
+@Setter
+@NoArgsConstructor
+public class AuthRequest {
+
+    private String username;
+
+    private String password;
+
 }

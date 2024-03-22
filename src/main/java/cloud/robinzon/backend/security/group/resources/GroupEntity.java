@@ -1,22 +1,20 @@
 package cloud.robinzon.backend.security.group.resources;
 
-import cloud.robinzon.backend.security.user.resources.UserEntity;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
-public class GroupEntity {
+public class GroupEntity
+implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,17 +36,12 @@ public class GroupEntity {
     @Column(nullable = false)
     private boolean deleted;
 
-    @ManyToMany(mappedBy = "groups")
-    @JsonIgnoreProperties("groups")
-    private Set<UserEntity> users = new HashSet<>();
-
     public GroupEntity(String name,
                        String title,
                        String description) {
         this.name = name;
         this.title = title;
         this.description = description;
-        this.users = null;
         this.deleted = false;
     }
 
@@ -58,6 +51,11 @@ public class GroupEntity {
         this.name = name;
         this.title = title;
         this.description = description;
+    }
+
+    @Override
+    public String getAuthority() {
+        return getName();
     }
 
 }

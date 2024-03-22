@@ -16,19 +16,20 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security.user.resources.history;
+package cloud.robinzon.backend.security;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.http.ResponseEntity;
 
 /**
- * standard JPA repository implement for history entity
+ * Security service
  *
  * @author Anton Kuzmin
  * @since 2024.03.23
  */
 
-@Repository
-public interface UserHistoryRepository
-        extends JpaRepository<UserHistory, UserHistoryKey> {
+public interface AuthService {
+
+    ResponseEntity<?>
+    auth(AuthRequest request);
+
 }
