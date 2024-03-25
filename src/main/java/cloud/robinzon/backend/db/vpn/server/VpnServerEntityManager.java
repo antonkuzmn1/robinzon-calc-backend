@@ -1,18 +1,20 @@
-/**
- * Copyright 2024 Anton Kuzmin (http://github.com/antonkuzmn1)
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/*
+
+Copyright 2024 Anton Kuzmin (http://github.com/antonkuzmn1)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+*/
 
 package cloud.robinzon.backend.db.vpn.server;
 
@@ -22,14 +24,14 @@ import cloud.robinzon.backend.db.vpn.server.resources.VpnServerEntityRepository;
 import cloud.robinzon.backend.db.vpn.server.resources.history.VpnServerHistory;
 import cloud.robinzon.backend.db.vpn.server.resources.history.VpnServerHistoryRepository;
 import cloud.robinzon.backend.db.vpn.type.resources.VpnTypeEntity;
-import cloud.robinzon.backend.tools.ResponseForm;
-import cloud.robinzon.backend.tools.ResponseStringTemplates;
+import cloud.robinzon.backend.security.user.resources.UserEntity;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Set;
 
-import static java.lang.String.format;
+import static cloud.robinzon.backend.tools.Log.*;
 
 /**
  * <h3>Entity Management Tools</h3>
@@ -53,24 +55,41 @@ import static java.lang.String.format;
  * </p>
  *
  * @author Anton Kuzmin
- * @since 2024.03.13
- * @since 2024.03.20
+ * @since 2024.03.25
  */
 
-@SuppressWarnings("unused")
 @Service
-public final class VpnServerEntityManager
-        extends ResponseForm
-        implements ResponseStringTemplates {
+@AllArgsConstructor
+public final class VpnServerEntityManager {
 
     private final VpnServerEntityRepository entityRepository;
     private final VpnServerHistoryRepository historyRepository;
 
-    public VpnServerEntityManager(VpnServerEntityRepository entityRepository,
-                                  VpnServerHistoryRepository historyRepository) {
-        this.entityRepository = entityRepository;
-        this.historyRepository = historyRepository;
-        super.set(getClass().getSimpleName());
+    /**
+     * Returns a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body.
+     * Logs the new values of the entity, saves the entity to the repository, saves a new entry in the history repository,
+     * and logs the success message.
+     *
+     * @param entity   the updated entity
+     * @param changeBy the UserEntity making the change
+     * @return a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body
+     * @author Anton Kuzmin
+     * @since 2024.03.25
+     */
+    private ResponseEntity<?> ok(VpnServerEntity entity,
+                                 @SuppressWarnings("SameParameterValue")
+                                 UserEntity changeBy) {
+        log("New values:");
+        System.out.println(entity.toMap());
+
+        log("Saving entity...");
+        entityRepository.save(entity);
+
+        log("Saving history...");
+        historyRepository.save(new VpnServerHistory(entity, changeBy));
+
+        log("Success!");
+        return ResponseEntity.ok().body(entity);
     }
 
     /**
@@ -94,37 +113,30 @@ public final class VpnServerEntityManager
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
-     * @since 2024.03.13
-     * @since 2024.03.20
+     * @since 2024.03.25
      */
-    public ResponseForm insert(String title,
-                               String description,
-                               String ip,
-                               String publicKey,
-                               NetEntity netEntity,
-                               Set<VpnTypeEntity> vpnTypeEntity) {
-        super.function("insert");
+    public ResponseEntity<?> insert(String title,
+                                    String description,
+                                    String ip,
+                                    String publicKey,
+                                    NetEntity netEntity,
+                                    Set<VpnTypeEntity> vpnTypeEntity) {
+        set(getClass(), "insert");
+        log(String.join(" ", "Insert:", ip));
 
-        VpnServerEntity entity = new VpnServerEntity(
-                title,
-                description,
-                ip,
-                publicKey,
-                netEntity,
-                vpnTypeEntity);
-        entityRepository.save(entity);
+        log("Checks...");
+        if (entityRepository.checkUnique(ip))
+            return err("IP must be unique");
 
-        historyRepository.save(new VpnServerHistory(
-                entity,
-                title,
-                description,
-                ip,
-                publicKey,
-                netEntity,
-                vpnTypeEntity,
-                null));
+        VpnServerEntity entity = new VpnServerEntity()
+                .update(title,
+                        description,
+                        ip,
+                        publicKey,
+                        netEntity,
+                        vpnTypeEntity);
 
-        return super.success(format("Inserted: %s", ip));
+        return ok(entity, null);
     }
 
     /**
@@ -149,50 +161,39 @@ public final class VpnServerEntityManager
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
-     * @since 2024.03.13
-     * @since 2024.03.20
+     * @since 2024.03.25
      */
-    public ResponseForm update(Long id,
-                               String title,
-                               String description,
-                               String ip,
-                               String publicKey,
-                               NetEntity netEntity,
-                               Set<VpnTypeEntity> vpnTypeEntity)
-            throws NullPointerException {
-        super.function("update");
+    public ResponseEntity<?> update(Long id,
+                                    String title,
+                                    String description,
+                                    String ip,
+                                    String publicKey,
+                                    NetEntity netEntity,
+                                    Set<VpnTypeEntity> vpnTypeEntity) {
+        set(getClass(), "update");
+        log(String.join(" ", "Update:", ip));
 
-        VpnServerEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
+        log("Entity search...");
+        VpnServerEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity == null) return err("Entity not found");
 
-        String err = setEquals(entity.getTitle().equals(title)
-                        && entity.getDescription().equals(description)
-                        && entity.getIp().equals(ip)
-                        && entity.getPublicKey().equals(publicKey)
-                        && entity.getNetEntity().getId().equals(netEntity.getId())
-                        && entity.getVpnTypeEntity().equals(vpnTypeEntity), ip);
+        log("Current values:");
+        System.out.println(entity.toMap());
 
-        if (!err.isEmpty()) return super.error(err);
+        log("Checks...");
+        if (!entity.getIp().equals(ip) && entityRepository.checkUnique(ip))
+            return err("IP must be unique");
 
-        entity.update(
-                title,
-                description,
-                ip,
-                publicKey,
-                netEntity,
-                vpnTypeEntity);
-        entityRepository.save(entity);
+        if (entity
+                .update(title,
+                        description,
+                        ip,
+                        publicKey,
+                        netEntity,
+                        vpnTypeEntity) == null)
+            return err("All parameters are equal");
 
-        historyRepository.save(new VpnServerHistory(
-                entity,
-                title,
-                description,
-                ip,
-                publicKey,
-                netEntity,
-                vpnTypeEntity,
-                null));
-
-        return super.success(format("Updated: %s", ip));
+        return ok(entity, null);
     }
 
     /**
@@ -211,24 +212,25 @@ public final class VpnServerEntityManager
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
-     * @since 2024.03.13
-     * @since 2024.03.20
+     * @since 2024.03.25
      */
-    public ResponseForm delete(Long id)
-            throws NullPointerException, NoSuchMethodException {
-        super.function("delete");
+    public ResponseEntity<?> delete(Long id) {
+        set(getClass(), "delete");
 
-        VpnServerEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
+        log("Entity search...");
+        VpnServerEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity == null) return err("Entity not found");
 
-        String err = deleteChecks(entity, id);
+        log("Current values:");
+        System.out.println(entity.toMap());
 
-        if (!err.isEmpty()) return super.error(err);
+        log("Checks...");
+        if (entity.isDeleted())
+            return err("Entity already deleted");
 
         entity.setDeleted(true);
-        entityRepository.save(entity);
-        historyRepository.save(new VpnServerHistory(entity, null));
 
-        return super.success(format("Deleted: %s", entity.getIp()));
+        return ok(entity, null);
     }
 
 }

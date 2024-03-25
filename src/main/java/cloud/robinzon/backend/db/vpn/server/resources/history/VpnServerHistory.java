@@ -1,45 +1,49 @@
+/*
+
+Copyright 2024 Anton Kuzmin (http://github.com/antonkuzmn1)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+*/
+
 package cloud.robinzon.backend.db.vpn.server.resources.history;
 
 import cloud.robinzon.backend.db.net.resources.NetEntity;
 import cloud.robinzon.backend.db.vpn.server.resources.VpnServerEntity;
-import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.db.vpn.type.resources.VpnTypeEntity;
+import cloud.robinzon.backend.security.user.resources.UserEntity;
+import cloud.robinzon.backend.tools.HistoryTemplate;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
-@SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
 @IdClass(VpnServerHistoryKey.class)
-public class VpnServerHistory {
+public class VpnServerHistory
+        extends HistoryTemplate<VpnServerEntity> {
 
-    @Id
-    @ManyToOne
-    @JoinColumn
-    private VpnServerEntity vpnServerEntity;
-
-    @Id
-    @CreationTimestamp
-    private Timestamp timestamp;
-
-    @Column(nullable = false, length = 50)
-    private String title;
-
-    @Column(nullable = false)
-    private String description;
-
+    @Size(min = 7, max = 15)
     @Column(nullable = false, length = 15)
     private String ip;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String publicKey;
 
     @ManyToOne
@@ -51,43 +55,17 @@ public class VpnServerHistory {
     @JoinTable
     private Set<VpnTypeEntity> vpnTypeEntity = new HashSet<>();
 
-    @ManyToOne
-    @JoinColumn
-    private UserEntity changeBy;
-
-    @Column(nullable = false)
-    private boolean deleted;
-
-    public VpnServerHistory(VpnServerEntity vpnServerEntity,
-                            String title,
-                            String description,
-                            String ip,
-                            String publicKey,
-                            NetEntity netEntity,
-                            Set<VpnTypeEntity> vpnTypeEntity,
+    public VpnServerHistory(VpnServerEntity entity,
                             UserEntity changeBy) {
-        this.vpnServerEntity = vpnServerEntity;
-        this.title = title;
-        this.description = description;
-        this.ip = ip;
-        this.publicKey = publicKey;
-        this.netEntity = netEntity;
-        this.vpnTypeEntity = vpnTypeEntity;
+        this.entity = entity;
         this.changeBy = changeBy;
-        this.deleted = false;
-    }
-
-    public VpnServerHistory(VpnServerEntity vpnServerEntity,
-                            UserEntity changeBy) {
-        this.vpnServerEntity = vpnServerEntity;
-        this.changeBy = changeBy;
-        this.title = vpnServerEntity.getTitle();
-        this.description = vpnServerEntity.getDescription();
-        this.ip = vpnServerEntity.getIp();
-        this.publicKey = vpnServerEntity.getPublicKey();
-        this.netEntity = vpnServerEntity.getNetEntity();
-        this.vpnTypeEntity = vpnServerEntity.getVpnTypeEntity();
-        this.deleted = true;
+        this.title = entity.getTitle();
+        this.description = entity.getDescription();
+        this.ip = entity.getIp();
+        this.publicKey = entity.getPublicKey();
+        this.netEntity = entity.getNetEntity();
+        this.vpnTypeEntity = entity.getVpnTypeEntity();
+        this.deleted = entity.isDeleted();
     }
 
 }
