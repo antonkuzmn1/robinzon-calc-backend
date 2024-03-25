@@ -2,91 +2,56 @@ package cloud.robinzon.backend.db.fm.resources.history;
 
 import cloud.robinzon.backend.db.fm.resources.FmEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
-import jakarta.persistence.*;
+import cloud.robinzon.backend.tools.HistoryTemplate;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.IdClass;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
-
-@SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
 @IdClass(FmHistoryKey.class)
-public class FmHistory {
+public class FmHistory
+        extends HistoryTemplate<FmEntity> {
 
-    @Id
-    @ManyToOne
-    @JoinColumn
-    private FmEntity fmEntity;
-
-    @Id
-    @CreationTimestamp
-    private Timestamp timestamp;
-
+    @Size(min = 2, max = 50)
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, length = 15)
+    @Size(min = 7, max = 15)
+    @Column(length = 15)
     private String ip;
-
-    @Column(nullable = false, length = 50)
-    private String title;
 
     @Column(nullable = false)
     private String specifications;
 
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
+    @Min(0)
+    @Max(99999)
+    @Column(nullable = false,
+            columnDefinition = "int default 0")
     private int price;
 
-    @Column(nullable = false)
+    @Column(nullable = false,
+            columnDefinition = "boolean default false")
     private boolean vm;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private UserEntity changeBy;
-
-    @Column(nullable = false)
-    private boolean deleted;
-
-    public FmHistory(FmEntity fmEntity,
-                     String name,
-                     String ip,
-                     String title,
-                     String specifications,
-                     String description,
-                     int price,
-                     boolean vm,
-                     UserEntity changeBy,
-                     boolean deleted) {
-        this.fmEntity = fmEntity;
-        this.name = name;
-        this.ip = ip;
-        this.title = title;
-        this.specifications = specifications;
-        this.description = description;
-        this.price = price;
-        this.vm = vm;
-        this.changeBy = changeBy;
-        this.deleted = deleted;
-    }
-
-    public FmHistory(FmEntity fmEntity,
+    public FmHistory(FmEntity entity,
                      UserEntity changeBy) {
-        this.fmEntity = fmEntity;
-        this.name = fmEntity.getName();
-        this.ip = fmEntity.getIp();
-        this.title = fmEntity.getTitle();
-        this.specifications = fmEntity.getSpecifications();
-        this.description = fmEntity.getDescription();
-        this.price = fmEntity.getPrice();
-        this.vm = fmEntity.isVm();
+        this.entity = entity;
         this.changeBy = changeBy;
-        this.deleted = true;
+        this.name = entity.getName();
+        this.ip = entity.getIp();
+        this.title = entity.getTitle();
+        this.specifications = entity.getSpecifications();
+        this.description = entity.getDescription();
+        this.price = entity.getPrice();
+        this.vm = entity.isVm();
+        this.deleted = entity.isDeleted();
     }
 
 }

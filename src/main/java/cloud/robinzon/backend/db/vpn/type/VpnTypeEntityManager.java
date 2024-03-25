@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package cloud.robinzon.backend.settings.vm.price;
+package cloud.robinzon.backend.db.vpn.type;
 
-import cloud.robinzon.backend.settings.vm.price.resources.VmPriceEntity;
-import cloud.robinzon.backend.settings.vm.price.resources.VmPriceEntityRepository;
-import cloud.robinzon.backend.settings.vm.price.resources.history.VmPriceHistory;
-import cloud.robinzon.backend.settings.vm.price.resources.history.VmPriceHistoryRepository;
+import cloud.robinzon.backend.db.vpn.type.resources.VpnTypeEntity;
+import cloud.robinzon.backend.db.vpn.type.resources.VpnTypeEntityRepository;
+import cloud.robinzon.backend.db.vpn.type.resources.history.VpnTypeHistory;
+import cloud.robinzon.backend.db.vpn.type.resources.history.VpnTypeHistoryRepository;
 import cloud.robinzon.backend.tools.ResponseForm;
 import cloud.robinzon.backend.tools.ResponseStringTemplates;
 
@@ -51,83 +51,80 @@ import static java.lang.String.format;
  */
 
 @SuppressWarnings("unused")
-public class VmPriceEntityManager
+public class VpnTypeEntityManager
         extends ResponseForm
         implements ResponseStringTemplates {
 
-    private final VmPriceEntityRepository entityRepository;
-    private final VmPriceHistoryRepository historyRepository;
+    private final VpnTypeEntityRepository entityRepository;
+    private final VpnTypeHistoryRepository historyRepository;
 
-    public VmPriceEntityManager(VmPriceEntityRepository entityRepository,
-                                VmPriceHistoryRepository historyRepository) {
+    public VpnTypeEntityManager(VpnTypeEntityRepository entityRepository,
+                                VpnTypeHistoryRepository historyRepository) {
         this.entityRepository = entityRepository;
         this.historyRepository = historyRepository;
     }
 
     /**
-     * Inserts a new entry into the database with the provided parameter and cost.
+     * Inserts a new VPN type entry into the database with the provided name.
      *
-     * @param param The parameter to be inserted.
-     * @param cost  The cost associated with the parameter.
+     * @param name The name of the VPN type to be inserted.
      * @return ResponseForm indicating the result of the insertion operation.
      * @author Anton Kuzmin
      * @see ResponseForm
      * @since 2024.03.21
      */
-    public ResponseForm insert(String param, int cost) {
+    public ResponseForm insert(String name) {
         super.function("insert");
 
-        String err = setUnique(entityRepository.checkUniqueParam(param), "param", param);
+        String err = setUnique(entityRepository.checkUniqueName(name), "param", name);
 
         if (!err.isEmpty()) return super.error(err);
 
-        VmPriceEntity entity = new VmPriceEntity(param, cost);
+        VpnTypeEntity entity = new VpnTypeEntity(name);
         entityRepository.save(entity);
 
-        historyRepository.save(new VmPriceHistory(entity, param, cost, null));
+        historyRepository.save(new VpnTypeHistory(entity, name, null));
 
-        return super.success(format("Inserted: %s", param));
+        return super.success(format("Inserted: %s", name));
     }
 
     /**
-     * Updates an existing entry in the database with the provided ID, parameter, and cost.
+     * Updates an existing VPN type entry in the database with the provided ID and name.
      *
-     * @param id    The ID of the entry to update.
-     * @param param The new parameter value.
-     * @param cost  The new cost value.
+     * @param id   The ID of the VPN type entry to update.
+     * @param name The new name for the VPN type.
      * @return ResponseForm indicating the result of the update operation.
-     * @throws NullPointerException if the entity with the given ID is not found.
+     * @throws NullPointerException if the VPN type with the given ID is not found.
      * @author Anton Kuzmin
      * @see ResponseForm
      * @since 2024.03.21
      */
-    public ResponseForm update(Long id, String param, int cost)
+    public ResponseForm update(Long id, String name)
             throws NullPointerException {
         super.function("update");
 
-        VmPriceEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
+        VpnTypeEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
 
         String err = String.join("",
-                setUnique(entityRepository.checkUniqueParam(param), "param", param),
-                setEquals(entity.getParam().equals(param)
-                        && entity.getCost() == cost, param));
+                setUnique(entityRepository.checkUniqueName(name), "name", name),
+                setEquals(entity.getName().equals(name), name));
 
         if (!err.isEmpty()) return super.error(err);
 
-        entity.update(param, cost);
+        entity.update(name);
         entityRepository.save(entity);
 
-        historyRepository.save(new VmPriceHistory(entity, param, cost, null));
+        historyRepository.save(new VpnTypeHistory(entity, name, null));
 
-        return super.success(format("Updated: %s", param));
+        return super.success(format("Updated: %s", name));
     }
 
     /**
-     * Soft deletes an entry from the database based on the provided ID.
+     * Soft deletes a VPN type entry from the database based on the provided ID.
      *
-     * @param id The ID of the entry to be softly deleted.
+     * @param id The ID of the VPN type entry to be softly deleted.
      * @return ResponseForm indicating the result of the deletion operation.
-     * @throws NullPointerException  if the entity with the given ID is not found.
+     * @throws NullPointerException  if the VPN type with the given ID is not found.
      * @throws NoSuchMethodException if the necessary method is not found.
      * @author Anton Kuzmin
      * @see ResponseForm
@@ -137,7 +134,7 @@ public class VmPriceEntityManager
             throws NullPointerException, NoSuchMethodException {
         super.function("delete");
 
-        VmPriceEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
+        VpnTypeEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
 
         String err = deleteChecks(entity, id);
 
@@ -145,9 +142,9 @@ public class VmPriceEntityManager
 
         entity.setDeleted(true);
         entityRepository.save(entity);
-        historyRepository.save(new VmPriceHistory(entity, null));
+        historyRepository.save(new VpnTypeHistory(entity, null));
 
-        return super.success(format("Deleted: %s", entity.getParam()));
+        return super.success(format("Deleted: %s", entity.getName()));
     }
 
 }

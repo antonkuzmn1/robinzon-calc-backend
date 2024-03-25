@@ -1,3 +1,4 @@
+/*
 package cloud.robinzon.backend.db.vm.resources.rent;
 
 import cloud.robinzon.backend.db.client.resources.ClientEntity;
@@ -45,3 +46,4 @@ public class VmRent {
     }
 
 }
+*/

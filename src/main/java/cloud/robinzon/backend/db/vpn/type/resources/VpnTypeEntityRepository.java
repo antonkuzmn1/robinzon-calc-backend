@@ -1,4 +1,4 @@
-package cloud.robinzon.backend.settings.vpn.type.resources;
+package cloud.robinzon.backend.db.vpn.type.resources;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

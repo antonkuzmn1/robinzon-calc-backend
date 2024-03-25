@@ -1,17 +1,11 @@
 package cloud.robinzon.backend.db.client.resources.history;
 
 import cloud.robinzon.backend.db.client.resources.ClientEntity;
+import cloud.robinzon.backend.tools.HistoryKeyTemplate;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-
-@SuppressWarnings("unused")
 @NoArgsConstructor
 public class ClientHistoryKey
-        implements Serializable {
-
-    private ClientEntity clientEntity;
-    private Timestamp timestamp;
+        extends HistoryKeyTemplate<ClientEntity> {
 
 }

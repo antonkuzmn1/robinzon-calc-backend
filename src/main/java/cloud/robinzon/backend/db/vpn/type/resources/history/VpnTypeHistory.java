@@ -1,7 +1,7 @@
-package cloud.robinzon.backend.settings.vm.price.resources.history;
+package cloud.robinzon.backend.db.vpn.type.resources.history;
 
+import cloud.robinzon.backend.db.vpn.type.resources.VpnTypeEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
-import cloud.robinzon.backend.settings.vm.price.resources.VmPriceEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,23 +13,20 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @NoArgsConstructor
-@IdClass(VmPriceHistoryKey.class)
-public class VmPriceHistory {
+@IdClass(VpnTypeHistoryKey.class)
+public class VpnTypeHistory {
 
     @Id
     @ManyToOne
     @JoinColumn
-    private VmPriceEntity vmPriceEntity;
+    private VpnTypeEntity vpnTypeEntity;
 
     @Id
     @CreationTimestamp
     private Timestamp timestamp;
 
     @Column(nullable = false, length = 20)
-    private String param;
-
-    @Column(nullable = false)
-    private int cost;
+    private String name;
 
     @ManyToOne
     @JoinColumn(nullable = false)
@@ -38,22 +35,19 @@ public class VmPriceHistory {
     @Column(nullable = false)
     private boolean deleted;
 
-    public VmPriceHistory(VmPriceEntity vmPriceEntity,
-                          String param,
-                          int cost,
+    public VpnTypeHistory(VpnTypeEntity vpnTypeEntity,
+                          String name,
                           UserEntity changeBy) {
-        this.vmPriceEntity = vmPriceEntity;
-        this.param = param;
-        this.cost = cost;
+        this.vpnTypeEntity = vpnTypeEntity;
+        this.name = name;
         this.changeBy = changeBy;
         this.deleted = false;
     }
 
-    public VmPriceHistory(VmPriceEntity vmPriceEntity,
+    public VpnTypeHistory(VpnTypeEntity vpnTypeEntity,
                           UserEntity changeBy) {
-        this.vmPriceEntity = vmPriceEntity;
-        this.param = vmPriceEntity.getParam();
-        this.cost = vmPriceEntity.getCost();
+        this.vpnTypeEntity = vpnTypeEntity;
+        this.name = vpnTypeEntity.getName();
         this.changeBy = changeBy;
         this.deleted = true;
     }

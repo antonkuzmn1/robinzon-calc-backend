@@ -1,7 +1,7 @@
 package cloud.robinzon.backend.db.vpn.user.resources;
 
 import cloud.robinzon.backend.db.vpn.server.resources.VpnServerEntity;
-import cloud.robinzon.backend.settings.vpn.type.resources.VpnTypeEntity;
+import cloud.robinzon.backend.db.vpn.type.resources.VpnTypeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,73 +1,81 @@
 package cloud.robinzon.backend.db.net.resources;
 
 import cloud.robinzon.backend.db.client.resources.ClientEntity;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.UpdateTimestamp;
+import cloud.robinzon.backend.tools.EntityTemplate;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
-import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
-@SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
-public class NetEntity {
+public class NetEntity
+        extends EntityTemplate {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @UpdateTimestamp
-    private Timestamp timestamp;
-
+    @Setter
     @ManyToOne
     @JoinColumn
     private ClientEntity client;
 
-    @Column(nullable = false, length = 50)
+    @Size(min = 5, max = 50)
+    @Column(length = 50)
     private String domain;
 
+    @NonNull
+    @Size(min = 7, max = 15)
     @Column(nullable = false, length = 15)
     private String subnet;
 
+    @NonNull
+    @Size(min = 7, max = 15)
     @Column(nullable = false, length = 15)
     private String mask;
 
+    @NonNull
+    @Size(min = 7, max = 15)
     @Column(nullable = false, length = 15)
     private String dns1;
 
-    @Column(nullable = false, length = 15)
+    @Size(min = 7, max = 15)
+    @Column(length = 15)
     private String dns2;
 
-    @Column(nullable = false, length = 15)
+    @Size(min = 7, max = 15)
+    @Column(length = 15)
     private String dns3;
 
-    @Column(nullable = false)
+    @Column(nullable = false,
+            columnDefinition = "boolean default false")
     private boolean cloud;
 
-    @Column(nullable = false, length = 50)
-    private String title;
+    public NetEntity update(String domain,
+                            String subnet,
+                            String mask,
+                            String dns1,
+                            String dns2,
+                            String dns3,
+                            boolean cloud,
+                            String title,
+                            String description) {
 
-    @Column(nullable = false)
-    private String description;
+        if (Objects.equals(this.domain, domain)
+                && Objects.equals(this.subnet, subnet)
+                && Objects.equals(this.mask, mask)
+                && Objects.equals(this.dns1, dns1)
+                && Objects.equals(this.dns2, dns2)
+                && Objects.equals(this.dns3, dns3)
+                && this.cloud == cloud
+                && Objects.equals(this.title, title)
+                && Objects.equals(this.description, description))
+            return null;
 
-    @Setter
-    @Column(nullable = false)
-    private boolean deleted;
-
-    public NetEntity(ClientEntity client,
-                     String domain,
-                     String subnet,
-                     String mask,
-                     String dns1,
-                     String dns2,
-                     String dns3,
-                     boolean cloud,
-                     String title,
-                     String description) {
-        this.client = client;
         this.domain = domain;
         this.subnet = subnet;
         this.mask = mask;
@@ -77,26 +85,39 @@ public class NetEntity {
         this.cloud = cloud;
         this.title = title;
         this.description = description;
+        return this;
     }
 
-    public void update(String domain,
-                       String subnet,
-                       String mask,
-                       String dns1,
-                       String dns2,
-                       String dns3,
-                       boolean cloud,
-                       String title,
-                       String description) {
-        this.domain = domain;
-        this.subnet = subnet;
-        this.mask = mask;
-        this.dns1 = dns1;
-        this.dns2 = dns2;
-        this.dns3 = dns3;
-        this.cloud = cloud;
-        this.title = title;
-        this.description = description;
+    public String toString() {
+        //noinspection StringBufferReplaceableByString
+        StringBuilder sb = new StringBuilder();
+        sb.append("[id=").append(id);
+        sb.append("][domain=").append(domain);
+        sb.append("][subnet=").append(subnet);
+        sb.append("][mask=").append(mask);
+        sb.append("][dns1=").append(dns1);
+        sb.append("][dns2=").append(dns2);
+        sb.append("][dns3=").append(dns3);
+        sb.append("][cloud=").append(cloud);
+        sb.append("][title=").append(title);
+        sb.append("][description=").append(description);
+        sb.append("][deleted=").append(deleted).append("]");
+        return sb.toString();
     }
 
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("domain", domain);
+        map.put("subnet", subnet);
+        map.put("mask", mask);
+        map.put("dns1", dns1);
+        map.put("dns2", dns2);
+        map.put("dns3", dns3);
+        map.put("cloud", cloud);
+        map.put("title", title);
+        map.put("description", description);
+        map.put("deleted", deleted);
+        return map;
+    }
 }

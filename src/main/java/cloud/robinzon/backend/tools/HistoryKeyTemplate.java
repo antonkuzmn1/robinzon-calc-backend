@@ -1,17 +1,18 @@
-package cloud.robinzon.backend.security.group.resources.history;
+package cloud.robinzon.backend.tools;
 
-import cloud.robinzon.backend.security.group.resources.GroupEntity;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
 
 @SuppressWarnings("unused")
+@EqualsAndHashCode
 @NoArgsConstructor
-public class GroupHistoryKey
+public abstract class HistoryKeyTemplate<T>
         implements Serializable {
 
-    private GroupEntity groupEntity;
+    private T entity;
     private Timestamp timestamp;
 
 }

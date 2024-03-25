@@ -9,6 +9,6 @@ public interface NetEntityRepository
         extends JpaRepository<NetEntity, Long> {
 
     @Query("SELECT COUNT(n) > 0 FROM NetEntity n WHERE n.subnet = :subnet AND n.deleted = false")
-    boolean checkUniqueSubnet(String subnet);
+    boolean checkUnique(String subnet);
 
 }

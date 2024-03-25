@@ -1,17 +1,10 @@
 package cloud.robinzon.backend.db.reg.resources.history;
 
 import cloud.robinzon.backend.db.reg.resources.RegEntity;
+import cloud.robinzon.backend.tools.HistoryKeyTemplate;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-
-@SuppressWarnings("unused")
 @NoArgsConstructor
 public class RegHistoryKey
-        implements Serializable {
-
-    private RegEntity regEntity;
-    private Timestamp timestamp;
-
+        extends HistoryKeyTemplate<RegEntity> {
 }

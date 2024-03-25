@@ -1,3 +1,4 @@
+/*
 package cloud.robinzon.backend.db.fm.resources.rent;
 
 import cloud.robinzon.backend.db.client.resources.ClientEntity;
@@ -17,3 +18,4 @@ public class FmRentKey
     private Timestamp timestamp;
 
 }
+*/

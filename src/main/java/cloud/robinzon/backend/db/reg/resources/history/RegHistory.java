@@ -2,104 +2,59 @@ package cloud.robinzon.backend.db.reg.resources.history;
 
 import cloud.robinzon.backend.db.reg.resources.RegEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
-import jakarta.persistence.*;
+import cloud.robinzon.backend.tools.HistoryTemplate;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.IdClass;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.NonNull;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
-@SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
 @IdClass(RegHistoryKey.class)
-public class RegHistory {
+public class RegHistory
+    extends HistoryTemplate<RegEntity> {
 
-    @Id
-    @ManyToOne
-    @JoinColumn
-    private RegEntity regEntity;
-
-    @Id
-    @CreationTimestamp
-    private Timestamp timestamp;
-
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String brand;
 
+    @NonNull
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String part;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String serial;
 
-    @Column(nullable = false)
+    @Column
     private Date buyDate;
 
-    @Column(nullable = false)
+    @Column
     private int warrantyMonths;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String provider;
 
-    @Column(nullable = false, length = 50)
-    private String title;
-
-    @Column(nullable = false)
-    private String description;
-
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private UserEntity changeBy;
-
-    @Column(nullable = false)
-    private boolean deleted;
-
-    public RegHistory(RegEntity regEntity,
-                      String brand,
-                      String name,
-                      String part,
-                      String serial,
-                      Date buyDate,
-                      int warrantyMonths,
-                      String provider,
-                      String title,
-                      String description,
-                      UserEntity changeBy,
-                      boolean deleted) {
-        this.regEntity = regEntity;
-        this.brand = brand;
-        this.name = name;
-        this.part = part;
-        this.serial = serial;
-        this.buyDate = buyDate;
-        this.warrantyMonths = warrantyMonths;
-        this.provider = provider;
-        this.title = title;
-        this.description = description;
-        this.changeBy = changeBy;
-        this.deleted = deleted;
-    }
-
-    public RegHistory(RegEntity regEntity,
+    public RegHistory(RegEntity entity,
                       UserEntity changeBy) {
-        this.regEntity = regEntity;
+        this.entity = entity;
         this.changeBy = changeBy;
-        this.brand = regEntity.getBrand();
-        this.name = regEntity.getName();
-        this.part = regEntity.getPart();
-        this.serial = regEntity.getSerial();
-        this.buyDate = regEntity.getBuyDate();
-        this.warrantyMonths = regEntity.getWarrantyMonths();
-        this.provider = regEntity.getProvider();
-        this.title = regEntity.getTitle();
-        this.description = regEntity.getDescription();
-        this.deleted = true;
+        this.brand = entity.getBrand();
+        this.name = entity.getName();
+        this.part = entity.getPart();
+        this.serial = entity.getSerial();
+        this.buyDate = entity.getBuyDate();
+        this.warrantyMonths = entity.getWarrantyMonths();
+        this.provider = entity.getProvider();
+        this.title = entity.getTitle();
+        this.description = entity.getDescription();
+        this.deleted = entity.isDeleted();
     }
 
 }

@@ -1,35 +1,33 @@
-/**
- * Copyright 2024 Anton Kuzmin (http://github.com/antonkuzmn1)
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/*
+
+Copyright 2024 Anton Kuzmin (http://github.com/antonkuzmn1)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+*/
 
 package cloud.robinzon.backend.db.fm;
 
-import cloud.robinzon.backend.db.client.resources.ClientEntity;
 import cloud.robinzon.backend.db.fm.resources.FmEntity;
 import cloud.robinzon.backend.db.fm.resources.FmEntityRepository;
 import cloud.robinzon.backend.db.fm.resources.history.FmHistory;
 import cloud.robinzon.backend.db.fm.resources.history.FmHistoryRepository;
-import cloud.robinzon.backend.db.fm.resources.rent.FmRent;
-import cloud.robinzon.backend.db.fm.resources.rent.FmRentRepository;
-import cloud.robinzon.backend.tools.ResponseForm;
-import cloud.robinzon.backend.tools.ResponseStringTemplates;
+import cloud.robinzon.backend.security.user.resources.UserEntity;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
-import static java.lang.String.format;
+import static cloud.robinzon.backend.tools.Log.*;
 
 /**
  * <h3>Entity Management Tools</h3>
@@ -53,28 +51,41 @@ import static java.lang.String.format;
  * </p>
  *
  * @author Anton Kuzmin
- * @since 2024.03.14
- * @since 2024.03.19
- * @since 2024.03.20
+ * @since 2024.03.25
  */
 
-@SuppressWarnings("unused")
 @Service
-public class FmEntityManager
-        extends ResponseForm
-        implements ResponseStringTemplates {
+@AllArgsConstructor
+public class FmEntityManager {
 
     private final FmEntityRepository entityRepository;
     private final FmHistoryRepository historyRepository;
-    private final FmRentRepository rentRepository;
 
-    public FmEntityManager(FmEntityRepository entityRepository,
-                           FmHistoryRepository historyRepository,
-                           FmRentRepository rentRepository) {
-        this.entityRepository = entityRepository;
-        this.historyRepository = historyRepository;
-        this.rentRepository = rentRepository;
-        super.set(getClass().getSimpleName());
+    /**
+     * Returns a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body.
+     * Logs the new values of the entity, saves the entity to the repository, saves a new entry in the history repository,
+     * and logs the success message.
+     *
+     * @param entity   the updated entity
+     * @param changeBy the UserEntity making the change
+     * @return a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body
+     * @author Anton Kuzmin
+     * @since 2024.03.25
+     */
+    private ResponseEntity<?> ok(FmEntity entity,
+                                 @SuppressWarnings("SameParameterValue")
+                                 UserEntity changeBy) {
+        log("New values:");
+        System.out.println(entity.toMap());
+
+        log("Saving entity...");
+        entityRepository.save(entity);
+
+        log("Saving history...");
+        historyRepository.save(new FmHistory(entity, changeBy));
+
+        log("Success!");
+        return ResponseEntity.ok().body(entity);
     }
 
     /**
@@ -95,54 +106,36 @@ public class FmEntityManager
      * @param description    Full description of the entry {@code 255 chars};
      * @param price          Price of the entity;
      * @param vm             FM can host VM's or not;
-     * @param clientEntity   Renter entity reference;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
-     * @since 2024.03.14
-     * @since 2024.03.19
+     * @since 2024.03.25
      */
-    public ResponseForm insert(String name,
-                               String ip,
-                               String title,
-                               String specifications,
-                               String description,
-                               int price,
-                               boolean vm,
-                               ClientEntity clientEntity) {
-        super.function("insert");
+    public ResponseEntity<?> insert(String name,
+                                    String ip,
+                                    String title,
+                                    String specifications,
+                                    String description,
+                                    int price,
+                                    boolean vm) {
+        set(getClass(), "insert");
+        log(String.join(" ", "Insert:", name));
 
-        String err = setUnique(entityRepository.checkUniqueIp(ip), "ip", ip);
+        log("Checks...");
+        if (entityRepository.checkUnique(ip))
+            return err("IP must be unique");
 
-        if (!err.isEmpty()) return super.error(err);
+        FmEntity entity = new FmEntity()
+                .update(name,
+                        ip,
+                        title,
+                        specifications,
+                        description,
+                        price,
+                        vm);
 
-        FmEntity entity = new FmEntity(
-                name,
-                ip,
-                title,
-                specifications,
-                description,
-                price,
-                vm,
-                clientEntity);
-        entityRepository.save(entity);
-
-        historyRepository.save(new FmHistory(
-                entity,
-                name,
-                ip,
-                title,
-                specifications,
-                description,
-                price,
-                vm,
-                null,
-                false));
-
-        rentRepository.save(new FmRent(entity, clientEntity, null));
-
-        return super.success(format("Inserted: %s", name));
+        return ok(entity, null);
     }
 
     /**
@@ -167,58 +160,41 @@ public class FmEntityManager
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
-     * @since 2024.03.14
-     * @since 2024.03.19
+     * @since 2024.03.25
      */
-    public ResponseForm update(Long id,
-                               String name,
-                               String ip,
-                               String title,
-                               String specifications,
-                               String description,
-                               int price,
-                               boolean vm)
-            throws NullPointerException {
-        super.function("update");
+    public ResponseEntity<?> update(Long id,
+                                    String name,
+                                    String ip,
+                                    String title,
+                                    String specifications,
+                                    String description,
+                                    int price,
+                                    boolean vm) {
+        set(getClass(), "update");
+        log(String.join(" ", "Update:", name));
 
-        FmEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
+        log("Entity search...");
+        FmEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity == null) return err("Entity not found");
 
-        String err = String.join("",
-                setUnique(entityRepository.checkUniqueIp(ip), "ip", ip),
-                setEquals(entity.getName().equals(name)
-                        && entity.getIp().equals(ip)
-                        && entity.getTitle().equals(title)
-                        && entity.getSpecifications()
-                        .equals(specifications)
-                        && entity.getDescription().equals(description)
-                        && entity.getPrice() == price
-                        && entity.isVm() == vm, name));
+        log("Current values:");
+        System.out.println(entity.toMap());
 
-        if (!err.isEmpty()) return super.error(err);
+        log("Checks...");
+        if (!entity.getIp().equals(ip) && entityRepository.checkUnique(ip))
+            return err("IP must be unique");
 
-        entity.update(
-                name,
-                ip,
-                title,
-                specifications,
-                description,
-                price,
-                vm);
-        entityRepository.save(entity);
+        if (entity
+                .update(name,
+                        ip,
+                        title,
+                        specifications,
+                        description,
+                        price,
+                        vm) == null)
+            return err("All parameters are equal");
 
-        historyRepository.save(new FmHistory(
-                entity,
-                name,
-                ip,
-                title,
-                specifications,
-                description,
-                price,
-                vm,
-                null,
-                false));
-
-        return super.success(format("Updated: %s", name));
+        return ok(entity, null);
     }
 
     /**
@@ -237,24 +213,25 @@ public class FmEntityManager
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
-     * @since 2024.03.14
-     * @since 2024.03.19
+     * @since 2024.03.25
      */
-    public ResponseForm delete(Long id)
-            throws NullPointerException, NoSuchMethodException {
-        super.function("delete");
+    public ResponseEntity<?> delete(Long id) {
+        set(getClass(), "delete");
 
-        FmEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
+        log("Entity search...");
+        FmEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity == null) return err("Entity not found");
 
-        String err = deleteChecks(entity, id);
+        log("Current values:");
+        System.out.println(entity.toMap());
 
-        if (!err.isEmpty()) return super.error(err);
+        log("Checks...");
+        if (entity.isDeleted())
+            return err("Entity already deleted");
 
         entity.setDeleted(true);
-        entityRepository.save(entity);
-        historyRepository.save(new FmHistory(entity, null));
 
-        return super.success(format("Deleted: %s", entity.getName()));
+        return ok(entity, null);
     }
 
 }

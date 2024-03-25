@@ -1,4 +1,4 @@
-package cloud.robinzon.backend.settings.vpn.type.resources;
+package cloud.robinzon.backend.db.vpn.type.resources;
 
 import cloud.robinzon.backend.db.vpn.server.resources.VpnServerEntity;
 import cloud.robinzon.backend.db.vpn.server.resources.history.VpnServerHistory;

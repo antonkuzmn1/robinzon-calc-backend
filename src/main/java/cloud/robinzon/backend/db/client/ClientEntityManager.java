@@ -1,18 +1,20 @@
-/**
- * Copyright 2024 Anton Kuzmin (http://github.com/antonkuzmn1)
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/*
+
+Copyright 2024 Anton Kuzmin (http://github.com/antonkuzmn1)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+*/
 
 package cloud.robinzon.backend.db.client;
 
@@ -20,16 +22,14 @@ import cloud.robinzon.backend.db.client.resources.ClientEntity;
 import cloud.robinzon.backend.db.client.resources.ClientEntityRepository;
 import cloud.robinzon.backend.db.client.resources.history.ClientHistory;
 import cloud.robinzon.backend.db.client.resources.history.ClientHistoryRepository;
-import cloud.robinzon.backend.db.client.resources.payment.ClientPayment;
-import cloud.robinzon.backend.db.client.resources.payment.ClientPaymentRepository;
-import cloud.robinzon.backend.tools.ResponseForm;
-import cloud.robinzon.backend.tools.ResponseStringTemplates;
+import cloud.robinzon.backend.security.user.resources.UserEntity;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.Objects;
 
-import static java.lang.String.format;
+import static cloud.robinzon.backend.tools.Log.*;
 
 /**
  * <h3>Entity Management Tools</h3>
@@ -53,27 +53,41 @@ import static java.lang.String.format;
  * </p>
  *
  * @author Anton Kuzmin
- * @since 2024.03.18
- * @since 2024.03.20
+ * @since 2024.03.25
  */
 
-@SuppressWarnings("unused")
 @Service
-public final class ClientEntityManager
-        extends ResponseForm
-        implements ResponseStringTemplates {
+@AllArgsConstructor
+public class ClientEntityManager {
 
     private final ClientEntityRepository entityRepository;
     private final ClientHistoryRepository historyRepository;
-    private final ClientPaymentRepository paymentRepository;
 
-    private ClientEntityManager(ClientEntityRepository entityRepository,
-                                ClientHistoryRepository historyRepository,
-                                ClientPaymentRepository paymentRepository) {
-        this.entityRepository = entityRepository;
-        this.historyRepository = historyRepository;
-        this.paymentRepository = paymentRepository;
-        super.set(getClass().getSimpleName());
+    /**
+     * Returns a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body.
+     * Logs the new values of the entity, saves the entity to the repository, saves a new entry in the history repository,
+     * and logs the success message.
+     *
+     * @param entity   the updated entity
+     * @param changeBy the UserEntity making the change
+     * @return a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body
+     * @author Anton Kuzmin
+     * @since 2024.03.25
+     */
+    private ResponseEntity<?> ok(ClientEntity entity,
+                                 @SuppressWarnings("SameParameterValue")
+                                 UserEntity changeBy) {
+        log("New values:");
+        System.out.println(entity.toMap());
+
+        log("Saving entity...");
+        entityRepository.save(entity);
+
+        log("Saving history...");
+        historyRepository.save(new ClientHistory(entity, changeBy));
+
+        log("Success!");
+        return ResponseEntity.ok().body(entity);
     }
 
     /**
@@ -93,57 +107,39 @@ public final class ClientEntityManager
      * @param contractNumber Contract number;
      * @param contractDate   Date of conclusion of the contract;
      * @param title          Short description of the entry {@code 50 chars};
-     * @param balance        Client balance;
      * @param description    Full description of the entry {@code 255 chars};
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
-     * @since 2024.03.18
-     * @since 2024.03.20
+     * @since 2024.03.25
      */
-    public ResponseForm insert(String name,
-                               String inn,
-                               int discount,
-                               int contractNumber,
-                               Date contractDate,
-                               String title,
-                               int balance,
-                               String description) {
-        super.function("insert");
+    public ResponseEntity<?> insert(String name,
+                                    String inn,
+                                    int discount,
+                                    int contractNumber,
+                                    Date contractDate,
+                                    String title,
+                                    String description) {
+        set(getClass(), "insert");
+        log(String.join(" ", "Insert:", name));
 
-        String err = String.join("",
-                setUnique(entityRepository.checkUniqueInn(inn), "inn", inn),
-                setUnique(entityRepository.checkUniqueContractNumber(contractNumber), "contractNumber", contractNumber));
+        log("Checks...");
+        if (entityRepository.checkUniqueInn(inn))
+            return err("INN must be unique");
+        if (entityRepository.checkUniqueContractNumber(contractNumber))
+            return err("Contract number must be unique");
 
-        if (!err.isEmpty()) return super.error(err);
+        ClientEntity entity = new ClientEntity()
+                .update(name,
+                        inn,
+                        discount,
+                        contractNumber,
+                        contractDate,
+                        title,
+                        description);
 
-        ClientEntity entity = new ClientEntity(
-                name,
-                inn,
-                discount,
-                contractNumber,
-                contractDate,
-                title,
-                balance,
-                description);
-        entityRepository.save(entity);
-
-        historyRepository.save(new ClientHistory(
-                entity,
-                name,
-                inn,
-                discount,
-                contractNumber,
-                contractDate,
-                title,
-                description,
-                null,
-                false));
-
-        paymentRepository.save(new ClientPayment(entity,balance,null));
-
-        return super.success(format("Inserted: %s", name));
+        return ok(entity, null);
     }
 
     /**
@@ -169,57 +165,43 @@ public final class ClientEntityManager
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
-     * @since 2024.03.18
+     * @since 2024.03.25
      */
-    public ResponseForm update(Long id,
-                               String name,
-                               String inn,
-                               int discount,
-                               int contractNumber,
-                               Date contractDate,
-                               String title,
-                               String description)
-            throws NullPointerException {
-        super.function("update");
+    public ResponseEntity<?> update(Long id,
+                                    String name,
+                                    String inn,
+                                    int discount,
+                                    int contractNumber,
+                                    Date contractDate,
+                                    String title,
+                                    String description) {
+        set(getClass(), "update");
+        log(String.join(" ", "Update:", name));
 
-        ClientEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
+        log("Entity search...");
+        ClientEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity == null) return err("Entity not found");
 
-        String err = String.join("",
-                setUnique(entityRepository.checkUniqueInn(inn), "inn", inn),
-                setUnique(entityRepository.checkUniqueContractNumber(contractNumber), "contractNumber", contractNumber),
-                setEquals(entity.getName().equals(name)
-                        && entity.getInn().equals(inn)
-                        && entity.getDiscount() == discount
-                        && entity.getContractNumber() == contractNumber
-                        && entity.getContractDate().equals(contractDate)
-                        && entity.getTitle().equals(title)
-                        && entity.getDescription().equals(description), name));
+        log("Current values:");
+        System.out.println(entity.toMap());
 
-        if (!err.isEmpty()) return super.error(err);
+        log("Checks...");
+        if (!entity.getInn().equals(inn) && entityRepository.checkUniqueInn(inn))
+            return err("INN must be unique");
+        if (!(entity.getContractNumber() == contractNumber) && entityRepository.checkUniqueContractNumber(contractNumber))
+            return err("Contract number must be unique");
 
-        entity.update(
-                name,
-                inn,
-                discount,
-                contractNumber,
-                contractDate,
-                title,
-                description);
-        entityRepository.save(entity);
+        if (entity
+                .update(name,
+                        inn,
+                        discount,
+                        contractNumber,
+                        contractDate,
+                        title,
+                        description) == null)
+            return err("All parameters are equal");
 
-        historyRepository.save(new ClientHistory(
-                entity,
-                name,
-                inn,
-                discount,
-                contractNumber,
-                contractDate,
-                title,
-                description,
-                null,
-                false));
-
-        return super.success(format("Updated: %s", name));
+        return ok(entity, null);
     }
 
     /**
@@ -238,22 +220,24 @@ public final class ClientEntityManager
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
-     * @since 2024.03.18
+     * @since 2024.03.25
      */
-    public ResponseForm delete(Long id)
-            throws NullPointerException, NoSuchMethodException {
-        super.function("delete");
+    public ResponseEntity<?> delete(Long id) {
+        set(getClass(), "delete");
 
-        ClientEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
+        log("Entity search...");
+        ClientEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity == null) return err("Entity not found");
 
-        String err = deleteChecks(entity, id);
+        log("Current values:");
+        System.out.println(entity.toMap());
 
-        if (!err.isEmpty()) return super.error(err);
+        log("Checks...");
+        if (entity.isDeleted())
+            return err("Entity already deleted");
 
         entity.setDeleted(true);
-        entityRepository.save(entity);
-        historyRepository.save(new ClientHistory(entity, null));
 
-        return super.success(format("Deleted: %s", entity.getName()));
+        return ok(entity, null);
     }
 }

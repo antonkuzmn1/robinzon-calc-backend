@@ -3,120 +3,66 @@ package cloud.robinzon.backend.db.vm.resources.history;
 import cloud.robinzon.backend.db.fm.resources.FmEntity;
 import cloud.robinzon.backend.db.vm.resources.VmEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
+import cloud.robinzon.backend.tools.HistoryTemplate;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
-
-@SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
 @IdClass(VmHistoryKey.class)
-public class VmHistory {
+public class VmHistory
+        extends HistoryTemplate<VmEntity> {
 
-    @Id
-    @ManyToOne
-    @JoinColumn
-    private VmEntity vmEntity;
-
-    @Id
-    @CreationTimestamp
-    private Timestamp timestamp;
-
+    @Size(min = 2, max = 100)
     @Column(nullable = false, length = 100)
     private String name;
 
+    @Min(0)
+    @Max(64)
     @Column(nullable = false)
     private int cpu;
 
+    @Min(0)
+    @Max(128)
     @Column(nullable = false)
     private int ram;
 
+    @Min(0)
+    @Max(20000)
     @Column(nullable = false)
     private int ssd;
 
+    @Min(0)
+    @Max(50000)
     @Column(nullable = false)
     private int hdd;
 
     @Column(nullable = false)
     private boolean running;
 
-    @Column(nullable = false, length = 50)
-    private String title;
-
-    @Column(nullable = false)
-    private String description;
-
     @ManyToOne
     @JoinColumn(nullable = false)
     private FmEntity fmEntity;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private UserEntity changeBy;
-
-    @Column(nullable = false)
-    private boolean deleted;
-
-    public VmHistory(VmEntity vmEntity,
-                     String name,
-                     Integer cpu,
-                     Integer ram,
-                     Integer ssd,
-                     Integer hdd,
-                     Boolean running,
-                     FmEntity fmEntity,
-                     UserEntity changeBy,
-                     boolean isNew) {
-        this.vmEntity = vmEntity;
-        this.name = name;
-        this.cpu = cpu;
-        this.ram = ram;
-        this.ssd = ssd;
-        this.hdd = hdd;
-        this.running = running;
-        this.title = isNew ? "" : vmEntity.getTitle();
-        this.description = isNew ? "" : vmEntity.getDescription();
-        this.fmEntity = fmEntity;
-        this.changeBy = changeBy;
-        this.deleted = false;
-    }
-
-    public VmHistory(VmEntity vmEntity,
-                     String title,
-                     String description,
+    public VmHistory(VmEntity entity,
                      UserEntity changeBy) {
-        this.vmEntity = vmEntity;
-        this.name = vmEntity.getName();
-        this.cpu = vmEntity.getCpu();
-        this.ram = vmEntity.getRam();
-        this.ssd = vmEntity.getSsd();
-        this.hdd = vmEntity.getHdd();
-        this.running = vmEntity.isRunning();
-        this.title = title;
-        this.description = description;
-        this.fmEntity = vmEntity.getFmEntity();
+        this.entity = entity;
         this.changeBy = changeBy;
-        this.deleted = false;
-    }
-
-    public VmHistory(VmEntity vmEntity,
-                     UserEntity changeBy) {
-        this.vmEntity = vmEntity;
-        this.name = vmEntity.getName();
-        this.cpu = vmEntity.getCpu();
-        this.ram = vmEntity.getRam();
-        this.ssd = vmEntity.getSsd();
-        this.hdd = vmEntity.getHdd();
-        this.running = vmEntity.isRunning();
-        this.title = vmEntity.getTitle();
-        this.description = vmEntity.getDescription();
-        this.fmEntity = vmEntity.getFmEntity();
-        this.changeBy = changeBy;
-        this.deleted = true;
+        this.name = entity.getName();
+        this.cpu = entity.getCpu();
+        this.ram = entity.getRam();
+        this.ssd = entity.getSsd();
+        this.hdd = entity.getHdd();
+        this.running = entity.isRunning();
+        this.title = entity.getTitle();
+        this.description = entity.getDescription();
+        this.fmEntity = entity.getFmEntity();
+        this.deleted = entity.isDeleted();
     }
 
 }

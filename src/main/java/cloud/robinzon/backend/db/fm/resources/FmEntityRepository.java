@@ -6,14 +6,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@SuppressWarnings("unused")
 @Repository
 public interface FmEntityRepository
         extends JpaRepository<FmEntity, Long> {
 
+    @SuppressWarnings("unused")
     List<FmEntity> findByVm(Boolean vm);
 
     @Query("SELECT COUNT(f) > 0 FROM FmEntity f WHERE f.ip = :ip AND f.deleted = false")
-    boolean checkUniqueIp(String ip);
+    boolean checkUnique(String ip);
 
 }

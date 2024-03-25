@@ -2,102 +2,67 @@ package cloud.robinzon.backend.db.net.resources.history;
 
 import cloud.robinzon.backend.db.net.resources.NetEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
-import jakarta.persistence.*;
+import cloud.robinzon.backend.tools.HistoryTemplate;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.IdClass;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.NonNull;
 
-import java.sql.Timestamp;
-
-@SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
 @IdClass(NetHistoryKey.class)
-public class NetHistory {
+public class NetHistory
+        extends HistoryTemplate<NetEntity> {
 
-    @Id
-    @ManyToOne
-    @JoinColumn
-    private NetEntity netEntity;
-
-    @Id
-    @CreationTimestamp
-    private Timestamp timestamp;
-
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private UserEntity changeBy;
-
+    @Size(min = 5, max = 15)
     @Column(nullable = false, length = 50)
     private String domain;
 
+    @NonNull
+    @Size(min = 7, max = 15)
     @Column(nullable = false, length = 15)
     private String subnet;
 
+    @NonNull
+    @Size(min = 7, max = 15)
     @Column(nullable = false, length = 15)
     private String mask;
 
+    @NonNull
+    @Size(min = 7, max = 15)
     @Column(nullable = false, length = 15)
     private String dns1;
 
-    @Column(nullable = false, length = 15)
+    @Size(min = 7, max = 15)
+    @Column(length = 15)
     private String dns2;
 
-    @Column(nullable = false, length = 15)
+    @Size(min = 7, max = 15)
+    @Column(length = 15)
     private String dns3;
 
-    @Column(nullable = false)
+    @Column(nullable = false,
+            columnDefinition = "boolean default false")
     private boolean cloud;
 
-    @Column(nullable = false, length = 50)
-    private String title;
-
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
-    private boolean deleted;
-
-    public NetHistory(NetEntity netEntity,
-                      UserEntity changeBy,
-                      String domain,
-                      String subnet,
-                      String mask,
-                      String dns1,
-                      String dns2,
-                      String dns3,
-                      boolean cloud,
-                      String title,
-                      String description,
-                      boolean deleted) {
-        this.netEntity = netEntity;
-        this.changeBy = changeBy;
-        this.domain = domain;
-        this.subnet = subnet;
-        this.mask = mask;
-        this.dns1 = dns1;
-        this.dns2 = dns2;
-        this.dns3 = dns3;
-        this.cloud = cloud;
-        this.title = title;
-        this.description = description;
-        this.deleted = deleted;
-    }
-
-    public NetHistory(NetEntity netEntity,
+    public NetHistory(NetEntity entity,
                       UserEntity changeBy) {
-        this.netEntity = netEntity;
+        this.entity = entity;
         this.changeBy = changeBy;
-        this.domain = netEntity.getDomain();
-        this.subnet = netEntity.getSubnet();
-        this.dns1 = netEntity.getDns1();
-        this.dns2 = netEntity.getDns2();
-        this.dns3 = netEntity.getDns3();
-        this.cloud = netEntity.isCloud();
-        this.title = netEntity.getTitle();
-        this.description = netEntity.getDescription();
-        this.deleted = true;
+        this.domain = entity.getDomain();
+        this.subnet = entity.getSubnet();
+        this.mask = entity.getMask();
+        this.dns1 = entity.getDns1();
+        this.dns2 = entity.getDns2();
+        this.dns3 = entity.getDns3();
+        this.cloud = entity.isCloud();
+        this.title = entity.getTitle();
+        this.description = entity.getDescription();
+        this.deleted = entity.isDeleted();
     }
 
 }

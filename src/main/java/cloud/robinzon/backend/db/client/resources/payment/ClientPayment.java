@@ -1,3 +1,4 @@
+/*
 package cloud.robinzon.backend.db.client.resources.payment;
 
 import cloud.robinzon.backend.db.client.resources.ClientEntity;
@@ -41,3 +42,4 @@ public class ClientPayment {
     }
 
 }
+*/

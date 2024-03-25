@@ -1,6 +1,6 @@
-package cloud.robinzon.backend.settings.vpn.type.resources.history;
+package cloud.robinzon.backend.db.vpn.type.resources.history;
 
-import cloud.robinzon.backend.settings.vpn.type.resources.VpnTypeEntity;
+import cloud.robinzon.backend.db.vpn.type.resources.VpnTypeEntity;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;

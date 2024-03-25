@@ -1,37 +1,36 @@
 package cloud.robinzon.backend.db.client.resources;
 
 import cloud.robinzon.backend.security.user.resources.UserEntity;
+import cloud.robinzon.backend.tools.EntityTemplate;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-@SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
-public class ClientEntity {
+public class ClientEntity
+        extends EntityTemplate {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @UpdateTimestamp
-    private Timestamp timestamp;
-
-    @Column(nullable = false, length = 100)
+    @Size(min = 2, max = 50)
+    @Column(nullable = false, length = 50)
     private String name;
 
+    @Size(min = 8, max = 12)
     @Column(length = 12)
     private String inn;
 
+    @Min(0)
+    @Max(100)
     @Column(nullable = false)
     private int discount;
 
@@ -41,32 +40,31 @@ public class ClientEntity {
     @Column
     private Date contractDate;
 
-    @Column(nullable = false, length = 50)
-    private String title;
-
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
+    @Column(nullable = false,
+            columnDefinition = "int default 0")
     private int balance;
-
-    @Setter
-    @Column(nullable = false)
-    private boolean deleted;
 
     @Setter
     @ManyToMany(mappedBy = "clients")
     @JsonIgnoreProperties("clients")
     private Set<UserEntity> users = new HashSet<>();
 
-    public ClientEntity(String name,
-                        String inn,
-                        int discount,
-                        int contractNumber,
-                        Date contractDate,
-                        String title,
-                        int balance,
-                        String description) {
+    public ClientEntity update(String name,
+                               String inn,
+                               int discount,
+                               int contractNumber,
+                               Date contractDate,
+                               String title,
+                               String description) {
+
+        if (Objects.equals(this.name, name)
+                && Objects.equals(this.inn, inn)
+                && this.discount == discount
+                && this.contractNumber == contractNumber
+                && Objects.equals(this.title, title)
+                && Objects.equals(this.description, description))
+            return null;
+
         this.name = name;
         this.inn = inn;
         this.discount = discount;
@@ -74,23 +72,33 @@ public class ClientEntity {
         this.contractDate = contractDate;
         this.title = title;
         this.description = description;
-        this.balance = balance;
+        return this;
     }
 
-    public void update(String name,
-                       String inn,
-                       int discount,
-                       int contractNumber,
-                       Date contractDate,
-                       String title,
-                       String description) {
-        this.name = name;
-        this.inn = inn;
-        this.discount = discount;
-        this.contractNumber = contractNumber;
-        this.contractDate = contractDate;
-        this.title = title;
-        this.description = description;
+    public String toString() {
+        //noinspection StringBufferReplaceableByString
+        StringBuilder sb = new StringBuilder();
+        sb.append("[id=").append(id);
+        sb.append("][domain=").append(name);
+        sb.append("][subnet=").append(inn);
+        sb.append("][mask=").append(discount);
+        sb.append("][dns1=").append(contractNumber);
+        sb.append("][title=").append(title);
+        sb.append("][description=").append(description);
+        sb.append("][deleted=").append(deleted).append("]");
+        return sb.toString();
     }
 
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("domain", name);
+        map.put("subnet", inn);
+        map.put("mask", discount);
+        map.put("dns1", contractDate);
+        map.put("title", title);
+        map.put("description", description);
+        map.put("deleted", deleted);
+        return map;
+    }
 }

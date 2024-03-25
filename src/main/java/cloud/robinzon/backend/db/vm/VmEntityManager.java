@@ -21,15 +21,12 @@ import cloud.robinzon.backend.db.vm.resources.VmEntity;
 import cloud.robinzon.backend.db.vm.resources.VmEntityRepository;
 import cloud.robinzon.backend.db.vm.resources.history.VmHistory;
 import cloud.robinzon.backend.db.vm.resources.history.VmHistoryRepository;
-import cloud.robinzon.backend.db.vm.resources.rent.VmRent;
-import cloud.robinzon.backend.db.vm.resources.rent.VmRentRepository;
-import cloud.robinzon.backend.tools.ResponseForm;
-import cloud.robinzon.backend.tools.ResponseStringTemplates;
+import cloud.robinzon.backend.security.user.resources.UserEntity;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
-import static java.lang.String.format;
+import static cloud.robinzon.backend.tools.Log.*;
 
 /**
  * <h3>Entity Management Tools</h3>
@@ -53,27 +50,42 @@ import static java.lang.String.format;
  * </p>
  *
  * @author Anton Kuzmin
- * @since 2024.03.14
- * @since 2024.03.20
+ * @since 2024.03.25
  */
 
-@SuppressWarnings("unused")
+
 @Service
-public class VmEntityManager
-        extends ResponseForm
-        implements ResponseStringTemplates {
+@AllArgsConstructor
+public class VmEntityManager {
 
     private final VmEntityRepository entityRepository;
     private final VmHistoryRepository historyRepository;
-    private final VmRentRepository rentRepository;
 
-    public VmEntityManager(VmEntityRepository entityRepository,
-                           VmHistoryRepository historyRepository,
-                           VmRentRepository rentRepository) {
-        this.entityRepository = entityRepository;
-        this.historyRepository = historyRepository;
-        this.rentRepository = rentRepository;
-        super.set(getClass().getSimpleName());
+    /**
+     * Returns a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body.
+     * Logs the new values of the entity, saves the entity to the repository, saves a new entry in the history repository,
+     * and logs the success message.
+     *
+     * @param entity   the updated entity
+     * @param changeBy the UserEntity making the change
+     * @return a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body
+     * @author Anton Kuzmin
+     * @since 2024.03.25
+     */
+    private ResponseEntity<?> ok(VmEntity entity,
+                                 @SuppressWarnings("SameParameterValue")
+                                 UserEntity changeBy) {
+        log("New values:");
+        System.out.println(entity.toMap());
+
+        log("Saving entity...");
+        entityRepository.save(entity);
+
+        log("Saving history...");
+        historyRepository.save(new VmHistory(entity, changeBy));
+
+        log("Success!");
+        return ResponseEntity.ok().body(entity);
     }
 
     /**
@@ -107,48 +119,37 @@ public class VmEntityManager
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
-     * @since 2024.03.14
-     * @since 2024.03.20
+     * @since 2024.03.25
      */
-    public ResponseForm insert(String id,
-                               String name,
-                               int cpu,
-                               int ram,
-                               int ssd,
-                               int hdd,
-                               boolean running,
-                               FmEntity fmEntity) {
-        super.function("insert");
+    public ResponseEntity<?> insert(String id,
+                                    String name,
+                                    int cpu,
+                                    int ram,
+                                    int ssd,
+                                    int hdd,
+                                    boolean running,
+                                    FmEntity fmEntity,
+                                    String title,
+                                    String description) {
+        set(getClass(), "insert");
+        log(String.join(" ", "Insert:", name));
 
+        log("Entity search...");
         VmEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity != null) return err("Entity already exists");
 
-        String err = setEquals(entity != null
-                && entity.getName().equals(name)
-                && entity.getCpu() == cpu
-                && entity.getRam() == ram
-                && entity.getSsd() == ssd
-                && entity.getHdd() == hdd
-                && entity.isRunning() == running
-                && entity.getFmEntity().equals(fmEntity), name);
+        entity = new VmEntity(id)
+                .update(name,
+                        cpu,
+                        ram,
+                        ssd,
+                        hdd,
+                        running,
+                        fmEntity,
+                        title,
+                        description);
 
-        if (!err.isEmpty()) return super.error(err);
-
-        if (entity == null) {
-
-            entity = new VmEntity(id, name, cpu, ram, ssd, hdd, running, fmEntity);
-            entityRepository.save(entity);
-            historyRepository.save(new VmHistory(entity, name, cpu, ram, ssd, hdd, running, fmEntity, null, true));
-            rentRepository.save(new VmRent(entity, null, null));
-
-            return super.success(format("Inserted: %s", name));
-        } else {
-
-            entity.update(name, cpu, ram, ssd, hdd, running, fmEntity);
-            entityRepository.save(entity);
-            historyRepository.save(new VmHistory(entity, name, cpu, ram, ssd, hdd, running, fmEntity, null, false));
-
-            return super.success(format("Updated: %s", name));
-        }
+        return ok(entity, null);
     }
 
     /**
@@ -169,27 +170,41 @@ public class VmEntityManager
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
-     * @since 2024.03.14
-     * @since 2024.03.20
+     * @since 2024.03.25
      */
-    public ResponseForm update(String id,
+    public ResponseEntity<?> update(String id,
+                               String name,
+                               int cpu,
+                               int ram,
+                               int ssd,
+                               int hdd,
+                               boolean running,
+                               FmEntity fmEntity,
                                String title,
-                               String description)
-            throws NullPointerException {
-        super.function("update");
+                               String description) {
+        set(getClass(), "update");
+        log(String.join(" ", "Update:", name));
 
-        VmEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
+        log("Entity search...");
+        VmEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity == null) return err("Entity not found");
 
-        String err = setEquals(entity.getTitle().equals(title)
-                && entity.getDescription().equals(description), entity.getName());
+        log("Current values:");
+        System.out.println(entity.toMap());
 
-        if (!err.isEmpty()) return super.error(err);
+        if (entity
+                .update(name,
+                        cpu,
+                        ram,
+                        ssd,
+                        hdd,
+                        running,
+                        fmEntity,
+                        title,
+                        description) == null)
+            return err("All parameters are equal");
 
-        entity.update2(title, description);
-        entityRepository.save(entity);
-        historyRepository.save(new VmHistory(entity, title, description, null));
-
-        return super.success(format("Updated: %s", entity.getName()));
+        return ok(entity, null);
     }
 
     /**
@@ -207,15 +222,25 @@ public class VmEntityManager
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
-     * @since 2024.03.14
-     * @since 2024.03.20
+     * @since 2024.03.25
      */
-    public ResponseForm deleteAll() {
-        super.function("deleteAll");
+    public ResponseEntity<?> delete(String id) {
+        set(getClass(), "delete");
 
-        entityRepository.markAsDeletedAll();
+        log("Entity search...");
+        VmEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity == null) return err("Entity not found");
 
-        return super.success("All VM has been successfully marked as deleted");
+        log("Current values:");
+        System.out.println(entity.toMap());
+
+        log("Checks...");
+        if (entity.isDeleted())
+            return err("Entity already deleted");
+
+        entity.setDeleted(true);
+
+        return ok(entity, null);
     }
 
 }

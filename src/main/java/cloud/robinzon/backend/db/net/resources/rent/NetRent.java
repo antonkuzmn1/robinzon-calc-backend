@@ -1,3 +1,4 @@
+/*
 package cloud.robinzon.backend.db.net.resources.rent;
 
 import cloud.robinzon.backend.db.client.resources.ClientEntity;
@@ -44,3 +45,4 @@ public class NetRent {
     }
 
 }
+*/

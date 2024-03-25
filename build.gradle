@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'cloud.robinzon'
-version = '2024.03.23-SNAPSHOT'
+version = '2024.03.25-SNAPSHOT'
 
 java {
     sourceCompatibility = '21'
@@ -17,17 +17,19 @@ repositories {
 
 dependencies {
 
-    // annotations
+    // lombok annotations
     compileOnly 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
     testCompileOnly 'org.projectlombok:lombok:1.18.32'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.32'
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
 
     // security
+    implementation 'org.springframework.security:spring-security-core:6.2.3'
     implementation 'org.springframework.security:spring-security-web:6.2.3'
     implementation 'org.springframework.security:spring-security-config:6.2.3'
     implementation 'org.springframework.security:spring-security-crypto:6.2.3'
-//    implementation 'com.auth0:java-jwt:4.4.0'
+    // implementation 'com.auth0:java-jwt:4.4.0'
 
     // ssh
     implementation 'com.jcraft:jsch:0.1.55'
@@ -39,17 +41,23 @@ dependencies {
     // implementation 'org.springframework.session:spring-session-jdbc:3.2.1'
     // implementation 'org.springframework.session:spring-session-core:3.2.1'
 
-    // mysql
+    // mysql & jpa
     implementation 'com.mysql:mysql-connector-j:8.3.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.2.3'
 
     // boot
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:3.2.3'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.2.3'
     implementation 'org.springframework.boot:spring-boot-starter-web:3.2.3'
 
-    // test
+    // base tests
     testImplementation 'org.springframework.boot:spring-boot-starter-test:3.2.3'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    // junit & mockito
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.11.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
 
 }
 
