@@ -16,50 +16,60 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security.user.resources.history;
+package cloud.robinzon.backend.data.reg.resources.history;
 
+import cloud.robinzon.backend.data.reg.resources.RegEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.common.HistoryTemplate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.IdClass;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
-/**
- * History class-entity
- *
- * @author Anton Kuzmin
- * @since 2024.03.25
- */
+import java.util.Date;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@IdClass(UserHistoryKey.class)
-public class UserHistory
-        extends HistoryTemplate<UserEntity> {
+@IdClass(RegHistoryKey.class)
+public class RegHistory
+    extends HistoryTemplate<RegEntity> {
 
-    @Size(min = 2, max = 50)
-    @Column(nullable = false, length = 50)
-    private String username;
+    @Column(length = 100)
+    private String brand;
 
-    @Size(min = 60, max = 60)
-    @Column(nullable = false, length = 60)
-    private String password;
+    @NonNull
+    @Column(nullable = false, length = 100)
+    private String name;
 
-    @Size(min = 2, max = 50)
-    @Column(nullable = false, length = 50)
-    private String fullName;
+    @Column(length = 50)
+    private String part;
 
-    public UserHistory(UserEntity entity,
-                       UserEntity changeBy) {
+    @Column(length = 50)
+    private String serial;
+
+    @Column
+    private Date buyDate;
+
+    @Column
+    private int warrantyMonths;
+
+    @Column(length = 50)
+    private String provider;
+
+    public RegHistory(RegEntity entity,
+                      UserEntity changeBy) {
         this.entity = entity;
         this.changeBy = changeBy;
-        this.username = entity.getUsername();
-        this.password = entity.getPassword();
-        this.fullName = entity.getFullName();
+        this.brand = entity.getBrand();
+        this.name = entity.getName();
+        this.part = entity.getPart();
+        this.serial = entity.getSerial();
+        this.buyDate = entity.getBuyDate();
+        this.warrantyMonths = entity.getWarrantyMonths();
+        this.provider = entity.getProvider();
         this.title = entity.getTitle();
         this.description = entity.getDescription();
         this.deleted = entity.isDeleted();

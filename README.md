@@ -1,15 +1,15 @@
-# Progress list (est. 60%)
+# Progress list (est. 70%)
 
 > [!TIP]
 > ###### 🔷 Ready
 > ###### 🔶 Not ready
 ### 🔷 Architecture (est. 100%)
-### 🔶 Security (est. 50%)
+### 🔶 Security (est. 80%)
 - 🔷 Authorization
 - 🔷 Cryptography
 - 🔷 Groups
-- 🔶 Sessions
-- 🔶 Tokens
+- 🔷 Sessions
+- 🔷 Tokens
 - 🔶 Integration
   - 🔶 client
   - 🔶 fm

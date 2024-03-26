@@ -16,20 +16,22 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security.user.resources.history;
+package cloud.robinzon.backend.common;
 
-import cloud.robinzon.backend.security.user.resources.UserEntity;
-import cloud.robinzon.backend.common.HistoryKeyTemplate;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-/**
- * The key-class for history entity
- *
- * @author Anton Kuzmin
- * @since 2024.03.25
- */
+import java.io.Serializable;
+import java.sql.Timestamp;
 
+@EqualsAndHashCode
 @NoArgsConstructor
-public class UserHistoryKey
-        extends HistoryKeyTemplate<UserEntity> {
+@Setter
+public abstract class HistoryKeyTemplate<T>
+        implements Serializable {
+
+    private T entity;
+    private Timestamp timestamp;
+
 }

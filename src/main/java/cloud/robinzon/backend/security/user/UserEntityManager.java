@@ -27,7 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static cloud.robinzon.backend.tools.Log.*;
+import static cloud.robinzon.backend.common.Log.*;
 
 /**
  * <h3>Entity Management Tools</h3>
@@ -122,6 +122,7 @@ public class UserEntityManager {
                         title,
                         description);
 
+        assert entity != null;
         return ok(entity, null);
     }
 

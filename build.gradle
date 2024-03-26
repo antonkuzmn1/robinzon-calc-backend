@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.3'
     id 'io.spring.dependency-management' version '1.1.4'
+ // id 'org.jetbrains.kotlin.jvm'
 }
 
 group = 'cloud.robinzon'
@@ -29,7 +30,11 @@ dependencies {
     implementation 'org.springframework.security:spring-security-web:6.2.3'
     implementation 'org.springframework.security:spring-security-config:6.2.3'
     implementation 'org.springframework.security:spring-security-crypto:6.2.3'
-    // implementation 'com.auth0:java-jwt:4.4.0'
+
+    // json web token
+ // implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+ // runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+ // runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 
     // ssh
     implementation 'com.jcraft:jsch:0.1.55'
@@ -59,8 +64,13 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
 
+ // implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+// kotlin {
+//     jvmToolchain(21)
+// }

@@ -16,20 +16,17 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security.user.resources.history;
+package cloud.robinzon.backend.data.vpn.server.resources;
 
-import cloud.robinzon.backend.security.user.resources.UserEntity;
-import cloud.robinzon.backend.common.HistoryKeyTemplate;
-import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-/**
- * The key-class for history entity
- *
- * @author Anton Kuzmin
- * @since 2024.03.25
- */
+@Repository
+public interface VpnServerEntityRepository
+        extends JpaRepository<VpnServerEntity, Long> {
 
-@NoArgsConstructor
-public class UserHistoryKey
-        extends HistoryKeyTemplate<UserEntity> {
+    @Query("SELECT COUNT(n) > 0 FROM VpnServerEntity n WHERE n.ip = :ip AND n.deleted = false")
+    boolean checkUnique(String ip);
+
 }

@@ -16,20 +16,14 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security.user.resources.history;
+package cloud.robinzon.backend.data.vm.resources.price;
 
-import cloud.robinzon.backend.security.user.resources.UserEntity;
-import cloud.robinzon.backend.common.HistoryKeyTemplate;
-import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-/**
- * The key-class for history entity
- *
- * @author Anton Kuzmin
- * @since 2024.03.25
- */
+import java.sql.Timestamp;
 
-@NoArgsConstructor
-public class UserHistoryKey
-        extends HistoryKeyTemplate<UserEntity> {
+@Repository
+public interface VmPriceRepository
+        extends JpaRepository<VmPrice, Timestamp> {
 }

@@ -16,31 +16,25 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security;
+package cloud.robinzon.backend.security.objects;
 
-import cloud.robinzon.backend.security.objects.AuthRequest;
-import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
- * The simple REST controller
+ * The simple form
  *
  * @author Anton Kuzmin
  * @since 2024.03.23
  */
 
-@RestController
-@AllArgsConstructor
-public class AuthController {
+@Getter
+@Setter
+@NoArgsConstructor
+public class AuthRequest {
 
-    private final AuthService authService;
-
-    @PostMapping("/auth")
-    public ResponseEntity<?> auth(@RequestBody AuthRequest request) {
-        return authService.auth(request);
-    }
+    private String username;
+    private String password;
 
 }

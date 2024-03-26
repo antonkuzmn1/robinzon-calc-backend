@@ -16,47 +16,56 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security.user.resources.history;
+package cloud.robinzon.backend.data.vpn.user.resources.history;
 
+import cloud.robinzon.backend.data.vpn.server.resources.VpnServerEntity;
+import cloud.robinzon.backend.data.vpn.user.resources.VpnUserEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
+import cloud.robinzon.backend.data.vpn.type.resources.VpnTypeEntity;
 import cloud.robinzon.backend.common.HistoryTemplate;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.IdClass;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/**
- * History class-entity
- *
- * @author Anton Kuzmin
- * @since 2024.03.25
- */
-
 @Entity
 @Getter
 @NoArgsConstructor
-@IdClass(UserHistoryKey.class)
-public class UserHistory
-        extends HistoryTemplate<UserEntity> {
+@IdClass(VpnUserHistoryKey.class)
+public class VpnUserHistory
+        extends HistoryTemplate<VpnUserEntity> {
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private VpnServerEntity vpnServerEntity;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private VpnTypeEntity vpnTypeEntity;
+
+    @Size(min = 7, max = 15)
+    @Column(nullable = false, length = 15)
+    private String ip;
 
     @Size(min = 2, max = 50)
     @Column(nullable = false, length = 50)
     private String username;
 
-    @Size(min = 60, max = 60)
-    @Column(nullable = false, length = 60)
+    @Size(min = 5, max = 50)
+    @Column(nullable = false, length = 50)
     private String password;
 
-    @Size(min = 2, max = 50)
-    @Column(nullable = false, length = 50)
+    @Size(min = 2, max = 100)
+    @Column(nullable = false, length = 100)
     private String fullName;
 
-    public UserHistory(UserEntity entity,
-                       UserEntity changeBy) {
+    public VpnUserHistory(VpnUserEntity entity,
+                          UserEntity changeBy) {
         this.entity = entity;
         this.changeBy = changeBy;
+        this.vpnServerEntity = entity.getVpnServerEntity();
+        this.vpnTypeEntity = entity.getVpnTypeEntity();
+        this.ip = entity.getIp();
         this.username = entity.getUsername();
         this.password = entity.getPassword();
         this.fullName = entity.getFullName();

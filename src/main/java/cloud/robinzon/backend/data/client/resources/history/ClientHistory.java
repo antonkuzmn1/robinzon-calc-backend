@@ -16,50 +16,57 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security.user.resources.history;
+package cloud.robinzon.backend.data.client.resources.history;
 
+import cloud.robinzon.backend.data.client.resources.ClientEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.common.HistoryTemplate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.IdClass;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-/**
- * History class-entity
- *
- * @author Anton Kuzmin
- * @since 2024.03.25
- */
+import java.util.Date;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@IdClass(UserHistoryKey.class)
-public class UserHistory
-        extends HistoryTemplate<UserEntity> {
+@IdClass(ClientHistoryKey.class)
+public class ClientHistory
+        extends HistoryTemplate<ClientEntity> {
 
     @Size(min = 2, max = 50)
     @Column(nullable = false, length = 50)
-    private String username;
+    private String name;
 
-    @Size(min = 60, max = 60)
-    @Column(nullable = false, length = 60)
-    private String password;
+    @Size(min = 8, max = 12)
+    @Column(length = 12)
+    private String inn;
 
-    @Size(min = 2, max = 50)
-    @Column(nullable = false, length = 50)
-    private String fullName;
+    @Min(0)
+    @Max(100)
+    @Column(nullable = false)
+    private int discount;
 
-    public UserHistory(UserEntity entity,
-                       UserEntity changeBy) {
+    @Column
+    private int contractNumber;
+
+    @Column
+    private Date contractDate;
+
+    public ClientHistory(ClientEntity entity,
+                         UserEntity changeBy) {
         this.entity = entity;
         this.changeBy = changeBy;
-        this.username = entity.getUsername();
-        this.password = entity.getPassword();
-        this.fullName = entity.getFullName();
+        this.name = entity.getName();
+        this.inn = entity.getInn();
+        this.discount = entity.getDiscount();
+        this.contractNumber = entity.getContractNumber();
+        this.contractDate = entity.getContractDate();
         this.title = entity.getTitle();
         this.description = entity.getDescription();
         this.deleted = entity.isDeleted();

@@ -18,18 +18,29 @@ limitations under the License.
 
 package cloud.robinzon.backend.security;
 
+import cloud.robinzon.backend.security.objects.AuthRequest;
 import org.springframework.http.ResponseEntity;
 
 /**
  * Security service
  *
  * @author Anton Kuzmin
- * @since 2024.03.23
+ * @since 2024.03.26
  */
 
 public interface AuthService {
 
-    ResponseEntity<?>
-    auth(AuthRequest request);
+    /**
+     * This method is used to authenticate a user based on the provided username and password.
+     * If the username and password are correct, the user is authenticated and a success response is returned.
+     * If the username or password is incorrect, a bad request response is returned.
+     *
+     * @param request the authentication request containing the username and password
+     * @return ResponseEntity representing the authentication result
+     *
+     * @author Anton Kuzmin
+     * @since 2024.03.26
+     */
+    ResponseEntity<?> auth(AuthRequest request);
 
 }

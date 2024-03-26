@@ -16,20 +16,14 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security.user.resources.history;
+package cloud.robinzon.backend.data.client.resources.history;
 
-import cloud.robinzon.backend.security.user.resources.UserEntity;
+import cloud.robinzon.backend.data.client.resources.ClientEntity;
 import cloud.robinzon.backend.common.HistoryKeyTemplate;
 import lombok.NoArgsConstructor;
 
-/**
- * The key-class for history entity
- *
- * @author Anton Kuzmin
- * @since 2024.03.25
- */
-
 @NoArgsConstructor
-public class UserHistoryKey
-        extends HistoryKeyTemplate<UserEntity> {
+public class ClientHistoryKey
+        extends HistoryKeyTemplate<ClientEntity> {
+
 }

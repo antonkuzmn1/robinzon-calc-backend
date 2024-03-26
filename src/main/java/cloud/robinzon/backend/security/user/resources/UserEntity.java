@@ -18,14 +18,17 @@ limitations under the License.
 
 package cloud.robinzon.backend.security.user.resources;
 
-import cloud.robinzon.backend.db.client.resources.ClientEntity;
-import cloud.robinzon.backend.tools.EntityTemplate;
+import cloud.robinzon.backend.data.client.resources.ClientEntity;
+import cloud.robinzon.backend.common.EntityTemplate;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
@@ -33,14 +36,15 @@ import java.util.*;
  * the main entity
  *
  * @author Anton Kkuzmin
- * @since 2024.03.25
+ * @since 2024.03.26
  */
 
 @Entity
 @Getter
 @NoArgsConstructor
 public class UserEntity
-        extends EntityTemplate {
+        extends EntityTemplate
+        implements UserDetails {
 
     @Size(min = 2, max = 50)
     @Column(nullable = false, length = 50)
@@ -64,11 +68,11 @@ public class UserEntity
     @JoinTable
     private Set<ClientEntity> clients = new HashSet<>();
 
-    public UserEntity update(String username,
-                             String password,
-                             String fullName,
-                             String title,
-                             String description) {
+    final public UserEntity update(String username,
+                                   String password,
+                                   String fullName,
+                                   String title,
+                                   String description) {
 
         if (Objects.equals(this.username, username)
                 && Objects.equals(this.password, password)
@@ -85,9 +89,9 @@ public class UserEntity
         return this;
     }
 
-    public String toString() {
+    final public String toString() {
         //noinspection StringBufferReplaceableByString
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("[id=").append(id);
         sb.append("][username=").append(username);
         sb.append("][password=").append(password);
@@ -98,8 +102,8 @@ public class UserEntity
         return sb.toString();
     }
 
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<>();
+    final public Map<String, Object> toMap() {
+        final Map<String, Object> map = new HashMap<>();
         map.put("id", id);
         map.put("username", username);
         map.put("password", password);
@@ -108,6 +112,37 @@ public class UserEntity
         map.put("description", description);
         map.put("deleted", deleted);
         return map;
+    }
+
+    // user details:
+
+    @Override
+    final public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singleton(new SimpleGrantedAuthority(
+                this.admin
+                        ? "ROLE_ADMIN"
+                        : "ROLE_USER"
+        ));
+    }
+
+    @Override
+    final public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    final public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    final public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    final public boolean isEnabled() {
+        return !this.deleted;
     }
 
 }
