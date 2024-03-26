@@ -34,7 +34,7 @@ public interface UserEntityRepository
         extends JpaRepository<UserEntity, Long> {
 
     @Query("SELECT COUNT(e) > 0 FROM UserEntity e WHERE e.username = :username AND e.deleted = false")
-    boolean checkUniqueUsername(String username);
+    boolean checkUnique(String username);
 
     UserEntity findUserEntityByUsername(String username);
 

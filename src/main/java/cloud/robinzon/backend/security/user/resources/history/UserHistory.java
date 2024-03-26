@@ -19,85 +19,50 @@ limitations under the License.
 package cloud.robinzon.backend.security.user.resources.history;
 
 import cloud.robinzon.backend.security.user.resources.UserEntity;
-import jakarta.persistence.*;
+import cloud.robinzon.backend.tools.HistoryTemplate;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.IdClass;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.sql.Timestamp;
 
 /**
  * History class-entity
  *
  * @author Anton Kuzmin
- * @since 2024.03.23
+ * @since 2024.03.25
  */
 
-@SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
 @IdClass(UserHistoryKey.class)
-public class UserHistory {
+public class UserHistory
+        extends HistoryTemplate<UserEntity> {
 
-    @Id
-    @ManyToOne
-    @JoinColumn
-    private UserEntity userEntity;
-
-    @Id
-    @CreationTimestamp
-    private Timestamp timestamp;
-
+    @Size(min = 2, max = 50)
     @Column(nullable = false, length = 50)
     private String username;
 
-    @Column(nullable = false)
+    @Size(min = 60, max = 60)
+    @Column(nullable = false, length = 60)
     private String password;
 
+    @Size(min = 2, max = 50)
     @Column(nullable = false, length = 50)
     private String fullName;
 
-    @Column(nullable = false, length = 50)
-    private String title;
-
-    @Column(nullable = false)
-    private String description;
-
-    @ManyToOne
-    @JoinColumn
-    private UserEntity changeBy;
-
-    @Column(nullable = false)
-    private boolean deleted;
-
-    public UserHistory(UserEntity userEntity,
-                       String username,
-                       String password,
-                       String fullName,
-                       String title,
-                       String description,
+    public UserHistory(UserEntity entity,
                        UserEntity changeBy) {
-        this.userEntity = userEntity;
-        this.username = username;
-        this.password = password;
-        this.fullName = fullName;
-        this.title = title;
-        this.description = description;
+        this.entity = entity;
         this.changeBy = changeBy;
-        this.deleted = false;
-    }
-
-    public UserHistory(UserEntity userEntity,
-                       UserEntity changeBy) {
-        this.userEntity = userEntity;
-        this.username = userEntity.getUsername();
-        this.password = userEntity.getPassword();
-        this.fullName = userEntity.getFullName();
-        this.title = userEntity.getTitle();
-        this.description = userEntity.getDescription();
-        this.changeBy = changeBy;
-        this.deleted = false;
+        this.username = entity.getUsername();
+        this.password = entity.getPassword();
+        this.fullName = entity.getFullName();
+        this.title = entity.getTitle();
+        this.description = entity.getDescription();
+        this.deleted = entity.isDeleted();
     }
 
 }

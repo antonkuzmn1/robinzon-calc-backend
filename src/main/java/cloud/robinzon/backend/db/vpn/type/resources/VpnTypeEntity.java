@@ -28,26 +28,27 @@ import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.security.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-@SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
 public class VpnTypeEntity {
 
+    @SuppressWarnings("unused")
     @Id
     private Long id;
 
     @Column(nullable = false, length = 20)
     private String name;
 
+    @SuppressWarnings("unused")
     @UpdateTimestamp
     private Timestamp timestamp;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false,
+            columnDefinition = "boolean default false")
     private boolean deleted;
 
     @ManyToMany(mappedBy = "vpnTypeEntity")
@@ -60,11 +61,32 @@ public class VpnTypeEntity {
 
     public VpnTypeEntity(String name) {
         this.name = name;
-        this.deleted = false;
     }
 
-    public void update(String name) {
+    public VpnTypeEntity update(String name) {
+
+        if (Objects.equals(this.name, name))
+            return null;
+
         this.name = name;
+        return this;
+    }
+
+    public String toString() {
+        //noinspection StringBufferReplaceableByString
+        StringBuilder sb = new StringBuilder();
+        sb.append("[id=").append(id);
+        sb.append("][name=").append(name);
+        sb.append("][deleted=").append(deleted).append("]");
+        return sb.toString();
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("name", name);
+        map.put("deleted", deleted);
+        return map;
     }
 
 }

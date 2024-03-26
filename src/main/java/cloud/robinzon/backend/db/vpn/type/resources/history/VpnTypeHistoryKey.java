@@ -19,17 +19,8 @@ limitations under the License.
 package cloud.robinzon.backend.db.vpn.type.resources.history;
 
 import cloud.robinzon.backend.db.vpn.type.resources.VpnTypeEntity;
-import lombok.NoArgsConstructor;
+import cloud.robinzon.backend.tools.HistoryKeyTemplate;
 
-import java.io.Serializable;
-import java.security.Timestamp;
-
-@SuppressWarnings("unused")
-@NoArgsConstructor
 public class VpnTypeHistoryKey
-        implements Serializable {
-
-    private VpnTypeEntity vpnTypeEntity;
-    private Timestamp timestamp;
-
+        extends HistoryKeyTemplate<VpnTypeEntity> {
 }

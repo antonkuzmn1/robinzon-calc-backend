@@ -27,6 +27,6 @@ public interface VpnTypeEntityRepository
         extends JpaRepository<VpnTypeEntity, Long> {
 
     @Query("SELECT COUNT(e) > 0 FROM VpnTypeEntity e WHERE e.name = :name AND e.deleted = false")
-    boolean checkUniqueName(String name);
+    boolean checkUnique(String name);
 
 }

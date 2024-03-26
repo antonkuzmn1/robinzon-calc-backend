@@ -22,12 +22,11 @@ import cloud.robinzon.backend.db.vpn.type.resources.VpnTypeEntity;
 import cloud.robinzon.backend.db.vpn.type.resources.VpnTypeEntityRepository;
 import cloud.robinzon.backend.db.vpn.type.resources.history.VpnTypeHistory;
 import cloud.robinzon.backend.db.vpn.type.resources.history.VpnTypeHistoryRepository;
-import cloud.robinzon.backend.tools.ResponseForm;
-import cloud.robinzon.backend.tools.ResponseStringTemplates;
+import cloud.robinzon.backend.security.user.resources.UserEntity;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 
-import java.util.Objects;
-
-import static java.lang.String.format;
+import static cloud.robinzon.backend.tools.Log.*;
 
 /**
  * <h3>Entity Management Tools</h3>
@@ -47,23 +46,40 @@ import static java.lang.String.format;
  * </p>
  *
  * @author Anton Kuzmin
- * @see ResponseForm
- * @see ResponseStringTemplates
- * @since 2024.03.21
+ * @since 2024.03.26
  */
 
-@SuppressWarnings("unused")
-public class VpnTypeEntityManager
-        extends ResponseForm
-        implements ResponseStringTemplates {
+@AllArgsConstructor
+public class VpnTypeEntityManager {
 
     private final VpnTypeEntityRepository entityRepository;
     private final VpnTypeHistoryRepository historyRepository;
 
-    public VpnTypeEntityManager(VpnTypeEntityRepository entityRepository,
-                                VpnTypeHistoryRepository historyRepository) {
-        this.entityRepository = entityRepository;
-        this.historyRepository = historyRepository;
+    /**
+     * Returns a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body.
+     * Logs the new values of the entity, saves the entity to the repository, saves a new entry in the history repository,
+     * and logs the success message.
+     *
+     * @param entity   the updated entity
+     * @param changeBy the UserEntity making the change
+     * @return a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body
+     * @author Anton Kuzmin
+     * @since 2024.03.26
+     */
+    private ResponseEntity<?> ok(VpnTypeEntity entity,
+                                 @SuppressWarnings("SameParameterValue")
+                                 UserEntity changeBy) {
+        log("New values:");
+        System.out.println(entity.toMap());
+
+        log("Saving entity...");
+        entityRepository.save(entity);
+
+        log("Saving history...");
+        historyRepository.save(new VpnTypeHistory(entity, changeBy));
+
+        log("Success!");
+        return ResponseEntity.ok().body(entity);
     }
 
     /**
@@ -72,22 +88,19 @@ public class VpnTypeEntityManager
      * @param name The name of the VPN type to be inserted.
      * @return ResponseForm indicating the result of the insertion operation.
      * @author Anton Kuzmin
-     * @see ResponseForm
-     * @since 2024.03.21
+     * @since 2024.03.26
      */
-    public ResponseForm insert(String name) {
-        super.function("insert");
+    public ResponseEntity<?> insert(String name) {
+        set(getClass(), "insert");
+        log(String.join(" ", "Insert:", name));
 
-        String err = setUnique(entityRepository.checkUniqueName(name), "param", name);
-
-        if (!err.isEmpty()) return super.error(err);
+        log("Checks...");
+        if (entityRepository.checkUnique(name))
+            return err("Name must be unique");
 
         VpnTypeEntity entity = new VpnTypeEntity(name);
-        entityRepository.save(entity);
 
-        historyRepository.save(new VpnTypeHistory(entity, name, null));
-
-        return super.success(format("Inserted: %s", name));
+        return ok(entity, null);
     }
 
     /**
@@ -96,29 +109,30 @@ public class VpnTypeEntityManager
      * @param id   The ID of the VPN type entry to update.
      * @param name The new name for the VPN type.
      * @return ResponseForm indicating the result of the update operation.
-     * @throws NullPointerException if the VPN type with the given ID is not found.
      * @author Anton Kuzmin
-     * @see ResponseForm
-     * @since 2024.03.21
+     * @since 2024.03.26
      */
-    public ResponseForm update(Long id, String name)
-            throws NullPointerException {
-        super.function("update");
+    public ResponseEntity<?> update(Long id,
+                                    String name) {
+        set(getClass(), "update");
+        log(String.join(" ", "Update:", name));
 
-        VpnTypeEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
+        log("Entity search...");
+        VpnTypeEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity == null) return err("Entity not found");
 
-        String err = String.join("",
-                setUnique(entityRepository.checkUniqueName(name), "name", name),
-                setEquals(entity.getName().equals(name), name));
+        log("Current values:");
+        System.out.println(entity.toMap());
 
-        if (!err.isEmpty()) return super.error(err);
+        log("Checks...");
+        if (!entity.getName().equals(name) && entityRepository.checkUnique(name))
+            return err("Name must be unique");
 
-        entity.update(name);
-        entityRepository.save(entity);
+        if (entity
+                .update(name) == null)
+            return err("All parameters are equal");
 
-        historyRepository.save(new VpnTypeHistory(entity, name, null));
-
-        return super.success(format("Updated: %s", name));
+        return ok(entity, null);
     }
 
     /**
@@ -126,27 +140,26 @@ public class VpnTypeEntityManager
      *
      * @param id The ID of the VPN type entry to be softly deleted.
      * @return ResponseForm indicating the result of the deletion operation.
-     * @throws NullPointerException  if the VPN type with the given ID is not found.
-     * @throws NoSuchMethodException if the necessary method is not found.
      * @author Anton Kuzmin
-     * @see ResponseForm
-     * @since 2024.03.21
+     * @since 2024.03.26
      */
-    public ResponseForm delete(Long id)
-            throws NullPointerException, NoSuchMethodException {
-        super.function("delete");
+    public ResponseEntity<?> delete(Long id) {
+        set(getClass(), "delete");
 
-        VpnTypeEntity entity = Objects.requireNonNull(entityRepository.findById(id).orElse(null));
+        log("Entity search...");
+        VpnTypeEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity == null) return err("Entity not found");
 
-        String err = deleteChecks(entity, id);
+        log("Current values:");
+        System.out.println(entity.toMap());
 
-        if (!err.isEmpty()) return super.error(err);
+        log("Checks...");
+        if (entity.isDeleted())
+            return err("Entity already deleted");
 
         entity.setDeleted(true);
-        entityRepository.save(entity);
-        historyRepository.save(new VpnTypeHistory(entity, null));
 
-        return super.success(format("Deleted: %s", entity.getName()));
+        return ok(entity, null);
     }
 
 }

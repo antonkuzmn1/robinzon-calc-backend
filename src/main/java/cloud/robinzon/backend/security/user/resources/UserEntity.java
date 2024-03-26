@@ -19,55 +19,40 @@ limitations under the License.
 package cloud.robinzon.backend.security.user.resources;
 
 import cloud.robinzon.backend.db.client.resources.ClientEntity;
+import cloud.robinzon.backend.tools.EntityTemplate;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * the main entity
  *
  * @author Anton Kkuzmin
- * @since 2024.03.23
+ * @since 2024.03.25
  */
 
-@SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
-public class UserEntity {
+public class UserEntity
+        extends EntityTemplate {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    @Size(min = 2, max = 50)
     @Column(nullable = false, length = 50)
     private String username;
 
-    @Column(nullable = false)
+    @Size(min = 60, max = 60)
+    @Column(nullable = false, length = 60)
     private String password;
 
+    @Size(min = 2, max = 50)
     @Column(nullable = false, length = 50)
     private String fullName;
-
-    @Column(nullable = false, length = 50)
-    private String title;
-
-    @Column(nullable = false)
-    private String description;
-
-    @UpdateTimestamp
-    private Timestamp timestamp;
-
-    @Setter
-    @Column(nullable = false)
-    private boolean deleted;
 
     @Setter
     @Column(nullable = false)
@@ -79,31 +64,50 @@ public class UserEntity {
     @JoinTable
     private Set<ClientEntity> clients = new HashSet<>();
 
-    public UserEntity(String username,
-                      String password,
-                      String fullName,
-                      String title,
-                      String description) {
+    public UserEntity update(String username,
+                             String password,
+                             String fullName,
+                             String title,
+                             String description) {
+
+        if (Objects.equals(this.username, username)
+                && Objects.equals(this.password, password)
+                && Objects.equals(this.fullName, fullName)
+                && Objects.equals(this.title, title)
+                && Objects.equals(this.description, description))
+            return null;
+
         this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.title = title;
         this.description = description;
-        this.clients = null;
-        this.deleted = false;
+        return this;
     }
 
-    public void update(String username,
-                       String password,
-                       String fullName,
-                       String title,
-                       String description) {
-        this.username = username;
-        this.password = password;
-        this.fullName = fullName;
-        this.title = title;
-        this.description = description;
-        this.deleted = false;
+    public String toString() {
+        //noinspection StringBufferReplaceableByString
+        StringBuilder sb = new StringBuilder();
+        sb.append("[id=").append(id);
+        sb.append("][username=").append(username);
+        sb.append("][password=").append(password);
+        sb.append("][fullName=").append(fullName);
+        sb.append("][title=").append(title);
+        sb.append("][description=").append(description);
+        sb.append("][deleted=").append(deleted).append("]");
+        return sb.toString();
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("username", username);
+        map.put("password", password);
+        map.put("fullName", fullName);
+        map.put("title", title);
+        map.put("description", description);
+        map.put("deleted", deleted);
+        return map;
     }
 
 }

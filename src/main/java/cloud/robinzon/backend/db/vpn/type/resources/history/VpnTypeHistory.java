@@ -23,11 +23,11 @@ import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
-@SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
@@ -37,37 +37,30 @@ public class VpnTypeHistory {
     @Id
     @ManyToOne
     @JoinColumn
-    private VpnTypeEntity vpnTypeEntity;
+    private VpnTypeEntity entity;
 
     @Id
     @CreationTimestamp
     private Timestamp timestamp;
 
+    @ManyToOne
+    @JoinColumn
+    private UserEntity changeBy;
+
+    @Setter
+    @Column(nullable = false,
+            columnDefinition = "boolean default false")
+    private boolean deleted;
+
     @Column(nullable = false, length = 20)
     private String name;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private UserEntity changeBy;
-
-    @Column(nullable = false)
-    private boolean deleted;
-
-    public VpnTypeHistory(VpnTypeEntity vpnTypeEntity,
-                          String name,
+    public VpnTypeHistory(VpnTypeEntity entity,
                           UserEntity changeBy) {
-        this.vpnTypeEntity = vpnTypeEntity;
-        this.name = name;
+        this.entity = entity;
         this.changeBy = changeBy;
-        this.deleted = false;
-    }
-
-    public VpnTypeHistory(VpnTypeEntity vpnTypeEntity,
-                          UserEntity changeBy) {
-        this.vpnTypeEntity = vpnTypeEntity;
-        this.name = vpnTypeEntity.getName();
-        this.changeBy = changeBy;
-        this.deleted = true;
+        this.name = entity.getName();
+        this.deleted = entity.isDeleted();
     }
 
 }

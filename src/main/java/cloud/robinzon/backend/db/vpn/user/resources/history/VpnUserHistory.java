@@ -22,98 +22,56 @@ import cloud.robinzon.backend.db.vpn.server.resources.VpnServerEntity;
 import cloud.robinzon.backend.db.vpn.user.resources.VpnUserEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.db.vpn.type.resources.VpnTypeEntity;
+import cloud.robinzon.backend.tools.HistoryTemplate;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.sql.Timestamp;
-
-@SuppressWarnings("unused")
 @Entity
 @Getter
 @NoArgsConstructor
 @IdClass(VpnUserHistoryKey.class)
-public class VpnUserHistory {
-
-    @Id
-    @ManyToOne
-    @JoinColumn
-    private VpnUserEntity vpnUserEntity;
-
-    @Id
-    @CreationTimestamp
-    private Timestamp timestamp;
+public class VpnUserHistory
+        extends HistoryTemplate<VpnUserEntity> {
 
     @ManyToOne
     @JoinColumn(nullable = false)
     private VpnServerEntity vpnServerEntity;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(nullable = false)
     private VpnTypeEntity vpnTypeEntity;
 
+    @Size(min = 7, max = 15)
     @Column(nullable = false, length = 15)
     private String ip;
 
+    @Size(min = 2, max = 50)
     @Column(nullable = false, length = 50)
     private String username;
 
+    @Size(min = 5, max = 50)
     @Column(nullable = false, length = 50)
     private String password;
 
+    @Size(min = 2, max = 100)
     @Column(nullable = false, length = 100)
     private String fullName;
 
-    @Column(nullable = false, length = 50)
-    private String title;
-
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
-    private boolean deleted;
-
-    @ManyToOne
-    @JoinColumn
-    private UserEntity changeBy;
-
-    public VpnUserHistory(VpnUserEntity vpnUserEntity,
-                          VpnServerEntity vpnServerEntity,
-                          VpnTypeEntity vpnTypeEntity,
-                          String ip,
-                          String username,
-                          String password,
-                          String fullName,
-                          String title,
-                          String description,
+    public VpnUserHistory(VpnUserEntity entity,
                           UserEntity changeBy) {
-        this.vpnUserEntity = vpnUserEntity;
-        this.vpnServerEntity = vpnServerEntity;
-        this.vpnTypeEntity = vpnTypeEntity;
-        this.ip = ip;
-        this.username = username;
-        this.password = password;
-        this.fullName = fullName;
-        this.title = title;
-        this.description = description;
+        this.entity = entity;
         this.changeBy = changeBy;
-        this.deleted = false;
-    }
-
-    public VpnUserHistory(VpnUserEntity vpnUserEntity,
-                          UserEntity changeBy) {
-        this.vpnUserEntity = vpnUserEntity;
-        this.vpnServerEntity = vpnUserEntity.getVpnServerEntity();
-        this.vpnTypeEntity = vpnUserEntity.getVpnTypeEntity();
-        this.ip = vpnUserEntity.getIp();
-        this.username = vpnUserEntity.getUsername();
-        this.password = vpnUserEntity.getPassword();
-        this.fullName = vpnUserEntity.getFullName();
-        this.title = vpnUserEntity.getTitle();
-        this.description = vpnUserEntity.getDescription();
-        this.changeBy = changeBy;
-        this.deleted = true;
+        this.vpnServerEntity = entity.getVpnServerEntity();
+        this.vpnTypeEntity = entity.getVpnTypeEntity();
+        this.ip = entity.getIp();
+        this.username = entity.getUsername();
+        this.password = entity.getPassword();
+        this.fullName = entity.getFullName();
+        this.title = entity.getTitle();
+        this.description = entity.getDescription();
+        this.deleted = entity.isDeleted();
     }
 
 }

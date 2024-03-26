@@ -22,13 +22,12 @@ import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntityRepository;
 import cloud.robinzon.backend.security.user.resources.history.UserHistory;
 import cloud.robinzon.backend.security.user.resources.history.UserHistoryRepository;
-import cloud.robinzon.backend.tools.ResponseForm;
-import cloud.robinzon.backend.tools.ResponseStringTemplates;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
-import static java.lang.String.format;
+import static cloud.robinzon.backend.tools.Log.*;
 
 /**
  * <h3>Entity Management Tools</h3>
@@ -48,33 +47,42 @@ import static java.lang.String.format;
  * </p>
  *
  * @author Anton Kuzmin
- * @see ResponseForm
- * @see ResponseStringTemplates
- * @since 2024.03.20
- * @since 2024.03.23
+ * @since 2024.03.26
  */
 
-@SuppressWarnings("unused")
-public class
-UserEntityManager
-        extends ResponseForm
-        implements ResponseStringTemplates {
+@Service
+@AllArgsConstructor
+public class UserEntityManager {
 
-    private final
-    UserEntityRepository entityRepository;
+    private final UserEntityRepository entityRepository;
+    private final UserHistoryRepository historyRepository;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    private final
-    UserHistoryRepository historyRepository;
+    /**
+     * Returns a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body.
+     * Logs the new values of the entity, saves the entity to the repository, saves a new entry in the history repository,
+     * and logs the success message.
+     *
+     * @param entity   the updated entity
+     * @param changeBy the UserEntity making the change
+     * @return a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body
+     * @author Anton Kuzmin
+     * @since 2024.03.26
+     */
+    private ResponseEntity<?> ok(UserEntity entity,
+                                 @SuppressWarnings("SameParameterValue")
+                                 UserEntity changeBy) {
+        log("New values:");
+        System.out.println(entity.toMap());
 
-    private final
-    BCryptPasswordEncoder encoder;
+        log("Saving entity...");
+        entityRepository.save(entity);
 
-    public UserEntityManager(UserEntityRepository entityRepository,
-                             UserHistoryRepository historyRepository,
-                             BCryptPasswordEncoder encoder) {
-        this.entityRepository = entityRepository;
-        this.historyRepository = historyRepository;
-        this.encoder = encoder;
+        log("Saving history...");
+        historyRepository.save(new UserHistory(entity, changeBy));
+
+        log("Success!");
+        return ResponseEntity.ok().body(entity);
     }
 
     /**
@@ -87,57 +95,34 @@ UserEntityManager
      * @param description the description of the user
      * @return a ResponseForm indicating the success or failure of the insertion process
      * @author Anton Kuzmin
-     * @see ResponseForm
-     * @since 2024.03.20
-     * @since 2024.03.23
+     * @since 2024.03.25
      */
-    public ResponseForm
-    insert(String username,
-           String rawPassword,
-           String fullName,
-           String title,
-           String description
-    ) {
-        super.function("insert");
+    public ResponseEntity<?> insert(String username,
+                                    String rawPassword,
+                                    String fullName,
+                                    String title,
+                                    String description) {
+        set(getClass(), "insert");
+        log(String.join(" ", "Insert:", username));
 
-        // encode pass
+        log("rawPassword:");
+        log(rawPassword);
         final String password = encoder.encode(rawPassword);
+        log("encodedPassword:");
+        log(password);
 
-        // check for unique
-        final String err = setUnique(
-                entityRepository.checkUniqueUsername(username),
-                "username",
-                username
-        );
+        log("Checks...");
+        if (entityRepository.checkUnique(username))
+            return err("Username must be unique");
 
-        // terminate if non unique
-        if (!err.isEmpty()) return super.error(err);
+        UserEntity entity = new UserEntity()
+                .update(username,
+                        password,
+                        fullName,
+                        title,
+                        description);
 
-        // save main entity
-        final UserEntity entity = new UserEntity(
-                username,
-                password,
-                fullName,
-                title,
-                description);
-        entityRepository.save(entity);
-
-        // save history
-        historyRepository.save(new UserHistory(
-                entity,
-                username,
-                password,
-                fullName,
-                title,
-                description,
-                null
-        ));
-
-        // success
-        return super.success(format(
-                "Inserted: %s",
-                username
-        ));
+        return ok(entity, null);
     }
 
     /**
@@ -150,73 +135,44 @@ UserEntityManager
      * @param title       the new title of the user
      * @param description the new description of the user
      * @return a ResponseForm indicating the success or failure of the update process
-     * @throws NullPointerException if the user entity with the specified ID is not found in the database
      * @author Anton Kuzmin
-     * @see ResponseForm
-     * @since 2024.03.20
-     * @since 2024.03.23
+     * @since 2024.03.26
      */
-    public ResponseForm
-    update(Long id,
-           String username,
-           String rawPassword,
-           String fullName,
-           String title,
-           String description
-    ) throws
-            NullPointerException {
-        super.function("update");
+    public ResponseEntity<?> update(Long id,
+                                    String username,
+                                    String rawPassword,
+                                    String fullName,
+                                    String title,
+                                    String description) {
+        set(getClass(), "update");
+        log(String.join(" ", "Update:", username));
 
-        // encode pass
+        log("rawPassword:");
+        log(rawPassword);
         final String password = encoder.encode(rawPassword);
+        log("encodedPassword:");
+        log(password);
 
-        // get entity
-        UserEntity entity = Objects.requireNonNull(entityRepository
-                .findById(id)
-                .orElse(null)
-        );
+        log("Entity search...");
+        UserEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity == null) return err("Entity not found");
 
-        // check for unique and equals
-        final String err = String.join("",
-                setUnique(entityRepository.checkUniqueUsername(username),
-                        "username",
-                        username),
-                setEquals(entity.getUsername().equals(username)
-                                && entity.getPassword().equals(password)
-                                && entity.getFullName().equals(fullName)
-                                && entity.getTitle().equals(title)
-                                && entity.getDescription().equals(description),
-                        username)
-        );
+        log("Current values:");
+        System.out.println(entity.toMap());
 
-        // terminate if non unique or equals
-        if (!err.isEmpty()) return super.error(err);
+        log("Checks...");
+        if (!entity.getUsername().equals(username) && entityRepository.checkUnique(username))
+            return err("Username must be unique");
 
-        // update main entity
-        entity.update(
-                username,
-                password,
-                fullName,
-                title,
-                description);
-        entityRepository.save(entity);
+        if (entity
+                .update(username,
+                        password,
+                        fullName,
+                        title,
+                        description) == null)
+            return err("All parameters are equal");
 
-        // save history
-        historyRepository.save(new UserHistory(
-                entity,
-                username,
-                password,
-                fullName,
-                title,
-                description,
-                null
-        ));
-
-        // success
-        return super.success(format(
-                "Updated: %s",
-                username
-        ));
+        return ok(entity, null);
     }
 
     /**
@@ -224,47 +180,26 @@ UserEntityManager
      *
      * @param id The ID of the user entity to softly delete.
      * @return The response form indicating the success or failure of the soft delete operation.
-     * @throws NullPointerException  If the entity is not found.
-     * @throws NoSuchMethodException If a required method is not found.
      * @author Anton Kuzmin
-     * @see ResponseForm
-     * @since 2024.03.20
-     * @since 2024.03.23
+     * @since 2024.03.26
      */
-    public ResponseForm
-    delete(Long id
-    ) throws
-            NullPointerException,
-            NoSuchMethodException {
-        super.function("delete");
+    public ResponseEntity<?> delete(Long id) {
+        set(getClass(), "delete");
 
-        // get entity
-        UserEntity entity = Objects.requireNonNull(entityRepository
-                .findById(id)
-                .orElse(null)
-        );
+        log("Entity search...");
+        UserEntity entity = entityRepository.findById(id).orElse(null);
+        if (entity == null) return err("Entity not found");
 
-        // check by delete-flag
-        final String err = deleteChecks(entity, id);
+        log("Current values:");
+        System.out.println(entity.toMap());
 
-        // terminate if already deleted
-        if (!err.isEmpty()) return super.error(err);
+        log("Checks...");
+        if (entity.isDeleted())
+            return err("Entity already deleted");
 
-        // set flag as deleted
         entity.setDeleted(true);
-        entityRepository.save(entity);
 
-        // save history
-        historyRepository.save(new UserHistory(
-                entity,
-                null
-        ));
-
-        // success
-        return super.success(format(
-                "Deleted: %s",
-                entity.getUsername()
-        ));
+        return ok(entity, null);
     }
 
 }
