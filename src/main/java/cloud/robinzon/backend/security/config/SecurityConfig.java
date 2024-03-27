@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
@@ -40,30 +41,33 @@ public class
 SecurityConfig {
 
     @Bean
-    public SecurityFilterChain
-    securityFilterChain(HttpSecurity http
-    ) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)
+            throws Exception {
         return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement((sessionManagement) -> sessionManagement
+                        .sessionConcurrency((sessionConcurrency) -> sessionConcurrency
+                                .maximumSessions(1)
+                                .expiredUrl("/api/auth")))
                 .authorizeHttpRequests(SecurityConfig::customize)
                 .formLogin(SecurityConfig::customize)
                 .logout(LogoutConfigurer::permitAll)
                 .build();
     }
 
-    private static void
-    customize(FormLoginConfigurer<HttpSecurity> form
-    ) {
+    private static void customize(
+            FormLoginConfigurer<HttpSecurity> form) {
         form
                 .loginPage("/api/auth").permitAll();
     }
 
-    private static void
-    customize(AuthorizeHttpRequestsConfigurer<HttpSecurity>
-                      .AuthorizationManagerRequestMatcherRegistry requests
-    ) {
+    private static void customize(
+            AuthorizeHttpRequestsConfigurer<HttpSecurity>
+                    .AuthorizationManagerRequestMatcherRegistry requests) {
         requests
                 .requestMatchers("/api").permitAll()
                 .anyRequest().authenticated();
     }
+
 
 }

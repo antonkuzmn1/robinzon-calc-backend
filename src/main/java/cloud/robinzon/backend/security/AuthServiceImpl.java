@@ -16,9 +16,9 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security.implementation;
+package cloud.robinzon.backend.security;
 
-import cloud.robinzon.backend.security.AuthService;
+import cloud.robinzon.backend.security.jwt.JwtUtil;
 import cloud.robinzon.backend.security.objects.AuthRequest;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntityRepository;
@@ -26,24 +26,29 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+
 /**
- * default implement of AuthService with default overrides
+ * The AuthServiceImpl class is an implementation of the AuthService interface, providing functionality for user authentication, token validation, and user logout.
  *
  * @author Anton Kuzmin
+ * @see AuthService
  * @since 2024.03.26
  */
 
 @Service
 @AllArgsConstructor
-public class AuthServiceImplements
+public class AuthServiceImpl
         implements AuthService {
 
     private final UserEntityRepository repository;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final JwtUtil jwtUtil;
 
     @Override
     public ResponseEntity<?> auth(AuthRequest request) {
@@ -51,14 +56,33 @@ public class AuthServiceImplements
         final UserEntity entity = repository.findUserEntityByUsername(request.getUsername());
 
         if (entity == null || !encoder.matches(request.getPassword(), entity.getPassword()))
-            return ResponseEntity.badRequest().body("Incorrect username or password"); // 401
+            return ResponseEntity.status(401).body("Incorrect username or password"); // 401
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 entity, null, entity.getAuthorities());
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return ResponseEntity.ok().build(); // 200
+        String token = jwtUtil.generateToken(entity.getUsername());
+
+        return ResponseEntity.ok().body(token); // 200
+    }
+
+    @Override
+    public ResponseEntity<?> check(String token) {
+        if (!jwtUtil.validateToken(token))
+            return ResponseEntity.status(401).body("Validation failed");
+
+        final String username = jwtUtil.extractUsername(token);
+        final UserEntity entity = repository.findUserEntityByUsername(username);
+        final Collection<? extends GrantedAuthority> authorities = entity.getAuthorities();
+
+        return ResponseEntity.ok().body(authorities);
+    }
+
+    @Override
+    public ResponseEntity<?> logout() {
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok().body("Logged out successfully");
     }
 
 }

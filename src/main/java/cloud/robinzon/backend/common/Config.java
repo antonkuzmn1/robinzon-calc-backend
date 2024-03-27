@@ -16,19 +16,24 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.security.tools;
+package cloud.robinzon.backend.common;
 
-import java.security.SecureRandom;
-import java.util.Base64;
+import org.springframework.context.annotation.Configuration;
 
-public class SecretKeyGenerator {
 
-    public static void main(String[] args) {
+/**
+ * no need
+ *
+ * @author Anton Kuzmin
+ * @since 2024.03.26
+ * @deprecated
+ */
 
-        byte[] keyBytes = new byte[64];
-        new SecureRandom().nextBytes(keyBytes);
-        String secretKey = Base64.getEncoder().encodeToString(keyBytes);
+@Configuration
+public class Config {
 
-        System.out.println(secretKey);
-    }
+//    @Bean
+//    public Properties properties() {
+//        return new PropertiesImpl();
+//    }
 }

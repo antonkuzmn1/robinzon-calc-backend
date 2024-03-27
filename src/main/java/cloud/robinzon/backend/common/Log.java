@@ -18,6 +18,8 @@ limitations under the License.
 
 package cloud.robinzon.backend.common;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
@@ -56,14 +58,12 @@ public class Log {
      * @since 2024.03.25
      */
     public static void log(String text) {
-        LocalDateTime currentTime = LocalDateTime.now();
-        DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter timePattern = DateTimeFormatter.ofPattern("HH:mm:ss");
-        String date = currentTime.format(datePattern);
-        String time = currentTime.format(timePattern);
-
         System.out.printf("[%s][%s][%s][%s] %s%n",
-                date, time, className, methodName, text);
+                getDateTime().date,
+                getDateTime().time,
+                className,
+                methodName,
+                text);
     }
 
     /**
@@ -76,16 +76,29 @@ public class Log {
      * @since 2024.03.25
      */
     public static ResponseEntity<?> err(String text) {
+        System.out.printf("[%s][%s][%s][%s][ERROR] %s%n",
+                getDateTime().date,
+                getDateTime().time,
+                className,
+                methodName,
+                text);
+        return ResponseEntity.badRequest().body(text);
+    }
+
+    private static DateTime getDateTime() {
         LocalDateTime currentTime = LocalDateTime.now();
         DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter timePattern = DateTimeFormatter.ofPattern("HH:mm:ss");
         String date = currentTime.format(datePattern);
         String time = currentTime.format(timePattern);
+        return new DateTime(date, time);
+    }
 
-        System.out.printf("[%s][%s][%s][%s][ERROR] %s%n",
-                date, time, className, methodName, text);
-
-        return ResponseEntity.badRequest().body(text);
+    @Getter
+    @AllArgsConstructor
+    private static class DateTime {
+        private String date;
+        private String time;
     }
 
 }

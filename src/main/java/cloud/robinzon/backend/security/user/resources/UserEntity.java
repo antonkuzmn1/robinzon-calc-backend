@@ -114,15 +114,22 @@ public class UserEntity
         return map;
     }
 
-    // user details:
+    // user details implements:
 
     @Override
     final public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(
-                this.admin
-                        ? "ROLE_ADMIN"
-                        : "ROLE_USER"
+        Set<GrantedAuthority> authorities = new HashSet<>();
+
+        authorities.add(new SimpleGrantedAuthority(
+                isAdmin() ? "ROLE_ADMIN" : "ROLE_USER"
         ));
+
+        for (ClientEntity client : getClients()) {
+            String role = String.format("ROLE_CLIENT_%d", client.getId());
+            authorities.add(new SimpleGrantedAuthority(role));
+        }
+
+        return authorities;
     }
 
     @Override
