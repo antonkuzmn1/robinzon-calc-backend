@@ -23,6 +23,7 @@ import cloud.robinzon.backend.data.vm.resources.VmEntity;
 import cloud.robinzon.backend.data.vm.resources.VmEntityRepository;
 import cloud.robinzon.backend.data.vm.resources.history.VmHistory;
 import cloud.robinzon.backend.data.vm.resources.history.VmHistoryRepository;
+import cloud.robinzon.backend.security.tools.CheckUser;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +76,6 @@ public class VmEntityManager {
      * @since 2024.03.25
      */
     private ResponseEntity<?> ok(VmEntity entity,
-                                 @SuppressWarnings("SameParameterValue")
                                  UserEntity changeBy) {
         log("New values:");
         System.out.println(entity.toMap());
@@ -132,7 +132,12 @@ public class VmEntityManager {
                                     boolean running,
                                     FmEntity fmEntity,
                                     String title,
-                                    String description) {
+                                    String description,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", name));
 
@@ -151,7 +156,7 @@ public class VmEntityManager {
                         title,
                         description);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -175,15 +180,20 @@ public class VmEntityManager {
      * @since 2024.03.25
      */
     public ResponseEntity<?> update(String id,
-                               String name,
-                               int cpu,
-                               int ram,
-                               int ssd,
-                               int hdd,
-                               boolean running,
-                               FmEntity fmEntity,
-                               String title,
-                               String description) {
+                                    String name,
+                                    int cpu,
+                                    int ram,
+                                    int ssd,
+                                    int hdd,
+                                    boolean running,
+                                    FmEntity fmEntity,
+                                    String title,
+                                    String description,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "update");
         log(String.join(" ", "Update:", name));
 
@@ -206,7 +216,7 @@ public class VmEntityManager {
                         description) == null)
             return err("All parameters are equal");
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -226,7 +236,12 @@ public class VmEntityManager {
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> delete(String id) {
+    public ResponseEntity<?> delete(String id,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "delete");
 
         log("Entity search...");
@@ -242,7 +257,7 @@ public class VmEntityManager {
 
         entity.setDeleted(true);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
 }

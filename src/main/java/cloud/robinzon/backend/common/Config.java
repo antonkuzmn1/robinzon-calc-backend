@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Anton Kuzmin
  * @since 2024.03.26
- * @deprecated
+ *
  */
 
 @Configuration
@@ -36,4 +36,5 @@ public class Config {
 //    public Properties properties() {
 //        return new PropertiesImpl();
 //    }
+
 }

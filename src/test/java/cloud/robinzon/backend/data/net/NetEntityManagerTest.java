@@ -18,9 +18,13 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.net;
 
+import cloud.robinzon.backend.common.PropertiesImpl;
 import cloud.robinzon.backend.data.net.resources.NetEntity;
 import cloud.robinzon.backend.data.net.resources.NetEntityRepository;
 import cloud.robinzon.backend.data.net.resources.history.NetHistoryRepository;
+import cloud.robinzon.backend.security.jwt.JwtUtil;
+import cloud.robinzon.backend.security.jwt.JwtUtilImpl;
+import cloud.robinzon.backend.security.user.resources.UserEntityRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +43,9 @@ class NetEntityManagerTest {
 
     private NetEntityRepository entityRepository;
     private NetEntityManager entityManager;
+    private final UserEntityRepository userEntityRepository = mock(UserEntityRepository.class);
+    private final JwtUtil jwtUtil = new JwtUtilImpl(new PropertiesImpl(), userEntityRepository);
+    private final String token = jwtUtil.generateToken("root");
 
     @BeforeEach
     void setUp() {
@@ -64,7 +71,8 @@ class NetEntityManagerTest {
                         null,
                         true,
                         "Test Title",
-                        "Test Description");
+                        "Test Description",
+                        token);
         assertNotNull(response1);
         assertEquals(200, response1.getStatusCode().value());
 
@@ -79,7 +87,8 @@ class NetEntityManagerTest {
                         null,
                         true,
                         "Test Title",
-                        "Test Description");
+                        "Test Description",
+                        token);
         assertNotNull(response2);
         assertEquals(400, response2.getStatusCode().value());
         assertEquals("Subnet must be unique", response2.getBody());
@@ -124,7 +133,8 @@ class NetEntityManagerTest {
                         null,
                         true,
                         "Test Title",
-                        "Test Description");
+                        "Test Description",
+                        token);
         assertNotNull(response1);
         assertEquals(200, response1.getStatusCode().value());
 
@@ -141,7 +151,8 @@ class NetEntityManagerTest {
                         null,
                         true,
                         "Test Title",
-                        "Test Description");
+                        "Test Description",
+                        token);
         assertNotNull(response2);
         assertEquals(400, response2.getStatusCode().value());
         assertEquals("All parameters are equal", response2.getBody());
@@ -176,20 +187,20 @@ class NetEntityManagerTest {
 
         // correct
         when(entityRepository.findById(1L)).thenReturn(entity1);
-        ResponseEntity<?> response1 = entityManager.delete(1L);
+        ResponseEntity<?> response1 = entityManager.delete(1L, token);
         assertNotNull(response1);
         assertEquals(200, response1.getStatusCode().value());
 
         // null
         when(entityRepository.findById(1L)).thenReturn(Optional.empty());
-        ResponseEntity<?> response2 = entityManager.delete(1L);
+        ResponseEntity<?> response2 = entityManager.delete(1L, token);
         assertNotNull(response2);
         assertEquals(400, response2.getStatusCode().value());
         assertEquals("Entity not found", response2.getBody());
 
         // deleted
         when(entityRepository.findById(1L)).thenReturn(entity2);
-        ResponseEntity<?> response3 = entityManager.delete(1L);
+        ResponseEntity<?> response3 = entityManager.delete(1L, token);
         assertNotNull(response3);
         assertEquals(400, response3.getStatusCode().value());
         assertEquals("Entity already deleted", response3.getBody());

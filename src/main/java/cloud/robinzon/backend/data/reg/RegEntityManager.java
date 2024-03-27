@@ -22,6 +22,7 @@ import cloud.robinzon.backend.data.reg.resources.RegEntity;
 import cloud.robinzon.backend.data.reg.resources.RegEntityRepository;
 import cloud.robinzon.backend.data.reg.resources.history.RegHistory;
 import cloud.robinzon.backend.data.reg.resources.history.RegHistoryRepository;
+import cloud.robinzon.backend.security.tools.CheckUser;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +76,6 @@ public class RegEntityManager {
      * @since 2024.03.25
      */
     private ResponseEntity<?> ok(RegEntity entity,
-                                 @SuppressWarnings("SameParameterValue")
                                  UserEntity changeBy) {
         log("New values:");
         System.out.println(entity.toMap());
@@ -117,14 +117,19 @@ public class RegEntityManager {
      * @since 2024.03.25
      */
     public ResponseEntity<?> insert(String brand,
-                               String name,
-                               String part,
-                               String serial,
-                               Date buyDate,
-                               int warrantyMonths,
-                               String provider,
-                               String title,
-                               String description) {
+                                    String name,
+                                    String part,
+                                    String serial,
+                                    Date buyDate,
+                                    int warrantyMonths,
+                                    String provider,
+                                    String title,
+                                    String description,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", name));
 
@@ -139,7 +144,7 @@ public class RegEntityManager {
                         title,
                         description);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -170,15 +175,20 @@ public class RegEntityManager {
      * @since 2024.03.25
      */
     public ResponseEntity<?> update(Long id,
-                               String brand,
-                               String name,
-                               String part,
-                               String serial,
-                               Date buyDate,
-                               int warrantyMonths,
-                               String provider,
-                               String title,
-                               String description) {
+                                    String brand,
+                                    String name,
+                                    String part,
+                                    String serial,
+                                    Date buyDate,
+                                    int warrantyMonths,
+                                    String provider,
+                                    String title,
+                                    String description,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "update");
         log(String.join(" ", "Update:", name));
 
@@ -201,7 +211,7 @@ public class RegEntityManager {
                         provider) == null)
             return err("All parameters are equal");
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -222,7 +232,12 @@ public class RegEntityManager {
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> delete(Long id) {
+    public ResponseEntity<?> delete(Long id,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "delete");
 
         log("Entity search...");
@@ -238,7 +253,7 @@ public class RegEntityManager {
 
         entity.setDeleted(true);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
 }

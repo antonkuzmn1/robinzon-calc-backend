@@ -22,6 +22,7 @@ import cloud.robinzon.backend.data.client.resources.ClientEntity;
 import cloud.robinzon.backend.data.client.resources.ClientEntityRepository;
 import cloud.robinzon.backend.data.client.resources.history.ClientHistory;
 import cloud.robinzon.backend.data.client.resources.history.ClientHistoryRepository;
+import cloud.robinzon.backend.security.tools.CheckUser;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +76,6 @@ public class ClientEntityManager {
      * @since 2024.03.25
      */
     private ResponseEntity<?> ok(ClientEntity entity,
-                                 @SuppressWarnings("SameParameterValue")
                                  UserEntity changeBy) {
         log("New values:");
         System.out.println(entity.toMap());
@@ -120,7 +120,12 @@ public class ClientEntityManager {
                                     int contractNumber,
                                     Date contractDate,
                                     String title,
-                                    String description) {
+                                    String description,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", name));
 
@@ -139,7 +144,7 @@ public class ClientEntityManager {
                         title,
                         description);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -174,7 +179,12 @@ public class ClientEntityManager {
                                     int contractNumber,
                                     Date contractDate,
                                     String title,
-                                    String description) {
+                                    String description,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "update");
         log(String.join(" ", "Update:", name));
 
@@ -201,7 +211,7 @@ public class ClientEntityManager {
                         description) == null)
             return err("All parameters are equal");
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -222,7 +232,12 @@ public class ClientEntityManager {
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> delete(Long id) {
+    public ResponseEntity<?> delete(Long id,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "delete");
 
         log("Entity search...");
@@ -238,6 +253,6 @@ public class ClientEntityManager {
 
         entity.setDeleted(true);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 }

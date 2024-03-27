@@ -22,6 +22,7 @@ import cloud.robinzon.backend.data.vpn.type.resources.VpnTypeEntity;
 import cloud.robinzon.backend.data.vpn.type.resources.VpnTypeEntityRepository;
 import cloud.robinzon.backend.data.vpn.type.resources.history.VpnTypeHistory;
 import cloud.robinzon.backend.data.vpn.type.resources.history.VpnTypeHistoryRepository;
+import cloud.robinzon.backend.security.tools.CheckUser;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +68,6 @@ public class VpnTypeEntityManager {
      * @since 2024.03.26
      */
     private ResponseEntity<?> ok(VpnTypeEntity entity,
-                                 @SuppressWarnings("SameParameterValue")
                                  UserEntity changeBy) {
         log("New values:");
         System.out.println(entity.toMap());
@@ -90,7 +90,12 @@ public class VpnTypeEntityManager {
      * @author Anton Kuzmin
      * @since 2024.03.26
      */
-    public ResponseEntity<?> insert(String name) {
+    public ResponseEntity<?> insert(String name,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", name));
 
@@ -100,7 +105,7 @@ public class VpnTypeEntityManager {
 
         VpnTypeEntity entity = new VpnTypeEntity(name);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -113,7 +118,12 @@ public class VpnTypeEntityManager {
      * @since 2024.03.26
      */
     public ResponseEntity<?> update(Long id,
-                                    String name) {
+                                    String name,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "update");
         log(String.join(" ", "Update:", name));
 
@@ -132,7 +142,7 @@ public class VpnTypeEntityManager {
                 .update(name) == null)
             return err("All parameters are equal");
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -143,7 +153,12 @@ public class VpnTypeEntityManager {
      * @author Anton Kuzmin
      * @since 2024.03.26
      */
-    public ResponseEntity<?> delete(Long id) {
+    public ResponseEntity<?> delete(Long id,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "delete");
 
         log("Entity search...");
@@ -159,7 +174,7 @@ public class VpnTypeEntityManager {
 
         entity.setDeleted(true);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
 }

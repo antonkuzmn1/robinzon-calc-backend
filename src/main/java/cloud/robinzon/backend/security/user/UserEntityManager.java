@@ -18,6 +18,7 @@ limitations under the License.
 
 package cloud.robinzon.backend.security.user;
 
+import cloud.robinzon.backend.security.tools.CheckUser;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntityRepository;
 import cloud.robinzon.backend.security.user.resources.history.UserHistory;
@@ -47,6 +48,7 @@ import static cloud.robinzon.backend.common.Log.*;
  * </p>
  *
  * @author Anton Kuzmin
+ * @version 2024.03.27
  * @since 2024.03.26
  */
 
@@ -70,7 +72,6 @@ public class UserEntityManager {
      * @since 2024.03.26
      */
     private ResponseEntity<?> ok(UserEntity entity,
-                                 @SuppressWarnings("SameParameterValue")
                                  UserEntity changeBy) {
         log("New values:");
         System.out.println(entity.toMap());
@@ -101,7 +102,12 @@ public class UserEntityManager {
                                     String rawPassword,
                                     String fullName,
                                     String title,
-                                    String description) {
+                                    String description,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", username));
 
@@ -123,7 +129,7 @@ public class UserEntityManager {
                         description);
 
         assert entity != null;
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -144,7 +150,12 @@ public class UserEntityManager {
                                     String rawPassword,
                                     String fullName,
                                     String title,
-                                    String description) {
+                                    String description,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "update");
         log(String.join(" ", "Update:", username));
 
@@ -173,7 +184,7 @@ public class UserEntityManager {
                         description) == null)
             return err("All parameters are equal");
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -184,7 +195,12 @@ public class UserEntityManager {
      * @author Anton Kuzmin
      * @since 2024.03.26
      */
-    public ResponseEntity<?> delete(Long id) {
+    public ResponseEntity<?> delete(Long id,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "delete");
 
         log("Entity search...");
@@ -200,7 +216,7 @@ public class UserEntityManager {
 
         entity.setDeleted(true);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
 }

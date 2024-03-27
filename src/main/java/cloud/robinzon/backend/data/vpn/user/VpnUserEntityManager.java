@@ -24,6 +24,7 @@ import cloud.robinzon.backend.data.vpn.user.resources.VpnUserEntity;
 import cloud.robinzon.backend.data.vpn.user.resources.VpnUserEntityRepository;
 import cloud.robinzon.backend.data.vpn.user.resources.history.VpnUserHistory;
 import cloud.robinzon.backend.data.vpn.user.resources.history.VpnUserHistoryRepository;
+import cloud.robinzon.backend.security.tools.CheckUser;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +76,6 @@ public class VpnUserEntityManager {
      * @since 2024.03.26
      */
     private ResponseEntity<?> ok(VpnUserEntity entity,
-                                 @SuppressWarnings("SameParameterValue")
                                  UserEntity changeBy) {
         log("New values:");
         System.out.println(entity.toMap());
@@ -116,13 +116,18 @@ public class VpnUserEntityManager {
      * @since 2024.03.26
      */
     public ResponseEntity<?> insert(VpnServerEntity vpnServerEntity,
-                               VpnTypeEntity vpnTypeEntity,
-                               String ip,
-                               String username,
-                               String password,
-                               String fullName,
-                               String title,
-                               String description) {
+                                    VpnTypeEntity vpnTypeEntity,
+                                    String ip,
+                                    String username,
+                                    String password,
+                                    String fullName,
+                                    String title,
+                                    String description,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", username));
 
@@ -136,7 +141,7 @@ public class VpnUserEntityManager {
                         title,
                         description);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -164,14 +169,19 @@ public class VpnUserEntityManager {
      * @since 2024.03.26
      */
     public ResponseEntity<?> update(Long id,
-                               VpnServerEntity vpnServerEntity,
-                               VpnTypeEntity vpnTypeEntity,
-                               String ip,
-                               String username,
-                               String password,
-                               String fullName,
-                               String title,
-                               String description) {
+                                    VpnServerEntity vpnServerEntity,
+                                    VpnTypeEntity vpnTypeEntity,
+                                    String ip,
+                                    String username,
+                                    String password,
+                                    String fullName,
+                                    String title,
+                                    String description,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "update");
         log(String.join(" ", "Update:", username));
 
@@ -214,7 +224,12 @@ public class VpnUserEntityManager {
      * @author Anton Kuzmin
      * @since 2024.03.26
      */
-    public ResponseEntity<?> delete(Long id) {
+    public ResponseEntity<?> delete(Long id,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "delete");
 
         log("Entity search...");
@@ -230,7 +245,7 @@ public class VpnUserEntityManager {
 
         entity.setDeleted(true);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
 }

@@ -22,6 +22,7 @@ import cloud.robinzon.backend.data.fm.resources.FmEntity;
 import cloud.robinzon.backend.data.fm.resources.FmEntityRepository;
 import cloud.robinzon.backend.data.fm.resources.history.FmHistory;
 import cloud.robinzon.backend.data.fm.resources.history.FmHistoryRepository;
+import cloud.robinzon.backend.security.tools.CheckUser;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +74,6 @@ public class FmEntityManager {
      * @since 2024.03.25
      */
     private ResponseEntity<?> ok(FmEntity entity,
-                                 @SuppressWarnings("SameParameterValue")
                                  UserEntity changeBy) {
         log("New values:");
         System.out.println(entity.toMap());
@@ -118,7 +118,12 @@ public class FmEntityManager {
                                     String specifications,
                                     String description,
                                     int price,
-                                    boolean vm) {
+                                    boolean vm,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", name));
 
@@ -135,7 +140,7 @@ public class FmEntityManager {
                         price,
                         vm);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -169,7 +174,12 @@ public class FmEntityManager {
                                     String specifications,
                                     String description,
                                     int price,
-                                    boolean vm) {
+                                    boolean vm,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "update");
         log(String.join(" ", "Update:", name));
 
@@ -194,7 +204,7 @@ public class FmEntityManager {
                         vm) == null)
             return err("All parameters are equal");
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -215,7 +225,12 @@ public class FmEntityManager {
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> delete(Long id) {
+    public ResponseEntity<?> delete(Long id,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "delete");
 
         log("Entity search...");
@@ -231,7 +246,7 @@ public class FmEntityManager {
 
         entity.setDeleted(true);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
 }

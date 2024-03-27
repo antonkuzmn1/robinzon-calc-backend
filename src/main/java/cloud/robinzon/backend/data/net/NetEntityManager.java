@@ -22,6 +22,7 @@ import cloud.robinzon.backend.data.net.resources.NetEntity;
 import cloud.robinzon.backend.data.net.resources.NetEntityRepository;
 import cloud.robinzon.backend.data.net.resources.history.NetHistory;
 import cloud.robinzon.backend.data.net.resources.history.NetHistoryRepository;
+import cloud.robinzon.backend.security.tools.CheckUser;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +74,6 @@ public class NetEntityManager {
      * @since 2024.03.25
      */
     private ResponseEntity<?> ok(NetEntity entity,
-                                 @SuppressWarnings("SameParameterValue")
                                  UserEntity changeBy) {
         log("New values:");
         System.out.println(entity.toMap());
@@ -122,7 +122,12 @@ public class NetEntityManager {
                                     String dns3,
                                     boolean cloud,
                                     String title,
-                                    String description) {
+                                    String description,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", subnet));
 
@@ -141,7 +146,7 @@ public class NetEntityManager {
                         title,
                         description);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -179,7 +184,12 @@ public class NetEntityManager {
                                     String dns3,
                                     boolean cloud,
                                     String title,
-                                    String description) {
+                                    String description,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "update");
         log(String.join(" ", "Update:", subnet));
 
@@ -206,7 +216,7 @@ public class NetEntityManager {
                         description) == null)
             return err("All parameters are equal");
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
     /**
@@ -227,7 +237,12 @@ public class NetEntityManager {
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> delete(Long id) {
+    public ResponseEntity<?> delete(Long id,
+                                    String token) {
+        UserEntity changeBy = CheckUser.extractEntity(token);
+        boolean allow = changeBy.isAdmin();
+        if (!allow) return err("Access denied");
+
         set(getClass(), "delete");
 
         log("Entity search...");
@@ -243,7 +258,7 @@ public class NetEntityManager {
 
         entity.setDeleted(true);
 
-        return ok(entity, null);
+        return ok(entity, changeBy);
     }
 
 }
