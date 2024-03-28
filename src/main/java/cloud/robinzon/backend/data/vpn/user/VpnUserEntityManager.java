@@ -24,7 +24,7 @@ import cloud.robinzon.backend.data.vpn.user.resources.VpnUserEntity;
 import cloud.robinzon.backend.data.vpn.user.resources.VpnUserEntityRepository;
 import cloud.robinzon.backend.data.vpn.user.resources.history.VpnUserHistory;
 import cloud.robinzon.backend.data.vpn.user.resources.history.VpnUserHistoryRepository;
-import cloud.robinzon.backend.security.tools.CheckUser;
+import cloud.robinzon.backend.security.tools.JwtUtilStatic;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -124,7 +124,7 @@ public class VpnUserEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -178,7 +178,7 @@ public class VpnUserEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -226,7 +226,7 @@ public class VpnUserEntityManager {
      */
     public ResponseEntity<?> delete(Long id,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 

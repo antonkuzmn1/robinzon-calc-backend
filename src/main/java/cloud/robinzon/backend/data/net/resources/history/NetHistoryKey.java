@@ -19,8 +19,8 @@ limitations under the License.
 package cloud.robinzon.backend.data.net.resources.history;
 
 import cloud.robinzon.backend.data.net.resources.NetEntity;
-import cloud.robinzon.backend.common.HistoryKeyTemplate;
+import cloud.robinzon.backend.common.KeyTemplate;
 
 public class NetHistoryKey
-        extends HistoryKeyTemplate<NetEntity> {
+        extends KeyTemplate<NetEntity> {
 }

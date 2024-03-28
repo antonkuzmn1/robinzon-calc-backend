@@ -19,7 +19,7 @@ limitations under the License.
 package cloud.robinzon.backend.security.user.resources.history;
 
 import cloud.robinzon.backend.security.user.resources.UserEntity;
-import cloud.robinzon.backend.common.HistoryKeyTemplate;
+import cloud.robinzon.backend.common.KeyTemplate;
 import lombok.NoArgsConstructor;
 
 /**
@@ -31,5 +31,5 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class UserHistoryKey
-        extends HistoryKeyTemplate<UserEntity> {
+        extends KeyTemplate<UserEntity> {
 }

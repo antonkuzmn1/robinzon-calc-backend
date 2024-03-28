@@ -1,48 +1,30 @@
 /*
-package cloud.robinzon.backend.db.fm.resources.rent;
 
-import cloud.robinzon.backend.db.client.resources.ClientEntity;
-import cloud.robinzon.backend.db.fm.resources.FmEntity;
-import cloud.robinzon.backend.security.user.resources.UserEntity;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+Copyright 2024 Anton Kuzmin (http://github.com/antonkuzmn1)
 
-import java.sql.Timestamp;
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-@SuppressWarnings("unused")
-@Entity
-@Getter
-@NoArgsConstructor
-@IdClass(FmRentKey.class)
-public class FmRent {
+    http://www.apache.org/licenses/LICENSE-2.0
 
-    @Id
-    @ManyToOne
-    @JoinColumn
-    private FmEntity fmEntity;
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
-    @Id
-    @ManyToOne
-    @JoinColumn
-    private ClientEntity clientEntity;
-
-    @Id
-    @CreationTimestamp
-    private Timestamp timestamp;
-
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private UserEntity changeBy;
-
-    public FmRent(FmEntity fmEntity,
-                  ClientEntity clientEntity,
-                  UserEntity changeBy) {
-        this.fmEntity = fmEntity;
-        this.clientEntity = clientEntity;
-        this.changeBy = changeBy;
-    }
-
-}
 */
+
+package cloud.robinzon.backend.data.fm.resources.rent;
+
+import cloud.robinzon.backend.common.RentTemplate;
+import cloud.robinzon.backend.data.fm.resources.FmEntity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.IdClass;
+
+@Entity
+@IdClass(FmRentKey.class)
+public class FmRent
+        extends RentTemplate<FmEntity> {
+}

@@ -22,7 +22,7 @@ import cloud.robinzon.backend.data.net.resources.NetEntity;
 import cloud.robinzon.backend.data.net.resources.NetEntityRepository;
 import cloud.robinzon.backend.data.net.resources.history.NetHistory;
 import cloud.robinzon.backend.data.net.resources.history.NetHistoryRepository;
-import cloud.robinzon.backend.security.tools.CheckUser;
+import cloud.robinzon.backend.security.tools.JwtUtilStatic;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -124,7 +124,7 @@ public class NetEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -186,7 +186,7 @@ public class NetEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -239,7 +239,7 @@ public class NetEntityManager {
      */
     public ResponseEntity<?> delete(Long id,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 

@@ -91,6 +91,12 @@ public class JwtUtilImpl
     }
 
     @Override
+    public UserEntity extractEntity(String token) {
+        return userEntityRepository.findUserEntityByUsername(extractUsername(token));
+    }
+
+
+    @Override
     public boolean validateToken(String token) {
         final String username = extractUsername(token);
         UserEntity userEntity = userEntityRepository.findUserEntityByUsername(username);

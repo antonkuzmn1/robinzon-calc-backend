@@ -19,11 +19,11 @@ limitations under the License.
 package cloud.robinzon.backend.data.net.resources.history;
 
 import cloud.robinzon.backend.data.net.resources.NetEntity;
-import cloud.robinzon.backend.common.HistoryKeyTemplate;
+import cloud.robinzon.backend.common.KeyTemplate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NetHistoryRepository
-        extends JpaRepository<NetHistory, HistoryKeyTemplate<NetEntity>> {
+        extends JpaRepository<NetHistory, KeyTemplate<NetEntity>> {
 }

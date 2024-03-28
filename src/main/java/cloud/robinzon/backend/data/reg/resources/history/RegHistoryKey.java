@@ -19,10 +19,10 @@ limitations under the License.
 package cloud.robinzon.backend.data.reg.resources.history;
 
 import cloud.robinzon.backend.data.reg.resources.RegEntity;
-import cloud.robinzon.backend.common.HistoryKeyTemplate;
+import cloud.robinzon.backend.common.KeyTemplate;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class RegHistoryKey
-        extends HistoryKeyTemplate<RegEntity> {
+        extends KeyTemplate<RegEntity> {
 }

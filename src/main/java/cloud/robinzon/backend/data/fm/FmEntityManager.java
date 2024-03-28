@@ -22,7 +22,7 @@ import cloud.robinzon.backend.data.fm.resources.FmEntity;
 import cloud.robinzon.backend.data.fm.resources.FmEntityRepository;
 import cloud.robinzon.backend.data.fm.resources.history.FmHistory;
 import cloud.robinzon.backend.data.fm.resources.history.FmHistoryRepository;
-import cloud.robinzon.backend.security.tools.CheckUser;
+import cloud.robinzon.backend.security.tools.JwtUtilStatic;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -120,7 +120,7 @@ public class FmEntityManager {
                                     int price,
                                     boolean vm,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -176,7 +176,7 @@ public class FmEntityManager {
                                     int price,
                                     boolean vm,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -227,7 +227,7 @@ public class FmEntityManager {
      */
     public ResponseEntity<?> delete(Long id,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 

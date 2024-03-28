@@ -1,21 +1,26 @@
 /*
-package cloud.robinzon.backend.db.fm.resources.rent;
 
-import cloud.robinzon.backend.db.client.resources.ClientEntity;
-import cloud.robinzon.backend.db.fm.resources.FmEntity;
-import lombok.NoArgsConstructor;
+Copyright 2024 Anton Kuzmin (http://github.com/antonkuzmn1)
 
-import java.io.Serializable;
-import java.sql.Timestamp;
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-@SuppressWarnings("unused")
-@NoArgsConstructor
-public class FmRentKey
-        implements Serializable {
+    http://www.apache.org/licenses/LICENSE-2.0
 
-    private FmEntity fmEntity;
-    private ClientEntity clientEntity;
-    private Timestamp timestamp;
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
-}
 */
+
+package cloud.robinzon.backend.data.fm.resources.rent;
+
+import cloud.robinzon.backend.common.KeyTemplate;
+import cloud.robinzon.backend.data.fm.resources.FmEntity;
+
+public class FmRentKey
+        extends KeyTemplate<FmEntity> {
+}

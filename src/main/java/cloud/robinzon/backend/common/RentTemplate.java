@@ -16,45 +16,50 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.data.client.resources.payment;
+package cloud.robinzon.backend.common;
+
 
 import cloud.robinzon.backend.data.client.resources.ClientEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
-@Entity
 @Getter
+@MappedSuperclass
 @NoArgsConstructor
-@IdClass(ClientPaymentKey.class)
-public class ClientPayment {
+public abstract class RentTemplate<R> {
 
     @Id
     @ManyToOne
     @JoinColumn
-    private ClientEntity entity;
+    protected R entity;
 
     @Id
     @CreationTimestamp
-    private Timestamp timestamp;
-
-    @Column(nullable = false)
-    private int balance;
+    protected Timestamp timestamp;
 
     @ManyToOne
     @JoinColumn
-    private UserEntity changeBy;
+    protected UserEntity changeBy;
 
-    public ClientPayment(ClientEntity entity,
-                         int balance,
-                         UserEntity changeBy) {
+    @ManyToOne
+    @JoinColumn
+    protected ClientEntity renter;
+
+    @SuppressWarnings("unused")
+    public RentTemplate(R entity,
+                        UserEntity changeBy,
+                        ClientEntity renter) {
         this.entity = entity;
-        this.balance = balance;
         this.changeBy = changeBy;
+        this.renter = renter;
     }
 
 }

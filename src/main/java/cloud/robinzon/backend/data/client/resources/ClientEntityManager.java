@@ -16,13 +16,11 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.data.client;
+package cloud.robinzon.backend.data.client.resources;
 
-import cloud.robinzon.backend.data.client.resources.ClientEntity;
-import cloud.robinzon.backend.data.client.resources.ClientEntityRepository;
 import cloud.robinzon.backend.data.client.resources.history.ClientHistory;
 import cloud.robinzon.backend.data.client.resources.history.ClientHistoryRepository;
-import cloud.robinzon.backend.security.tools.CheckUser;
+import cloud.robinzon.backend.security.tools.JwtUtilStatic;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +52,7 @@ import static cloud.robinzon.backend.common.Log.*;
  * </p>
  *
  * @author Anton Kuzmin
+ * @see ClientManager
  * @since 2024.03.25
  */
 
@@ -90,30 +89,6 @@ public class ClientEntityManager {
         return ResponseEntity.ok().body(entity);
     }
 
-    /**
-     * <h3>Inserts a new entry into the database.</h3>
-     * <p>
-     * The function implements all the necessary checks
-     * for compliance with data types,allowed string lengths, etc.
-     * The function will also perform all necessary actions
-     * with the edit history repository
-     * and the rental history repository (if present),
-     * just pass the new entity parameters and it will be updated.
-     * </p>
-     *
-     * @param name           Client name {@code 50 chars};
-     * @param inn            Client's TIN (INN) {@code 12 chars};
-     * @param discount       Customer discount amount;
-     * @param contractNumber Contract number;
-     * @param contractDate   Date of conclusion of the contract;
-     * @param title          Short description of the entry {@code 50 chars};
-     * @param description    Full description of the entry {@code 255 chars};
-     * @return A standard response form
-     * that contains the class name,
-     * functions, status and text.
-     * @author Anton Kuzmin
-     * @since 2024.03.25
-     */
     public ResponseEntity<?> insert(String name,
                                     String inn,
                                     int discount,
@@ -122,7 +97,7 @@ public class ClientEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -147,31 +122,6 @@ public class ClientEntityManager {
         return ok(entity, changeBy);
     }
 
-    /**
-     * <h3>Updates an existing entry in the database.</h3>
-     * <p>
-     * The function implements all the necessary checks
-     * for compliance with data types,allowed string lengths, etc.
-     * The function will also perform all necessary actions
-     * with the edit history repository
-     * and the rental history repository (if present),
-     * just pass the entity ID and new parameters and it will be updated.
-     * </p>
-     *
-     * @param id             Unique identifier of the entity;
-     * @param name           Client name {@code 50 chars};
-     * @param inn            Client's TIN (INN) {@code 12 chars};
-     * @param discount       Customer discount amount;
-     * @param contractNumber Contract number;
-     * @param contractDate   Date of conclusion of the contract;
-     * @param title          Short description of the entry {@code 50 chars};
-     * @param description    Full description of the entry {@code 255 chars};
-     * @return A standard response form
-     * that contains the class name,
-     * functions, status and text.
-     * @author Anton Kuzmin
-     * @since 2024.03.25
-     */
     public ResponseEntity<?> update(Long id,
                                     String name,
                                     String inn,
@@ -181,7 +131,7 @@ public class ClientEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -214,27 +164,9 @@ public class ClientEntityManager {
         return ok(entity, changeBy);
     }
 
-    /**
-     * <h3>Deleting an existing entry in the database.</h3>
-     * <p>
-     * The function implements all the necessary checks
-     * for compliance with data types,allowed string lengths, etc.
-     * The function will also perform all necessary actions
-     * with the edit history repository
-     * and the rental history repository (if present),
-     * just pass the entity ID and new parameters and it will be updated.
-     * </p>
-     *
-     * @param id Unique identifier of the entity;
-     * @return A standard response form
-     * that contains the class name,
-     * functions, status and text.
-     * @author Anton Kuzmin
-     * @since 2024.03.25
-     */
     public ResponseEntity<?> delete(Long id,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -255,4 +187,5 @@ public class ClientEntityManager {
 
         return ok(entity, changeBy);
     }
+
 }

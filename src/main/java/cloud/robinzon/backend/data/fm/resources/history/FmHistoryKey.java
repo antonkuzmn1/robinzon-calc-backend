@@ -19,8 +19,8 @@ limitations under the License.
 package cloud.robinzon.backend.data.fm.resources.history;
 
 import cloud.robinzon.backend.data.fm.resources.FmEntity;
-import cloud.robinzon.backend.common.HistoryKeyTemplate;
+import cloud.robinzon.backend.common.KeyTemplate;
 
 public class FmHistoryKey
-        extends HistoryKeyTemplate<FmEntity> {
+        extends KeyTemplate<FmEntity> {
 }

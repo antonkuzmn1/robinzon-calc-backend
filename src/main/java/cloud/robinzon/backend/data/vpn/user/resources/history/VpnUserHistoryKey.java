@@ -19,10 +19,10 @@ limitations under the License.
 package cloud.robinzon.backend.data.vpn.user.resources.history;
 
 import cloud.robinzon.backend.data.vpn.user.resources.VpnUserEntity;
-import cloud.robinzon.backend.common.HistoryKeyTemplate;
+import cloud.robinzon.backend.common.KeyTemplate;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class VpnUserHistoryKey
-        extends HistoryKeyTemplate<VpnUserEntity> {
+        extends KeyTemplate<VpnUserEntity> {
 }

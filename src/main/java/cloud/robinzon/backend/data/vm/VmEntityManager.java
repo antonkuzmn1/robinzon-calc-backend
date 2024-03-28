@@ -23,7 +23,7 @@ import cloud.robinzon.backend.data.vm.resources.VmEntity;
 import cloud.robinzon.backend.data.vm.resources.VmEntityRepository;
 import cloud.robinzon.backend.data.vm.resources.history.VmHistory;
 import cloud.robinzon.backend.data.vm.resources.history.VmHistoryRepository;
-import cloud.robinzon.backend.security.tools.CheckUser;
+import cloud.robinzon.backend.security.tools.JwtUtilStatic;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -134,7 +134,7 @@ public class VmEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -190,7 +190,7 @@ public class VmEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -238,7 +238,7 @@ public class VmEntityManager {
      */
     public ResponseEntity<?> delete(String id,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 

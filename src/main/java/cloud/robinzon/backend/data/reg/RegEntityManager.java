@@ -22,7 +22,7 @@ import cloud.robinzon.backend.data.reg.resources.RegEntity;
 import cloud.robinzon.backend.data.reg.resources.RegEntityRepository;
 import cloud.robinzon.backend.data.reg.resources.history.RegHistory;
 import cloud.robinzon.backend.data.reg.resources.history.RegHistoryRepository;
-import cloud.robinzon.backend.security.tools.CheckUser;
+import cloud.robinzon.backend.security.tools.JwtUtilStatic;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -126,7 +126,7 @@ public class RegEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -185,7 +185,7 @@ public class RegEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -234,7 +234,7 @@ public class RegEntityManager {
      */
     public ResponseEntity<?> delete(Long id,
                                     String token) {
-        UserEntity changeBy = CheckUser.extractEntity(token);
+        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 

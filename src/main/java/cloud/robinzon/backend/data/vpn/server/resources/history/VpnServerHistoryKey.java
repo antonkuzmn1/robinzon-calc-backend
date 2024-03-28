@@ -19,8 +19,8 @@ limitations under the License.
 package cloud.robinzon.backend.data.vpn.server.resources.history;
 
 import cloud.robinzon.backend.data.vpn.server.resources.VpnServerEntity;
-import cloud.robinzon.backend.common.HistoryKeyTemplate;
+import cloud.robinzon.backend.common.KeyTemplate;
 
 public class VpnServerHistoryKey
-        extends HistoryKeyTemplate<VpnServerEntity> {
+        extends KeyTemplate<VpnServerEntity> {
 }

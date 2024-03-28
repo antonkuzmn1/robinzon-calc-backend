@@ -28,7 +28,7 @@ import java.sql.Timestamp;
 @EqualsAndHashCode
 @NoArgsConstructor
 @Setter
-public abstract class HistoryKeyTemplate<T>
+public abstract class KeyTemplate<T>
         implements Serializable {
 
     private T entity;

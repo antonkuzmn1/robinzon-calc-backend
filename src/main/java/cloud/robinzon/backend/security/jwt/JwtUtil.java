@@ -19,6 +19,7 @@ limitations under the License.
 package cloud.robinzon.backend.security.jwt;
 
 import cloud.robinzon.backend.common.Properties;
+import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntityRepository;
 import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
@@ -106,6 +107,16 @@ public interface JwtUtil {
      * @since 2024.03.27
      */
     String extractUsername(String token);
+
+    /**
+     * Extract the entity from a JWT token.
+     *
+     * @param token The JWT token
+     * @return The entity
+     * @author Anton Kuzmin
+     * @since 2024.03.28
+     */
+    UserEntity extractEntity(String token);
 
     /**
      * Validate the JWT token for a specific user entity.

@@ -19,11 +19,11 @@ limitations under the License.
 package cloud.robinzon.backend.data.client.resources.history;
 
 import cloud.robinzon.backend.data.client.resources.ClientEntity;
-import cloud.robinzon.backend.common.HistoryKeyTemplate;
+import cloud.robinzon.backend.common.KeyTemplate;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class ClientHistoryKey
-        extends HistoryKeyTemplate<ClientEntity> {
+        extends KeyTemplate<ClientEntity> {
 
 }
