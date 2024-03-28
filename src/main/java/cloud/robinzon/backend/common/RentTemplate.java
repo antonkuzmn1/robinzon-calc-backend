@@ -54,7 +54,7 @@ public abstract class RentTemplate<R> {
     protected ClientEntity renter;
 
     @SuppressWarnings("unused")
-    public RentTemplate(R entity,
+    public void set(R entity,
                         UserEntity changeBy,
                         ClientEntity renter) {
         this.entity = entity;

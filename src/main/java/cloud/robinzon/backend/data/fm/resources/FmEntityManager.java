@@ -16,10 +16,8 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.data.fm;
+package cloud.robinzon.backend.data.fm.resources;
 
-import cloud.robinzon.backend.data.fm.resources.FmEntity;
-import cloud.robinzon.backend.data.fm.resources.FmEntityRepository;
 import cloud.robinzon.backend.data.fm.resources.history.FmHistory;
 import cloud.robinzon.backend.data.fm.resources.history.FmHistoryRepository;
 import cloud.robinzon.backend.security.tools.JwtUtilStatic;

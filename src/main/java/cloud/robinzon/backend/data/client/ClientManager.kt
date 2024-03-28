@@ -16,8 +16,9 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.data.client.resources
+package cloud.robinzon.backend.data.client
 
+import cloud.robinzon.backend.data.client.resources.ClientEntityManager
 import cloud.robinzon.backend.data.client.resources.payment.ClientPaymentManager
 import org.springframework.http.ResponseEntity
 import java.util.Date
@@ -140,6 +141,10 @@ class ClientManager(
      * @param id Unique entity identifier
      * @param balance New entity balance value
      * @param token JWT-Token for identification
+     *
+     * @author Anton Kuzmin
+     * @since 2024.03.28
+     * @since 2024.03.28
      */
     fun balance(id: Long,
                 balance: Int,
@@ -159,6 +164,10 @@ class ClientManager(
      * @param id Unique entity identifier
      * @param sum Difference
      * @param token JWT-Token for identification
+     *
+     * @author Anton Kuzmin
+     * @since 2024.03.28
+     * @version 2024.03.28
      */
     fun pay(id: Long,
             sum: Int,

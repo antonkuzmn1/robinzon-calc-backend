@@ -25,7 +25,7 @@ import cloud.robinzon.backend.data.client.resources.ClientEntityRepository
 import cloud.robinzon.backend.security.user.resources.UserEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import cloud.robinzon.backend.data.client.resources.ClientManager
+import cloud.robinzon.backend.data.client.ClientManager
 
 /**
  * Payment management
@@ -69,6 +69,10 @@ class ClientPaymentManager(
         if (balance == oldBalance) return err("All parameters are equal")
 
         val payment = ClientPayment(entity, balance, changeBy)
+
+        log("Saving entity...")
+        entity.balance = balance
+        entityRepository.save(entity)
 
         log("Saving payment...")
         paymentRepository.save(payment)

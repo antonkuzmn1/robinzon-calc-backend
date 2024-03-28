@@ -58,6 +58,7 @@ public class ClientEntity
     @Column
     private Date contractDate;
 
+    @Setter
     @Column(nullable = false,
             columnDefinition = "int default 0")
     private int balance;

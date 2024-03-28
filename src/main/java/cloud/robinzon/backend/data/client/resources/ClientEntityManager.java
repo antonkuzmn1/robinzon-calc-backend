@@ -18,6 +18,7 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.client.resources;
 
+import cloud.robinzon.backend.data.client.ClientManager;
 import cloud.robinzon.backend.data.client.resources.history.ClientHistory;
 import cloud.robinzon.backend.data.client.resources.history.ClientHistoryRepository;
 import cloud.robinzon.backend.security.tools.JwtUtilStatic;

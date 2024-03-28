@@ -20,6 +20,7 @@ package cloud.robinzon.backend.data.net;
 
 import cloud.robinzon.backend.common.PropertiesImpl;
 import cloud.robinzon.backend.data.net.resources.NetEntity;
+import cloud.robinzon.backend.data.net.resources.NetEntityManager;
 import cloud.robinzon.backend.data.net.resources.NetEntityRepository;
 import cloud.robinzon.backend.data.net.resources.history.NetHistoryRepository;
 import cloud.robinzon.backend.security.jwt.JwtUtil;

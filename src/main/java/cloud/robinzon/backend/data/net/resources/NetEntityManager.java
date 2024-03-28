@@ -16,13 +16,10 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.data.vm;
+package cloud.robinzon.backend.data.net.resources;
 
-import cloud.robinzon.backend.data.fm.resources.FmEntity;
-import cloud.robinzon.backend.data.vm.resources.VmEntity;
-import cloud.robinzon.backend.data.vm.resources.VmEntityRepository;
-import cloud.robinzon.backend.data.vm.resources.history.VmHistory;
-import cloud.robinzon.backend.data.vm.resources.history.VmHistoryRepository;
+import cloud.robinzon.backend.data.net.resources.history.NetHistory;
+import cloud.robinzon.backend.data.net.resources.history.NetHistoryRepository;
 import cloud.robinzon.backend.security.tools.JwtUtilStatic;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
@@ -34,7 +31,7 @@ import static cloud.robinzon.backend.common.Log.*;
 /**
  * <h3>Entity Management Tools</h3>
  * <p>
- * This class handles the management of VM entities in the database.
+ * This class handles the management of Net entities in the database.
  * </p>
  * <p>
  * Contains the next methods:
@@ -56,13 +53,12 @@ import static cloud.robinzon.backend.common.Log.*;
  * @since 2024.03.25
  */
 
-
 @Service
 @AllArgsConstructor
-public class VmEntityManager {
+public class NetEntityManager {
 
-    private final VmEntityRepository entityRepository;
-    private final VmHistoryRepository historyRepository;
+    private final NetEntityRepository entityRepository;
+    private final NetHistoryRepository historyRepository;
 
     /**
      * Returns a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body.
@@ -75,7 +71,7 @@ public class VmEntityManager {
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    private ResponseEntity<?> ok(VmEntity entity,
+    private ResponseEntity<?> ok(NetEntity entity,
                                  UserEntity changeBy) {
         log("New values:");
         System.out.println(entity.toMap());
@@ -84,7 +80,7 @@ public class VmEntityManager {
         entityRepository.save(entity);
 
         log("Saving history...");
-        historyRepository.save(new VmHistory(entity, changeBy));
+        historyRepository.save(new NetHistory(entity, changeBy));
 
         log("Success!");
         return ResponseEntity.ok().body(entity);
@@ -92,14 +88,6 @@ public class VmEntityManager {
 
     /**
      * <h3>Inserts a new entry into the database.</h3>
-     * <p>
-     * <strong>IMPORTANT:</strong>
-     * </p>
-     * <p>
-     * If entity already exists in database,
-     * it will be just updated.
-     * keep calm :)
-     * </p>
      * <p>
      * The function implements all the necessary checks
      * for compliance with data types,allowed string lengths, etc.
@@ -109,28 +97,28 @@ public class VmEntityManager {
      * just pass the new entity parameters and it will be updated.
      * </p>
      *
-     * @param id       Unique identifier of the entry {@code 36 chars};
-     * @param name     Name of the entry {@code 50 chars};
-     * @param cpu      Amount of CPU cores;
-     * @param ram      Amount of RAM;
-     * @param ssd      Amount of SSD;
-     * @param hdd      Amount of HDD;
-     * @param running  VM's state;
-     * @param fmEntity FM entity on which this virtual machine is hosted;
+     * @param domain      Domain name {@code 50 chars};
+     * @param subnet      Subnet IP {@code 15 chars};
+     * @param mask        Mask {@code 15 chars};
+     * @param dns1        1st DNS IP {@code 15 chars};
+     * @param dns2        2nd DNS IP {@code 15 chars};
+     * @param dns3        3rd DNS IP {@code 15 chars};
+     * @param cloud       Net is in cloud or not {@code 15 chars};
+     * @param title       Short description of the entry {@code 50 chars};
+     * @param description Full description of the entry {@code 255 chars};
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> insert(String id,
-                                    String name,
-                                    int cpu,
-                                    int ram,
-                                    int ssd,
-                                    int hdd,
-                                    boolean running,
-                                    FmEntity fmEntity,
+    public ResponseEntity<?> insert(String domain,
+                                    String subnet,
+                                    String mask,
+                                    String dns1,
+                                    String dns2,
+                                    String dns3,
+                                    boolean cloud,
                                     String title,
                                     String description,
                                     String token) {
@@ -139,20 +127,20 @@ public class VmEntityManager {
         if (!allow) return err("Access denied");
 
         set(getClass(), "insert");
-        log(String.join(" ", "Insert:", name));
+        log(String.join(" ", "Insert:", subnet));
 
-        log("Entity search...");
-        VmEntity entity = entityRepository.findById(id).orElse(null);
-        if (entity != null) return err("Entity already exists");
+        log("Checks...");
+        if (entityRepository.checkUnique(subnet))
+            return err("Subnet must be unique");
 
-        entity = new VmEntity(id)
-                .update(name,
-                        cpu,
-                        ram,
-                        ssd,
-                        hdd,
-                        running,
-                        fmEntity,
+        NetEntity entity = new NetEntity()
+                .update(domain,
+                        subnet,
+                        mask,
+                        dns1,
+                        dns2,
+                        dns3,
+                        cloud,
                         title,
                         description);
 
@@ -170,7 +158,13 @@ public class VmEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id          Unique identifier of the entry {@code 36 chars};
+     * @param id          Unique identifier of the entity;
+     * @param subnet      Subnet IP {@code 15 chars};
+     * @param mask        Mask {@code 15 chars};
+     * @param dns1        1st DNS IP {@code 15 chars};
+     * @param dns2        2nd DNS IP {@code 15 chars};
+     * @param dns3        3rd DNS IP {@code 15 chars};
+     * @param cloud       Net is in cloud or not {@code 15 chars};
      * @param title       Short description of the entry {@code 50 chars};
      * @param description Full description of the entry {@code 255 chars};
      * @return A standard response form
@@ -179,14 +173,14 @@ public class VmEntityManager {
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> update(String id,
-                                    String name,
-                                    int cpu,
-                                    int ram,
-                                    int ssd,
-                                    int hdd,
-                                    boolean running,
-                                    FmEntity fmEntity,
+    public ResponseEntity<?> update(Long id,
+                                    String domain,
+                                    String subnet,
+                                    String mask,
+                                    String dns1,
+                                    String dns2,
+                                    String dns3,
+                                    boolean cloud,
                                     String title,
                                     String description,
                                     String token) {
@@ -195,23 +189,27 @@ public class VmEntityManager {
         if (!allow) return err("Access denied");
 
         set(getClass(), "update");
-        log(String.join(" ", "Update:", name));
+        log(String.join(" ", "Update:", subnet));
 
         log("Entity search...");
-        VmEntity entity = entityRepository.findById(id).orElse(null);
+        NetEntity entity = entityRepository.findById(id).orElse(null);
         if (entity == null) return err("Entity not found");
 
         log("Current values:");
         System.out.println(entity.toMap());
 
+        log("Checks...");
+        if (!entity.getSubnet().equals(subnet) && entityRepository.checkUnique(subnet))
+            return err("Subnet must be unique");
+
         if (entity
-                .update(name,
-                        cpu,
-                        ram,
-                        ssd,
-                        hdd,
-                        running,
-                        fmEntity,
+                .update(domain,
+                        subnet,
+                        mask,
+                        dns1,
+                        dns2,
+                        dns3,
+                        cloud,
                         title,
                         description) == null)
             return err("All parameters are equal");
@@ -220,7 +218,7 @@ public class VmEntityManager {
     }
 
     /**
-     * <h3>Soft deletion of all entities from the database.</h3>
+     * <h3>Deleting an existing entry in the database.</h3>
      * <p>
      * The function implements all the necessary checks
      * for compliance with data types,allowed string lengths, etc.
@@ -230,13 +228,14 @@ public class VmEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
+     * @param id - the unique identifier of the entity;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> delete(String id,
+    public ResponseEntity<?> delete(Long id,
                                     String token) {
         UserEntity changeBy = JwtUtilStatic.extractEntity(token);
         boolean allow = changeBy.isAdmin();
@@ -245,7 +244,7 @@ public class VmEntityManager {
         set(getClass(), "delete");
 
         log("Entity search...");
-        VmEntity entity = entityRepository.findById(id).orElse(null);
+        NetEntity entity = entityRepository.findById(id).orElse(null);
         if (entity == null) return err("Entity not found");
 
         log("Current values:");
