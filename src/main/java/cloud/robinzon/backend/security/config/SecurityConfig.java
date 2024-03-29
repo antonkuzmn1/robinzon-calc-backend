@@ -48,7 +48,7 @@ SecurityConfig {
                 .sessionManagement((sessionManagement) -> sessionManagement
                         .sessionConcurrency((sessionConcurrency) -> sessionConcurrency
                                 .maximumSessions(1)
-                                .expiredUrl("/api/auth")))
+                                .expiredUrl("/auth")))
                 .authorizeHttpRequests(SecurityConfig::customize)
                 .formLogin(SecurityConfig::customize)
                 .logout(LogoutConfigurer::permitAll)
@@ -58,14 +58,14 @@ SecurityConfig {
     private static void customize(
             FormLoginConfigurer<HttpSecurity> form) {
         form
-                .loginPage("/api/auth").permitAll();
+                .loginPage("/auth").permitAll();
     }
 
     private static void customize(
             AuthorizeHttpRequestsConfigurer<HttpSecurity>
                     .AuthorizationManagerRequestMatcherRegistry requests) {
         requests
-                .requestMatchers("/api").permitAll()
+                .requestMatchers("/").permitAll()
                 .anyRequest().authenticated();
     }
 

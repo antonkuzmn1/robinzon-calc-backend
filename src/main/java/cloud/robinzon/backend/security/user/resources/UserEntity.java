@@ -60,7 +60,7 @@ public class UserEntity
 
     @Setter
     @Column(nullable = false)
-    private boolean admin;
+    public boolean admin;
 
     @Setter
     @ManyToMany(fetch = FetchType.EAGER)

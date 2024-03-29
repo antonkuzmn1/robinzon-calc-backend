@@ -41,32 +41,32 @@ public class ClientEntity
 
     @Size(min = 2, max = 50)
     @Column(nullable = false, length = 50)
-    private String name;
+    public String name;
 
     @Size(min = 8, max = 12)
     @Column(length = 12)
-    private String inn;
+    public String inn;
 
     @Min(0)
     @Max(100)
     @Column(nullable = false)
-    private int discount;
+    public int discount;
 
     @Column
-    private int contractNumber;
+    public int contractNumber;
 
     @Column
-    private Date contractDate;
+    public Date contractDate;
 
     @Setter
     @Column(nullable = false,
             columnDefinition = "int default 0")
-    private int balance;
+    public int balance;
 
     @Setter
     @ManyToMany(mappedBy = "clients")
     @JsonIgnoreProperties("clients")
-    private Set<UserEntity> users = new HashSet<>();
+    public Set<UserEntity> users = new HashSet<>();
 
     public ClientEntity update(String name,
                                String inn,

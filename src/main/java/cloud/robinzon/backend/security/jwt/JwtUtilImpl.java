@@ -24,12 +24,14 @@ import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntityRepository;
 import io.jsonwebtoken.*;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -47,11 +49,16 @@ public class JwtUtilImpl
 
     @SuppressWarnings("FieldCanBeLocal")
     private final long EXPIRATION_TIME = 3600_000;
-    private final Properties properties;
+
+    @Autowired
+    private Properties properties;
+
     private final UserEntityRepository userEntityRepository;
 
     @Override
     public SecretKey getSecretKey() {
+//        System.out.println(properties.getSshFmAdminCommand());
+//        System.out.println(properties.getJwtSecretKey());
         final byte[] secretBytes = properties.getJwtSecretKey().getBytes(StandardCharsets.UTF_8);
         return new SecretKeySpec(secretBytes, 0, secretBytes.length, "HMACSHA256");
     }
@@ -113,6 +120,20 @@ public class JwtUtilImpl
     @Override
     public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
+    }
+
+    @Override
+    public UserEntity isAdmin(String token) {
+        UserEntity user = extractEntity(token);
+        return user.admin ? user : null;
+    }
+
+    @Override
+    public UserEntity hasRole(String token, String role) {
+        UserEntity user = extractEntity(token);
+        return user.getAuthorities().stream().anyMatch(it ->
+                Objects.equals(it.getAuthority(), role)
+        ) ? user : null;
     }
 
 }

@@ -18,14 +18,14 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.client.resources.payment
 
-import cloud.robinzon.backend.security.tools.isAdmin
 import cloud.robinzon.backend.common.Log.*
+import cloud.robinzon.backend.data.client.ClientManager
 import cloud.robinzon.backend.data.client.resources.ClientEntity
 import cloud.robinzon.backend.data.client.resources.ClientEntityRepository
+import cloud.robinzon.backend.security.jwt.JwtUtil
 import cloud.robinzon.backend.security.user.resources.UserEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import cloud.robinzon.backend.data.client.ClientManager
 
 /**
  * Payment management
@@ -38,8 +38,9 @@ import cloud.robinzon.backend.data.client.ClientManager
 
 @Service
 class ClientPaymentManager(
-        private val paymentRepository: ClientPaymentRepository,
-        private val entityRepository: ClientEntityRepository
+    private val paymentRepository: ClientPaymentRepository,
+    private val entityRepository: ClientEntityRepository,
+    private val jwtUtil: JwtUtil
 ) {
 
     private fun entity(id: Long): ClientEntity? {
@@ -53,13 +54,14 @@ class ClientPaymentManager(
         return balance
     }
 
-    private fun template(methodName: String,
-                         entity: ClientEntity,
-                         balance: Int,
-                         token: String
+    private fun template(
+        methodName: String,
+        entity: ClientEntity,
+        balance: Int,
+        token: String
     ): ResponseEntity<*> {
         set(javaClass, methodName)
-        val changeBy: UserEntity = isAdmin(token) ?: return err("Access denied")
+        val changeBy: UserEntity = jwtUtil.isAdmin(token) ?: return err("Access denied")
         log("Client: ${entity.name}")
 
         val oldBalance: Int = balance(entity)
@@ -81,18 +83,20 @@ class ClientPaymentManager(
         return ResponseEntity.ok().body(payment)
     }
 
-    fun balance(id: Long,
-               balance: Int,
-               token: String
+    fun balance(
+        id: Long,
+        balance: Int,
+        token: String
     ): ResponseEntity<*> {
         val entity: ClientEntity = entity(id) ?: return err("Entity not found")
 
         return template("update", entity, balance, token)
     }
 
-    fun pay(id: Long,
-            sum: Int,
-            token: String
+    fun pay(
+        id: Long,
+        sum: Int,
+        token: String
     ): ResponseEntity<*> {
         if (sum == 0) return err("Pay sum cannot be null")
         val entity: ClientEntity = entity(id) ?: return err("Entity not found")

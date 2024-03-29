@@ -21,7 +21,7 @@ package cloud.robinzon.backend.data.client.resources;
 import cloud.robinzon.backend.data.client.ClientManager;
 import cloud.robinzon.backend.data.client.resources.history.ClientHistory;
 import cloud.robinzon.backend.data.client.resources.history.ClientHistoryRepository;
-import cloud.robinzon.backend.security.tools.JwtUtilStatic;
+import cloud.robinzon.backend.security.jwt.JwtUtil;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +63,7 @@ public class ClientEntityManager {
 
     private final ClientEntityRepository entityRepository;
     private final ClientHistoryRepository historyRepository;
+    private final JwtUtil jwtUtil;
 
     /**
      * Returns a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body.
@@ -98,7 +99,7 @@ public class ClientEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -132,7 +133,7 @@ public class ClientEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -167,7 +168,7 @@ public class ClientEntityManager {
 
     public ResponseEntity<?> delete(Long id,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 

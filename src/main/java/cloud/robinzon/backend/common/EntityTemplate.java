@@ -31,20 +31,20 @@ public abstract class EntityTemplate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+    public Long id;
 
     @UpdateTimestamp
-    protected Timestamp timestamp;
+    public Timestamp timestamp;
 
     @Setter
     @Column(nullable = false,
             columnDefinition = "boolean default false")
-    protected boolean deleted;
+    public boolean deleted;
 
     @Column(nullable = false, length = 50)
-    protected String title;
+    public String title;
 
     @Column(nullable = false)
-    protected String description;
+    public String description;
 
 }

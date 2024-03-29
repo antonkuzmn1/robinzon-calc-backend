@@ -18,7 +18,7 @@ limitations under the License.
 
 package cloud.robinzon.backend.security.user;
 
-import cloud.robinzon.backend.security.tools.JwtUtilStatic;
+import cloud.robinzon.backend.security.jwt.JwtUtil;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntityRepository;
 import cloud.robinzon.backend.security.user.resources.history.UserHistory;
@@ -58,6 +58,7 @@ public class UserEntityManager {
 
     private final UserEntityRepository entityRepository;
     private final UserHistoryRepository historyRepository;
+    private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     /**
@@ -104,7 +105,7 @@ public class UserEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -152,7 +153,7 @@ public class UserEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -197,7 +198,7 @@ public class UserEntityManager {
      */
     public ResponseEntity<?> delete(Long id,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 

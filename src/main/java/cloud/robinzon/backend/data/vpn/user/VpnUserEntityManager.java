@@ -24,7 +24,7 @@ import cloud.robinzon.backend.data.vpn.user.resources.VpnUserEntity;
 import cloud.robinzon.backend.data.vpn.user.resources.VpnUserEntityRepository;
 import cloud.robinzon.backend.data.vpn.user.resources.history.VpnUserHistory;
 import cloud.robinzon.backend.data.vpn.user.resources.history.VpnUserHistoryRepository;
-import cloud.robinzon.backend.security.tools.JwtUtilStatic;
+import cloud.robinzon.backend.security.jwt.JwtUtil;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +63,7 @@ public class VpnUserEntityManager {
 
     private final VpnUserEntityRepository entityRepository;
     private final VpnUserHistoryRepository historyRepository;
+    private final JwtUtil jwtUtil;
 
     /**
      * Returns a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body.
@@ -124,7 +125,7 @@ public class VpnUserEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -178,7 +179,7 @@ public class VpnUserEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -226,7 +227,7 @@ public class VpnUserEntityManager {
      */
     public ResponseEntity<?> delete(Long id,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 

@@ -44,28 +44,28 @@ public class FmEntity
     @Setter
     @ManyToOne
     @JoinColumn
-    private ClientEntity client;
+    public ClientEntity client;
 
     @Size(min = 2, max = 50)
     @Column(nullable = false, length = 50)
-    private String name;
+    public String name;
 
     @Size(min = 7, max = 15)
     @Column(length = 15)
-    private String ip;
+    public String ip;
 
     @Column(nullable = false)
-    private String specifications;
+    public String specifications;
 
     @Min(0)
     @Max(99999)
     @Column(nullable = false,
             columnDefinition = "int default 0")
-    private int price;
+    public int price;
 
     @Column(nullable = false,
             columnDefinition = "boolean default false")
-    private boolean vm;
+    public boolean vm;
 
     public FmEntity update(String name,
                            String ip,

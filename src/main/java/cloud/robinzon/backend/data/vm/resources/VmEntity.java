@@ -40,60 +40,60 @@ import java.util.Objects;
 public class VmEntity {
 
     @Id
-    private String id; // replaced cuz string
+    public String id; // replaced cuz string
 
     @SuppressWarnings("unused")
     @UpdateTimestamp
-    private Timestamp timestamp;
+    public Timestamp timestamp;
 
     @Setter
     @Column(nullable = false,
             columnDefinition = "boolean default false")
-    private boolean deleted;
+    public boolean deleted;
 
     @Column(nullable = false, length = 50)
-    private String title;
+    public String title;
 
     @Column(nullable = false)
-    private String description;
+    public String description;
 
     // end of template
 
     @Setter
     @ManyToOne
     @JoinColumn
-    private ClientEntity clientEntity;
+    public ClientEntity clientEntity;
 
     @Size(min = 2, max = 100)
     @Column(nullable = false, length = 100)
-    private String name;
+    public String name;
 
     @Min(0)
     @Max(64)
     @Column(nullable = false)
-    private int cpu;
+    public int cpu;
 
     @Min(0)
     @Max(128)
     @Column(nullable = false)
-    private int ram;
+    public int ram;
 
     @Min(0)
     @Max(20000)
     @Column(nullable = false)
-    private int ssd;
+    public int ssd;
 
     @Min(0)
     @Max(50000)
     @Column(nullable = false)
-    private int hdd;
+    public int hdd;
 
     @Column(nullable = false)
-    private boolean running;
+    public boolean running;
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private FmEntity fmEntity;
+    public FmEntity fmEntity;
 
     public VmEntity(String id) {
         this.id = id;

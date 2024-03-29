@@ -40,38 +40,38 @@ public class NetEntity
     @Setter
     @ManyToOne
     @JoinColumn
-    private ClientEntity client;
+    public ClientEntity client;
 
     @Size(min = 5, max = 50)
     @Column(length = 50)
-    private String domain;
+    public String domain;
 
     @NonNull
     @Size(min = 7, max = 15)
     @Column(nullable = false, length = 15)
-    private String subnet;
+    public String subnet;
 
     @NonNull
     @Size(min = 7, max = 15)
     @Column(nullable = false, length = 15)
-    private String mask;
+    public String mask;
 
     @NonNull
     @Size(min = 7, max = 15)
     @Column(nullable = false, length = 15)
-    private String dns1;
+    public String dns1;
 
     @Size(min = 7, max = 15)
     @Column(length = 15)
-    private String dns2;
+    public String dns2;
 
     @Size(min = 7, max = 15)
     @Column(length = 15)
-    private String dns3;
+    public String dns3;
 
     @Column(nullable = false,
             columnDefinition = "boolean default false")
-    private boolean cloud;
+    public boolean cloud;
 
     public NetEntity update(String domain,
                             String subnet,

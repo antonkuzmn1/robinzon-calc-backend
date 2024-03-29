@@ -148,4 +148,25 @@ public interface JwtUtil {
      */
     boolean isTokenExpired(String token);
 
+    /**
+     * Check for admin rights.
+     *
+     * @param token The JWT token
+     * @return The result of the expiration check
+     * @author Anton Kuzmin
+     * @since 2024.03.28
+     */
+    UserEntity isAdmin(String token);
+
+    /**
+     * Check for custom rights.
+     *
+     * @param token The JWT token
+     * @return The result of the expiration check
+     * @author Anton Kuzmin
+     * @since 2024.03.28
+     */
+    @SuppressWarnings("unused")
+    UserEntity hasRole(String token, String role);
+
 }

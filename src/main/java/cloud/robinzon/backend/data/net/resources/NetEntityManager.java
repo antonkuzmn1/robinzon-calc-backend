@@ -20,7 +20,7 @@ package cloud.robinzon.backend.data.net.resources;
 
 import cloud.robinzon.backend.data.net.resources.history.NetHistory;
 import cloud.robinzon.backend.data.net.resources.history.NetHistoryRepository;
-import cloud.robinzon.backend.security.tools.JwtUtilStatic;
+import cloud.robinzon.backend.security.jwt.JwtUtil;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +59,7 @@ public class NetEntityManager {
 
     private final NetEntityRepository entityRepository;
     private final NetHistoryRepository historyRepository;
+    private final JwtUtil jwtUtil;
 
     /**
      * Returns a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body.
@@ -122,7 +123,7 @@ public class NetEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -184,7 +185,7 @@ public class NetEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -237,7 +238,7 @@ public class NetEntityManager {
      */
     public ResponseEntity<?> delete(Long id,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 

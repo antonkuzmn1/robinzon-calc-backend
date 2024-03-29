@@ -21,7 +21,7 @@ package cloud.robinzon.backend.data.vm.resources;
 import cloud.robinzon.backend.data.fm.resources.FmEntity;
 import cloud.robinzon.backend.data.vm.resources.history.VmHistory;
 import cloud.robinzon.backend.data.vm.resources.history.VmHistoryRepository;
-import cloud.robinzon.backend.security.tools.JwtUtilStatic;
+import cloud.robinzon.backend.security.jwt.JwtUtil;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +61,7 @@ public class VmEntityManager {
 
     private final VmEntityRepository entityRepository;
     private final VmHistoryRepository historyRepository;
+    private final JwtUtil jwtUtil;
 
     /**
      * Returns a ResponseEntity with status code 200 (OK) and the updated NetEntity as the response body.
@@ -132,7 +133,7 @@ public class VmEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -188,7 +189,7 @@ public class VmEntityManager {
                                     String title,
                                     String description,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 
@@ -236,7 +237,7 @@ public class VmEntityManager {
      */
     public ResponseEntity<?> delete(String id,
                                     String token) {
-        UserEntity changeBy = JwtUtilStatic.extractEntity(token);
+        UserEntity changeBy = jwtUtil.extractEntity(token);
         boolean allow = changeBy.isAdmin();
         if (!allow) return err("Access denied");
 

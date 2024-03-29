@@ -23,35 +23,37 @@ import cloud.robinzon.backend.data.client.resources.ClientEntity
 import cloud.robinzon.backend.data.client.resources.ClientEntityRepository
 import cloud.robinzon.backend.data.vm.resources.VmEntity
 import cloud.robinzon.backend.data.vm.resources.VmEntityRepository
-import cloud.robinzon.backend.security.tools.isAdmin
+import cloud.robinzon.backend.security.jwt.JwtUtil
 import cloud.robinzon.backend.security.user.resources.UserEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
 class VmRentManager(
-        private val entityRepository: VmEntityRepository,
-        private val rentRepository: VmRentRepository,
-        private val clientEntityRepository: ClientEntityRepository
+    private val entityRepository: VmEntityRepository,
+    private val rentRepository: VmRentRepository,
+    private val clientEntityRepository: ClientEntityRepository,
+    private val jwtUtil: JwtUtil
 ) {
 
-    fun rent(entityId: String,
-             clientId: Long,
-             token: String
+    fun rent(
+        entityId: String,
+        clientId: Long,
+        token: String
     ): ResponseEntity<*> {
         set(javaClass, "rent")
-        val changeBy: UserEntity = isAdmin(token)
-                ?: return err("Access denied")
+        val changeBy: UserEntity = jwtUtil.isAdmin(token)
+            ?: return err("Access denied")
 
         log("Entity search...")
         val entity: VmEntity = entityRepository.findById(entityId).orElse(null)
-                ?: return err("Entity not found")
+            ?: return err("Entity not found")
         log("Entity: ${entity.name}")
 
         log("Old renter: ${entity.clientEntity.name}")
         log("Client search")
         val client: ClientEntity = clientEntityRepository.findById(clientId).orElse(null)
-                ?: return err("Client not found")
+            ?: return err("Client not found")
         if (entity.clientEntity.id.equals(client.id)) return err("All parameters are equal")
         log("New renter: ${client.name}")
 

@@ -18,35 +18,26 @@ limitations under the License.
 
 package cloud.robinzon.backend.security.jwt;
 
-import cloud.robinzon.backend.common.Properties;
-import cloud.robinzon.backend.security.user.resources.UserEntityRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.crypto.SecretKey;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class JwtUtilTest {
 
-    @Value("${jwt.secret.key}")
-    private String secret;
-    private final String username = "example";
-    private Properties properties;
+    @Autowired
     private JwtUtil jwtUtil;
+
+    private final String username = "example";
 
     @BeforeEach
     void setUp() {
-        properties = mock(Properties.class);
-        UserEntityRepository userEntityRepository = mock(UserEntityRepository.class);
-        when(properties.getJwtSecretKey()).thenReturn(secret);
-        jwtUtil = new JwtUtilImpl(properties, userEntityRepository);
     }
 
     @AfterEach
@@ -55,7 +46,6 @@ class JwtUtilTest {
 
     @Test
     void init() {
-        System.out.println(properties.getJwtSecretKey());
     }
 
     @Test
