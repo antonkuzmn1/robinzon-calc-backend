@@ -19,6 +19,8 @@ limitations under the License.
 package cloud.robinzon.backend.data.vm.resources;
 
 import cloud.robinzon.backend.data.fm.resources.FmEntity;
+import cloud.robinzon.backend.data.vm.VmDeleteForm;
+import cloud.robinzon.backend.data.vm.VmInsertUpdateForm;
 import cloud.robinzon.backend.data.vm.resources.history.VmHistory;
 import cloud.robinzon.backend.data.vm.resources.history.VmHistoryRepository;
 import cloud.robinzon.backend.security.jwt.JwtUtil;
@@ -27,6 +29,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import static cloud.robinzon.backend.common.Allow.check;
 import static cloud.robinzon.backend.common.Log.*;
 
 /**
@@ -108,37 +111,31 @@ public class VmEntityManager {
      * just pass the new entity parameters and it will be updated.
      * </p>
      *
-     * @param id       Unique identifier of the entry {@code 36 chars};
-     * @param name     Name of the entry {@code 50 chars};
-     * @param cpu      Amount of CPU cores;
-     * @param ram      Amount of RAM;
-     * @param ssd      Amount of SSD;
-     * @param hdd      Amount of HDD;
-     * @param running  VM's state;
-     * @param fmEntity FM entity on which this virtual machine is hosted;
+     * @param form VmInsertUpdateForm
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> insert(String id,
-                                    String name,
-                                    int cpu,
-                                    int ram,
-                                    int ssd,
-                                    int hdd,
-                                    boolean running,
-                                    FmEntity fmEntity,
-                                    String title,
-                                    String description,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> insert(VmInsertUpdateForm form) {
+        String id = form.getId();
+        String name = form.getName();
+        int cpu = form.getCpu();
+        int ram = form.getRam();
+        int ssd = form.getSsd();
+        int hdd = form.getHdd();
+        boolean running = form.getRunning();
+        FmEntity fmEntity = form.getFmEntity();
+        String title = form.getTitle();
+        String description= form.getDescription();
+        String token = form.getToken();
 
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", name));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         VmEntity entity = entityRepository.findById(id).orElse(null);
@@ -169,32 +166,30 @@ public class VmEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id          Unique identifier of the entry {@code 36 chars};
-     * @param title       Short description of the entry {@code 50 chars};
-     * @param description Full description of the entry {@code 255 chars};
+     * @param form VmInsertUpdateForm
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> update(String id,
-                                    String name,
-                                    int cpu,
-                                    int ram,
-                                    int ssd,
-                                    int hdd,
-                                    boolean running,
-                                    FmEntity fmEntity,
-                                    String title,
-                                    String description,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
-
+    public ResponseEntity<?> update(VmInsertUpdateForm form) {
+        String id = form.getId();
+        String name = form.getName();
+        int cpu = form.getCpu();
+        int ram = form.getRam();
+        int ssd = form.getSsd();
+        int hdd = form.getHdd();
+        boolean running = form.getRunning();
+        FmEntity fmEntity = form.getFmEntity();
+        String title = form.getTitle();
+        String description= form.getDescription();
+        String token = form.getToken();
         set(getClass(), "update");
         log(String.join(" ", "Update:", name));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         VmEntity entity = entityRepository.findById(id).orElse(null);
@@ -235,13 +230,13 @@ public class VmEntityManager {
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> delete(String id,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
-
+    public ResponseEntity<?> delete(VmDeleteForm form) {
+        String id = form.getId();
+        String token = form.getToken();
         set(getClass(), "delete");
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         VmEntity entity = entityRepository.findById(id).orElse(null);

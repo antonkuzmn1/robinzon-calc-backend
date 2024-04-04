@@ -18,13 +18,14 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.fm.resources.rent
 
+import cloud.robinzon.backend.common.Allow.check
 import cloud.robinzon.backend.common.Log.*
+import cloud.robinzon.backend.common.RentForm
 import cloud.robinzon.backend.data.client.resources.ClientEntity
 import cloud.robinzon.backend.data.client.resources.ClientEntityRepository
 import cloud.robinzon.backend.data.fm.resources.FmEntity
 import cloud.robinzon.backend.data.fm.resources.FmEntityRepository
 import cloud.robinzon.backend.security.jwt.JwtUtil
-import cloud.robinzon.backend.security.user.resources.UserEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
@@ -36,24 +37,20 @@ class FmRentManager(
     private val jwtUtil: JwtUtil
 ) {
 
-    fun rent(
-        entityId: Long,
-        clientId: Long,
-        token: String
-    ): ResponseEntity<*> {
+    fun rent(form: RentForm): ResponseEntity<*> {
 
         set(javaClass, "rent")
-        val changeBy: UserEntity = jwtUtil.isAdmin(token)
-            ?: return err("Access denied")
+
+        val changeBy = check(jwtUtil, form.token) ?: return err("Access denied")
 
         log("Entity search...")
-        val entity: FmEntity = entityRepository.findById(entityId).orElse(null)
+        val entity: FmEntity = entityRepository.findById(form.entityId).orElse(null)
             ?: return err("Entity not found")
         log("Entity: ${entity.name}")
 
         log("Old renter: ${entity.client.name}")
         log("Client search")
-        val client: ClientEntity = clientEntityRepository.findById(clientId).orElse(null)
+        val client: ClientEntity = clientEntityRepository.findById(form.clientId).orElse(null)
             ?: return err("Client not found")
         if (entity.client.id.equals(client.id)) return err("All parameters are equal")
         log("New renter: ${client.name}")

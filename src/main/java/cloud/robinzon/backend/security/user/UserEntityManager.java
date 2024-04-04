@@ -18,6 +18,7 @@ limitations under the License.
 
 package cloud.robinzon.backend.security.user;
 
+import cloud.robinzon.backend.common.DeleteForm;
 import cloud.robinzon.backend.security.jwt.JwtUtil;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import cloud.robinzon.backend.security.user.resources.UserEntityRepository;
@@ -28,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import static cloud.robinzon.backend.common.Allow.check;
 import static cloud.robinzon.backend.common.Log.*;
 
 /**
@@ -90,27 +92,24 @@ public class UserEntityManager {
     /**
      * Inserts a new user into the database.
      *
-     * @param username    the username of the user
-     * @param rawPassword the password of the user
-     * @param fullName    the full name of the user
-     * @param title       the title of the user
-     * @param description the description of the user
      * @return a ResponseForm indicating the success or failure of the insertion process
      * @author Anton Kuzmin
+     * @see UserInsertForm
      * @since 2024.03.25
      */
-    public ResponseEntity<?> insert(String username,
-                                    String rawPassword,
-                                    String fullName,
-                                    String title,
-                                    String description,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> insert(UserInsertForm form) {
+        String username = form.getUsername();
+        String rawPassword = form.getRawPassword();
+        String fullName = form.getFullName();
+        String title = form.getTitle();
+        String description = form.getDescription();
+        String token = form.getToken();
 
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", username));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("rawPassword:");
         log(rawPassword);
@@ -136,29 +135,25 @@ public class UserEntityManager {
     /**
      * Updates an existing user in the database.
      *
-     * @param id          the ID of the user to update
-     * @param username    the new username of the user
-     * @param rawPassword the new password of the user
-     * @param fullName    the new full name of the user
-     * @param title       the new title of the user
-     * @param description the new description of the user
      * @return a ResponseForm indicating the success or failure of the update process
      * @author Anton Kuzmin
+     * @see UserUpdateForm
      * @since 2024.03.26
      */
-    public ResponseEntity<?> update(Long id,
-                                    String username,
-                                    String rawPassword,
-                                    String fullName,
-                                    String title,
-                                    String description,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> update(UserUpdateForm form) {
+        Long id = form.getId();
+        String username = form.getUsername();
+        String rawPassword = form.getRawPassword();
+        String fullName = form.getFullName();
+        String title = form.getTitle();
+        String description = form.getDescription();
+        String token = form.getToken();
 
         set(getClass(), "update");
         log(String.join(" ", "Update:", username));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("rawPassword:");
         log(rawPassword);
@@ -191,18 +186,19 @@ public class UserEntityManager {
     /**
      * Soft deletes a user entity with the specified ID by marking it as deleted.
      *
-     * @param id The ID of the user entity to softly delete.
      * @return The response form indicating the success or failure of the soft delete operation.
      * @author Anton Kuzmin
+     * @see DeleteForm
      * @since 2024.03.26
      */
-    public ResponseEntity<?> delete(Long id,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> delete(DeleteForm form) {
+        Long id = form.getId();
+        String token = form.getToken();
 
         set(getClass(), "delete");
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         UserEntity entity = entityRepository.findById(id).orElse(null);

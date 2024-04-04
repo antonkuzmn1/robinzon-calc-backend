@@ -18,7 +18,10 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.client.resources;
 
+import cloud.robinzon.backend.common.DeleteForm;
+import cloud.robinzon.backend.data.client.ClientInsertForm;
 import cloud.robinzon.backend.data.client.ClientManager;
+import cloud.robinzon.backend.data.client.ClientUpdateForm;
 import cloud.robinzon.backend.data.client.resources.history.ClientHistory;
 import cloud.robinzon.backend.data.client.resources.history.ClientHistoryRepository;
 import cloud.robinzon.backend.security.jwt.JwtUtil;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+import static cloud.robinzon.backend.common.Allow.check;
 import static cloud.robinzon.backend.common.Log.*;
 
 /**
@@ -91,20 +95,21 @@ public class ClientEntityManager {
         return ResponseEntity.ok().body(entity);
     }
 
-    public ResponseEntity<?> insert(String name,
-                                    String inn,
-                                    int discount,
-                                    int contractNumber,
-                                    Date contractDate,
-                                    String title,
-                                    String description,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> insert(ClientInsertForm form) {
+        String name = form.getName();
+        String token = form.getToken();
+        String inn = form.getInn();
+        int contractNumber = form.getContractNumber();
+        int discount = form.getDiscount();
+        Date contractDate = form.getContractDate();
+        String title = form.getTitle();
+        String description = form.getDescription();
 
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", name));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Checks...");
         if (entityRepository.checkUniqueInn(inn))
@@ -124,21 +129,22 @@ public class ClientEntityManager {
         return ok(entity, changeBy);
     }
 
-    public ResponseEntity<?> update(Long id,
-                                    String name,
-                                    String inn,
-                                    int discount,
-                                    int contractNumber,
-                                    Date contractDate,
-                                    String title,
-                                    String description,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> update(ClientUpdateForm form) {
+        Long id = form.getId();
+        String name = form.getName();
+        String inn = form.getInn();
+        int discount = form.getDiscount();
+        int contractNumber = form.getContractNumber();
+        Date contractDate = form.getContractDate();
+        String title = form.getTitle();
+        String description = form.getDescription();
+        String token = form.getToken();
 
         set(getClass(), "update");
         log(String.join(" ", "Update:", name));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         ClientEntity entity = entityRepository.findById(id).orElse(null);
@@ -166,13 +172,14 @@ public class ClientEntityManager {
         return ok(entity, changeBy);
     }
 
-    public ResponseEntity<?> delete(Long id,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> delete(DeleteForm form) {
+        Long id = form.getId();
+        String token = form.getToken();
 
         set(getClass(), "delete");
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         ClientEntity entity = entityRepository.findById(id).orElse(null);

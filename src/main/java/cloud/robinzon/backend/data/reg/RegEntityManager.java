@@ -18,6 +18,7 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.reg;
 
+import cloud.robinzon.backend.common.DeleteForm;
 import cloud.robinzon.backend.data.reg.resources.RegEntity;
 import cloud.robinzon.backend.data.reg.resources.RegEntityRepository;
 import cloud.robinzon.backend.data.reg.resources.history.RegHistory;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+import static cloud.robinzon.backend.common.Allow.check;
 import static cloud.robinzon.backend.common.Log.*;
 
 /**
@@ -102,37 +104,30 @@ public class RegEntityManager {
      * just pass the new entity parameters and it will be updated.
      * </p>
      *
-     * @param brand          Name of the brand {@code 100 chars};
-     * @param name           Name of the entity {@code 100 chars};
-     * @param part           The part {@code 50 chars};
-     * @param serial         Serial number of the entity {@code 50 chars};
-     * @param buyDate        Entity purchase date;
-     * @param warrantyMonths Amount of warranty months;
-     * @param provider       Name of the provider (dealer) {@code 50 chars};
-     * @param title          Short description of the entry {@code 50 chars};
-     * @param description    Full description of the entry {@code 255 chars};
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see RegInsertForm
      * @since 2024.03.25
      */
-    public ResponseEntity<?> insert(String brand,
-                                    String name,
-                                    String part,
-                                    String serial,
-                                    Date buyDate,
-                                    int warrantyMonths,
-                                    String provider,
-                                    String title,
-                                    String description,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> insert(RegInsertForm form) {
+        String brand = form.getBrand();
+        String name = form.getName();
+        String part = form.getPart();
+        String serial = form.getSerial();
+        Date buyDate = form.getBuyDate();
+        int warrantyMonths = form.getWarrantyMonths();
+        String provider = form.getProvider();
+        String title = form.getTitle();
+        String description = form.getDescription();
+        String token = form.getToken();
 
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", name));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         RegEntity entity = new RegEntity()
                 .update(brand,
@@ -159,39 +154,31 @@ public class RegEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id             Unique identifier of the entity;
-     * @param brand          Name of the brand {@code 100 chars};
-     * @param name           Name of the entity {@code 100 chars};
-     * @param part           The part {@code 50 chars};
-     * @param serial         Serial number of the entity {@code 50 chars};
-     * @param buyDate        Entity purchase date;
-     * @param warrantyMonths Amount of warranty months;
-     * @param provider       Name of the provider (dealer) {@code 50 chars};
-     * @param title          Short description of the entry {@code 50 chars};
-     * @param description    Full description of the entry {@code 255 chars};
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see RegUpdateForm
      * @since 2024.03.25
      */
-    public ResponseEntity<?> update(Long id,
-                                    String brand,
-                                    String name,
-                                    String part,
-                                    String serial,
-                                    Date buyDate,
-                                    int warrantyMonths,
-                                    String provider,
-                                    String title,
-                                    String description,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> update(RegUpdateForm form) {
+        Long id = form.getId();
+        String brand = form.getBrand();
+        String name = form.getName();
+        String part = form.getPart();
+        String serial = form.getSerial();
+        Date buyDate = form.getBuyDate();
+        int warrantyMonths = form.getWarrantyMonths();
+        String provider = form.getProvider();
+        String title = form.getTitle();
+        String description = form.getDescription();
+        String token = form.getToken();
 
         set(getClass(), "update");
         log(String.join(" ", "Update:", name));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         RegEntity entity = entityRepository.findById(id).orElse(null);
@@ -226,20 +213,21 @@ public class RegEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id Unique identifier of the entity;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see DeleteForm
      * @since 2024.03.25
      */
-    public ResponseEntity<?> delete(Long id,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> delete(DeleteForm form) {
+        Long id = form.getId();
+        String token = form.getToken();
 
         set(getClass(), "delete");
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         RegEntity entity = entityRepository.findById(id).orElse(null);

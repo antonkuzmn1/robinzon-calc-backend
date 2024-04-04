@@ -18,6 +18,8 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.net
 
+import cloud.robinzon.backend.common.DeleteForm
+import cloud.robinzon.backend.common.RentForm
 import cloud.robinzon.backend.data.net.resources.NetEntityManager
 import cloud.robinzon.backend.data.net.resources.rent.NetRentManager
 import org.springframework.http.ResponseEntity
@@ -37,8 +39,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class NetManager(
-        private val e: NetEntityManager,
-        private val r: NetRentManager
+    private val e: NetEntityManager,
+    private val r: NetRentManager
 ) {
 
     /**
@@ -51,33 +53,15 @@ class NetManager(
      * and the rental history repository (if present),
      * just pass the new entity parameters and it will be updated.
      *
-     * @param domain      Domain name `50 chars`;
-     * @param subnet      Subnet IP `15 chars`;
-     * @param mask        Mask `15 chars`;
-     * @param dns1        1st DNS IP `15 chars`;
-     * @param dns2        2nd DNS IP `15 chars`;
-     * @param dns3        3rd DNS IP `15 chars`;
-     * @param cloud       Net is in cloud or not `15 chars`;
-     * @param title       Short description of the entry `50 chars`;
-     * @param description Full description of the entry `255 chars`;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see NetInsertForm
      * @since 2024.03.25
      */
-    fun insert(domain: String,
-               subnet: String,
-               mask: String,
-               dns1: String,
-               dns2: String,
-               dns3: String,
-               cloud: Boolean,
-               title: String,
-               description: String,
-               token: String
-    ): ResponseEntity<*> {
-        return e.insert(domain, subnet, mask, dns1, dns2, dns3, cloud, title, description, token)
+    fun insert(form: NetInsertForm): ResponseEntity<*> {
+        return e.insert(form)
     }
 
     /**
@@ -90,34 +74,15 @@ class NetManager(
      * and the rental history repository (if present),
      * just pass the entity ID and new parameters and it will be updated.
      *
-     * @param id          Unique identifier of the entity;
-     * @param subnet      Subnet IP `15 chars`;
-     * @param mask        Mask `15 chars`;
-     * @param dns1        1st DNS IP `15 chars`;
-     * @param dns2        2nd DNS IP `15 chars`;
-     * @param dns3        3rd DNS IP `15 chars`;
-     * @param cloud       Net is in cloud or not `15 chars`;
-     * @param title       Short description of the entry `50 chars`;
-     * @param description Full description of the entry `255 chars`;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see NetUpdateForm
      * @since 2024.03.25
      */
-    fun update(id: Long,
-               domain: String,
-               subnet: String,
-               mask: String,
-               dns1: String,
-               dns2: String,
-               dns3: String,
-               cloud: Boolean,
-               title: String,
-               description: String,
-               token: String
-    ): ResponseEntity<*> {
-        return e.update(id, domain, subnet, mask, dns1, dns2, dns3, cloud, title, description, token)
+    fun update(form: NetUpdateForm): ResponseEntity<*> {
+        return e.update(form)
     }
 
     /**
@@ -130,35 +95,27 @@ class NetManager(
      * and the rental history repository (if present),
      * just pass the entity ID and new parameters and it will be updated.
      *
-     * @param id - the unique identifier of the entity;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see DeleteForm
      * @since 2024.03.25
      */
-    fun delete(id: Long,
-               token: String
-    ): ResponseEntity<*> {
-        return e.delete(id, token)
+    fun delete(form: DeleteForm): ResponseEntity<*> {
+        return e.delete(form)
     }
 
     /**
      * ## Setting a new renter
      *
-     * @param entityId Unique entity identifier
-     * @param clientId New entity renter value
-     * @param token JWT-Token for identification
-     *
      * @author Anton Kuzmin
+     * @see RentForm
      * @since 2024.03.28
      * @since 2024.03.28
      */
-    fun rent(entityId: Long,
-             clientId: Long,
-             token: String
-    ): ResponseEntity<*> {
-        return r.rent(entityId, clientId, token)
+    fun rent(form: RentForm): ResponseEntity<*> {
+        return r.rent(form)
     }
 
 }

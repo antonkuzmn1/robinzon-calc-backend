@@ -23,10 +23,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
-import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 
 /**
  * Security configuration
@@ -41,33 +40,26 @@ public class
 SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-            throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement((sessionManagement) -> sessionManagement
-                        .sessionConcurrency((sessionConcurrency) -> sessionConcurrency
-                                .maximumSessions(1)
-                                .expiredUrl("/auth")))
-                .authorizeHttpRequests(SecurityConfig::customize)
-                .formLogin(SecurityConfig::customize)
-                .logout(LogoutConfigurer::permitAll)
-                .build();
-    }
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable);
 
-    private static void customize(
-            FormLoginConfigurer<HttpSecurity> form) {
-        form
-                .loginPage("/auth").permitAll();
-    }
+        http.headers(headers -> headers
+                .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
-    private static void customize(
-            AuthorizeHttpRequestsConfigurer<HttpSecurity>
-                    .AuthorizationManagerRequestMatcherRegistry requests) {
-        requests
-                .requestMatchers("/").permitAll()
-                .anyRequest().authenticated();
-    }
+        http.headers(headers -> headers
+                .xssProtection(xss -> xss
+                        .headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK)));
 
+        http.headers(headers -> headers
+                .contentSecurityPolicy(cps -> cps
+                        .policyDirectives("script-src 'self'")));
+
+        /*
+        http.authorizeHttpRequests((auth) -> auth
+                .anyRequest().authenticated());
+         */
+
+        return http.build();
+    }
 
 }

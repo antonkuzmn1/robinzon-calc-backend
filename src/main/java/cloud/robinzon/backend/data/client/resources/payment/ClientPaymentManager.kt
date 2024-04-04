@@ -19,7 +19,9 @@ limitations under the License.
 package cloud.robinzon.backend.data.client.resources.payment
 
 import cloud.robinzon.backend.common.Log.*
+import cloud.robinzon.backend.data.client.ClientBalanceForm
 import cloud.robinzon.backend.data.client.ClientManager
+import cloud.robinzon.backend.data.client.ClientPayForm
 import cloud.robinzon.backend.data.client.resources.ClientEntity
 import cloud.robinzon.backend.data.client.resources.ClientEntityRepository
 import cloud.robinzon.backend.security.jwt.JwtUtil
@@ -83,26 +85,18 @@ class ClientPaymentManager(
         return ResponseEntity.ok().body(payment)
     }
 
-    fun balance(
-        id: Long,
-        balance: Int,
-        token: String
-    ): ResponseEntity<*> {
-        val entity: ClientEntity = entity(id) ?: return err("Entity not found")
+    fun balance(form: ClientBalanceForm): ResponseEntity<*> {
+        val entity: ClientEntity = entity(form.id) ?: return err("Entity not found")
 
-        return template("update", entity, balance, token)
+        return template("update", entity, form.balance, form.token)
     }
 
-    fun pay(
-        id: Long,
-        sum: Int,
-        token: String
-    ): ResponseEntity<*> {
-        if (sum == 0) return err("Pay sum cannot be null")
-        val entity: ClientEntity = entity(id) ?: return err("Entity not found")
-        val balance: Int = balance(entity) + sum
+    fun pay(form: ClientPayForm): ResponseEntity<*> {
+        if (form.sum == 0) return err("Pay sum cannot be null")
+        val entity: ClientEntity = entity(form.id) ?: return err("Entity not found")
+        val balance: Int = balance(entity) + form.sum
 
-        return template("pay", entity, balance, token)
+        return template("pay", entity, balance, form.token)
     }
 
 }

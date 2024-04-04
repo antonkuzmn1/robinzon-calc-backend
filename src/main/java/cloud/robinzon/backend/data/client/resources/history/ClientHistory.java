@@ -30,6 +30,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
@@ -60,6 +61,7 @@ public class ClientHistory
 
     public ClientHistory(ClientEntity entity,
                          UserEntity changeBy) {
+        this.timestamp = new Timestamp(System.currentTimeMillis());
         this.entity = entity;
         this.changeBy = changeBy;
         this.name = entity.getName();

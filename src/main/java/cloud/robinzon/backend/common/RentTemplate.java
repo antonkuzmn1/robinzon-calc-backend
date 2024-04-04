@@ -27,7 +27,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
@@ -42,7 +41,6 @@ public abstract class RentTemplate<R> {
     protected R entity;
 
     @Id
-    @CreationTimestamp
     protected Timestamp timestamp;
 
     @ManyToOne
@@ -57,6 +55,7 @@ public abstract class RentTemplate<R> {
     public void set(R entity,
                         UserEntity changeBy,
                         ClientEntity renter) {
+        this.timestamp = new Timestamp(System.currentTimeMillis());
         this.entity = entity;
         this.changeBy = changeBy;
         this.renter = renter;

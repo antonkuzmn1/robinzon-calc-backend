@@ -24,7 +24,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
@@ -40,7 +39,6 @@ public class VpnTypeHistory {
     private VpnTypeEntity entity;
 
     @Id
-    @CreationTimestamp
     private Timestamp timestamp;
 
     @ManyToOne
@@ -57,6 +55,7 @@ public class VpnTypeHistory {
 
     public VpnTypeHistory(VpnTypeEntity entity,
                           UserEntity changeBy) {
+        this.timestamp = new Timestamp(System.currentTimeMillis());
         this.entity = entity;
         this.changeBy = changeBy;
         this.name = entity.getName();

@@ -1,12 +1,12 @@
 /*
 
-Copyright 2024 Anton Kuzmin (http://github.com/antonkuzmn1)
+Copyright 2024 Anton Kuzmin (https://github.com/antonkuzmn1)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+    https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,8 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.fm
 
+import cloud.robinzon.backend.common.DeleteForm
+import cloud.robinzon.backend.common.RentForm
 import cloud.robinzon.backend.data.fm.resources.FmEntityManager
 import cloud.robinzon.backend.data.fm.resources.rent.FmRentManager
 import org.springframework.http.ResponseEntity
@@ -37,8 +39,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class FmManager(
-        private val e: FmEntityManager,
-        private val r: FmRentManager
+    private val entityManager: FmEntityManager,
+    private val rentManager: FmRentManager
 ) {
 
     /**
@@ -51,29 +53,15 @@ class FmManager(
      * and the rental history repository (if present),
      * just pass the new entity parameters and it will be updated.
      *
-     * @param name           Name of the entity `50 chars`;
-     * @param ip             IP address of the entity `15 chars`;
-     * @param title          Short description of the entry `50 chars`;
-     * @param specifications Specifications of the entry `255 chars`;
-     * @param description    Full description of the entry `255 chars`;
-     * @param price          Price of the entity;
-     * @param vm             FM can host VM's or not;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see FmInsertForm
      * @since 2024.03.25
      */
-    fun insert(name: String,
-               ip: String,
-               title: String,
-               specifications: String,
-               description: String,
-               price: Int,
-               vm: Boolean,
-               token: String
-    ): ResponseEntity<*> {
-        return e.insert(name, ip, title, specifications, description, price, vm, token)
+    fun insert(form: FmInsertForm): ResponseEntity<*> {
+        return entityManager.insert(form)
     }
 
     /**
@@ -86,30 +74,15 @@ class FmManager(
      * and the rental history repository (if present),
      * just pass the entity ID and new parameters and it will be updated.
      *
-     * @param id             Unique identifier of the entity;
-     * @param ip             IP address of the entity `15 chars`;
-     * @param title          Short description of the entry `50 chars`;
-     * @param specifications Specifications of the entry `255 chars`;
-     * @param description    Full description of the entry `255 chars`;
-     * @param price          Price of the entity;
-     * @param vm             FM can host VM's or not;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see FmUpdateForm
      * @since 2024.03.25
      */
-    fun update(id: Long,
-               name: String,
-               ip: String,
-               title: String,
-               specifications: String,
-               description: String,
-               price: Int,
-               vm: Boolean,
-               token: String
-    ): ResponseEntity<*> {
-        return e.update(id, name, ip, title, specifications, description, price, vm, token)
+    fun update(form: FmUpdateForm): ResponseEntity<*> {
+        return entityManager.update(form)
     }
 
     /**
@@ -121,36 +94,27 @@ class FmManager(
      * with the edit history repository
      * and the rental history repository (if present),
      * just pass the entity ID and new parameters and it will be updated.
-     *
-     * @param id Unique identifier of the entity;
+
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see DeleteForm
      * @since 2024.03.25
      */
-    fun delete(id: Long,
-               token: String
-    ): ResponseEntity<*> {
-        return e.delete(id, token)
+    fun delete(form: DeleteForm): ResponseEntity<*> {
+        return entityManager.delete(form)
     }
 
     /**
      * ## Setting a new renter
      *
-     * @param entityId Unique entity identifier
-     * @param clientId New entity renter value
-     * @param token JWT-Token for identification
-     *
      * @author Anton Kuzmin
      * @since 2024.03.28
-     * @since 2024.03.28
+     * @see RentForm
      */
-    fun rent(entityId: Long,
-             clientId: Long,
-             token: String
-    ): ResponseEntity<*> {
-        return r.rent(entityId, clientId, token)
+    fun rent(form: RentForm): ResponseEntity<*> {
+        return rentManager.rent(form)
     }
 
 }

@@ -30,6 +30,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -60,6 +62,7 @@ public class FmHistory
 
     public FmHistory(FmEntity entity,
                      UserEntity changeBy) {
+        this.timestamp = new Timestamp(System.currentTimeMillis());
         this.entity = entity;
         this.changeBy = changeBy;
         this.name = entity.getName();

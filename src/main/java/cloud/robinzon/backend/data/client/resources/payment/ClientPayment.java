@@ -23,7 +23,6 @@ import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
@@ -39,7 +38,6 @@ public class ClientPayment {
     private ClientEntity entity;
 
     @Id
-    @CreationTimestamp
     private Timestamp timestamp;
 
     @Column(nullable = false)
@@ -52,6 +50,7 @@ public class ClientPayment {
     public ClientPayment(ClientEntity entity,
                          int balance,
                          UserEntity changeBy) {
+        this.timestamp = new Timestamp(System.currentTimeMillis());
         this.entity = entity;
         this.balance = balance;
         this.changeBy = changeBy;

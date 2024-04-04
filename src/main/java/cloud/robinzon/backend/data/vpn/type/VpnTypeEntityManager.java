@@ -18,6 +18,7 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.vpn.type;
 
+import cloud.robinzon.backend.common.DeleteForm;
 import cloud.robinzon.backend.data.vpn.type.resources.VpnTypeEntity;
 import cloud.robinzon.backend.data.vpn.type.resources.VpnTypeEntityRepository;
 import cloud.robinzon.backend.data.vpn.type.resources.history.VpnTypeHistory;
@@ -26,7 +27,9 @@ import cloud.robinzon.backend.security.jwt.JwtUtil;
 import cloud.robinzon.backend.security.user.resources.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
+import static cloud.robinzon.backend.common.Allow.check;
 import static cloud.robinzon.backend.common.Log.*;
 
 /**
@@ -50,6 +53,7 @@ import static cloud.robinzon.backend.common.Log.*;
  * @since 2024.03.26
  */
 
+@Service
 @AllArgsConstructor
 public class VpnTypeEntityManager {
 
@@ -86,19 +90,20 @@ public class VpnTypeEntityManager {
     /**
      * Inserts a new VPN type entry into the database with the provided name.
      *
-     * @param name The name of the VPN type to be inserted.
      * @return ResponseForm indicating the result of the insertion operation.
      * @author Anton Kuzmin
+     * @see VpnTypeInsertForm
      * @since 2024.03.26
      */
-    public ResponseEntity<?> insert(String name,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> insert(VpnTypeInsertForm form) {
+        String name = form.getName();
+        String token = form.getToken();
 
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", name));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Checks...");
         if (entityRepository.checkUnique(name))
@@ -112,21 +117,21 @@ public class VpnTypeEntityManager {
     /**
      * Updates an existing VPN type entry in the database with the provided ID and name.
      *
-     * @param id   The ID of the VPN type entry to update.
-     * @param name The new name for the VPN type.
      * @return ResponseForm indicating the result of the update operation.
      * @author Anton Kuzmin
+     * @see VpnTypeUpdateForm
      * @since 2024.03.26
      */
-    public ResponseEntity<?> update(Long id,
-                                    String name,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> update(VpnTypeUpdateForm form) {
+        Long id = form.getId();
+        String name = form.getName();
+        String token = form.getToken();
 
         set(getClass(), "update");
         log(String.join(" ", "Update:", name));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         VpnTypeEntity entity = entityRepository.findById(id).orElse(null);
@@ -149,18 +154,19 @@ public class VpnTypeEntityManager {
     /**
      * Soft deletes a VPN type entry from the database based on the provided ID.
      *
-     * @param id The ID of the VPN type entry to be softly deleted.
      * @return ResponseForm indicating the result of the deletion operation.
      * @author Anton Kuzmin
+     * @see DeleteForm
      * @since 2024.03.26
      */
-    public ResponseEntity<?> delete(Long id,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> delete(DeleteForm form) {
+        Long id = form.getId();
+        String token = form.getToken();
 
         set(getClass(), "delete");
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         VpnTypeEntity entity = entityRepository.findById(id).orElse(null);

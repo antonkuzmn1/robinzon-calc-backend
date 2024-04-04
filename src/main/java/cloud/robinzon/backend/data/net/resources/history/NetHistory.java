@@ -29,6 +29,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.sql.Timestamp;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -69,6 +71,7 @@ public class NetHistory
 
     public NetHistory(NetEntity entity,
                       UserEntity changeBy) {
+        this.timestamp = new Timestamp(System.currentTimeMillis());
         this.entity = entity;
         this.changeBy = changeBy;
         this.domain = entity.getDomain();

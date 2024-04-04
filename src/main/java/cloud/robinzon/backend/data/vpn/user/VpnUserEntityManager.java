@@ -18,6 +18,7 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.vpn.user;
 
+import cloud.robinzon.backend.common.DeleteForm;
 import cloud.robinzon.backend.data.vpn.server.resources.VpnServerEntity;
 import cloud.robinzon.backend.data.vpn.type.resources.VpnTypeEntity;
 import cloud.robinzon.backend.data.vpn.user.resources.VpnUserEntity;
@@ -30,6 +31,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import static cloud.robinzon.backend.common.Allow.check;
 import static cloud.robinzon.backend.common.Log.*;
 
 /**
@@ -102,35 +104,29 @@ public class VpnUserEntityManager {
      * just pass the new entity parameters and it will be updated.
      * </p>
      *
-     * @param vpnServerEntity VpnServerEntity object representing the VPN server entity to be inserted.
-     * @param vpnTypeEntity   A VpnTypeEntity object representing the VPN type entity to be inserted.
-     * @param ip              The IP address to be associated with the entry.
-     * @param username        The username to be associated with the entry.
-     * @param password        The password to be associated with the entry.
-     * @param fullName        The full name to be associated with the entry.
-     * @param title           The title of the entry.
-     * @param description     The description of the entry.
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see VpnUserInsertForm
      * @since 2024.03.26
      */
-    public ResponseEntity<?> insert(VpnServerEntity vpnServerEntity,
-                                    VpnTypeEntity vpnTypeEntity,
-                                    String ip,
-                                    String username,
-                                    String password,
-                                    String fullName,
-                                    String title,
-                                    String description,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> insert(VpnUserInsertForm form) {
+        VpnServerEntity vpnServerEntity = form.getVpnServerEntity();
+        VpnTypeEntity vpnTypeEntity = form.getVpnTypeEntity();
+        String ip = form.getIp();
+        String username = form.getUsername();
+        String password = form.getPassword();
+        String fullName = form.getFullName();
+        String title = form.getTitle();
+        String description = form.getDescription();
+        String token = form.getToken();
 
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", username));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         VpnUserEntity entity = new VpnUserEntity()
                 .update(vpnServerEntity,
@@ -156,35 +152,28 @@ public class VpnUserEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id              The ID of the VPN user entity to be updated. {@link Long}
-     * @param vpnServerEntity A VpnServerEntity object representing the VPN server entity for the updated entry.
-     * @param vpnTypeEntity   A VpnTypeEntity object representing the VPN type entity for the updated entry.
-     * @param ip              The updated IP address associated with the entry.
-     * @param username        The updated username associated with the entry.
-     * @param password        The updated password associated with the entry.
-     * @param fullName        The updated full name associated with the entry.
-     * @param title           The updated title of the entry.
-     * @param description     The updated description of the entry.
      * @return A standard response form that contains the class name, functions, status, and text.
      * @author Anton Kuzmin
+     * @see VpnUserUpdateForm
      * @since 2024.03.26
      */
-    public ResponseEntity<?> update(Long id,
-                                    VpnServerEntity vpnServerEntity,
-                                    VpnTypeEntity vpnTypeEntity,
-                                    String ip,
-                                    String username,
-                                    String password,
-                                    String fullName,
-                                    String title,
-                                    String description,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> update(VpnUserUpdateForm form) {
+        Long id = form.getId();
+        VpnServerEntity vpnServerEntity = form.getVpnServerEntity();
+        VpnTypeEntity vpnTypeEntity = form.getVpnTypeEntity();
+        String ip = form.getIp();
+        String username = form.getUsername();
+        String password = form.getPassword();
+        String fullName = form.getFullName();
+        String title = form.getTitle();
+        String description = form.getDescription();
+        String token = form.getToken();
 
         set(getClass(), "update");
         log(String.join(" ", "Update:", username));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         VpnUserEntity entity = entityRepository.findById(id).orElse(null);
@@ -218,20 +207,21 @@ public class VpnUserEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id Unique identifier of the entity;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see DeleteForm
      * @since 2024.03.26
      */
-    public ResponseEntity<?> delete(Long id,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> delete(DeleteForm form) {
+        Long id = form.getId();
+        String token = form.getToken();
 
         set(getClass(), "delete");
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         VpnUserEntity entity = entityRepository.findById(id).orElse(null);

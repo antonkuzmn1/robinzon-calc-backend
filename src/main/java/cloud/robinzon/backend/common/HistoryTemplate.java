@@ -22,7 +22,6 @@ import cloud.robinzon.backend.security.user.resources.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
@@ -36,7 +35,6 @@ public abstract class HistoryTemplate<T> {
     protected T entity;
 
     @Id
-    @CreationTimestamp
     protected Timestamp timestamp;
 
     @ManyToOne

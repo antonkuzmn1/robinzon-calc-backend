@@ -18,6 +18,7 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.vpn.server;
 
+import cloud.robinzon.backend.common.DeleteForm;
 import cloud.robinzon.backend.data.net.resources.NetEntity;
 import cloud.robinzon.backend.data.vpn.server.resources.VpnServerEntity;
 import cloud.robinzon.backend.data.vpn.server.resources.VpnServerEntityRepository;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
+import static cloud.robinzon.backend.common.Allow.check;
 import static cloud.robinzon.backend.common.Log.*;
 
 /**
@@ -104,31 +106,27 @@ public final class VpnServerEntityManager {
      * just pass the new entity parameters and it will be updated.
      * </p>
      *
-     * @param title         Short description of the entry {@code 50 chars};
-     * @param description   Full description of the entry {@code 255 chars};
-     * @param ip            IP address {@code 15 chars};
-     * @param publicKey     Public key {@code 50 chars};
-     * @param netEntity     NetEntity reference;
-     * @param vpnTypeEntity VPN type entity-list;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see VpnServerInsertForm
      * @since 2024.03.25
      */
-    public ResponseEntity<?> insert(String title,
-                                    String description,
-                                    String ip,
-                                    String publicKey,
-                                    NetEntity netEntity,
-                                    Set<VpnTypeEntity> vpnTypeEntity,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> insert(VpnServerInsertForm form) {
+        String title = form.getTitle();
+        String description = form.getDescription();
+        String ip = form.getIp();
+        String publicKey = form.getPublicKey();
+        NetEntity netEntity = form.getNetEntity();
+        Set<VpnTypeEntity> vpnTypeEntity = form.getVpnTypeEntity();
+        String token = form.getToken();
 
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", ip));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Checks...");
         if (entityRepository.checkUnique(ip))
@@ -156,33 +154,27 @@ public final class VpnServerEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id            Unique identifier of the entity;
-     * @param title         Short description of the entity {@code 50 chars};
-     * @param description   Full description of the entity {@code 255 chars};
-     * @param ip            IP address {@code 15 chars};
-     * @param publicKey     Public key {@code 50 chars};
-     * @param netEntity     Reference to a NetEntity object;
-     * @param vpnTypeEntity List of VPN type entities;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see VpnServerUpdateForm
      * @since 2024.03.25
      */
-    public ResponseEntity<?> update(Long id,
-                                    String title,
-                                    String description,
-                                    String ip,
-                                    String publicKey,
-                                    NetEntity netEntity,
-                                    Set<VpnTypeEntity> vpnTypeEntity,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
-
+    public ResponseEntity<?> update(VpnServerUpdateForm form) {
+        Long id = form.getId();
+        String title = form.getTitle();
+        String description = form.getDescription();
+        String ip = form.getIp();
+        String publicKey = form.getPublicKey();
+        NetEntity netEntity = form.getNetEntity();
+        Set<VpnTypeEntity> vpnTypeEntity = form.getVpnTypeEntity();
+        String token = form.getToken();
         set(getClass(), "update");
         log(String.join(" ", "Update:", ip));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         VpnServerEntity entity = entityRepository.findById(id).orElse(null);
@@ -218,20 +210,21 @@ public final class VpnServerEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id Unique identifier of the entity;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see DeleteForm
      * @since 2024.03.25
      */
-    public ResponseEntity<?> delete(Long id,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> delete(DeleteForm form) {
+        Long id = form.getId();
+        String token = form.getToken();
 
         set(getClass(), "delete");
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         VpnServerEntity entity = entityRepository.findById(id).orElse(null);

@@ -28,6 +28,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
@@ -61,6 +62,7 @@ public class RegHistory
 
     public RegHistory(RegEntity entity,
                       UserEntity changeBy) {
+        this.timestamp = new Timestamp(System.currentTimeMillis());
         this.entity = entity;
         this.changeBy = changeBy;
         this.brand = entity.getBrand();

@@ -18,7 +18,6 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.vm
 
-import cloud.robinzon.backend.data.fm.resources.FmEntity
 import cloud.robinzon.backend.data.vm.resources.VmEntityManager
 import cloud.robinzon.backend.data.vm.resources.rent.VmRentManager
 import org.springframework.http.ResponseEntity
@@ -38,8 +37,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class VmManager(
-        private val e: VmEntityManager,
-        private val r: VmRentManager
+    private val e: VmEntityManager,
+    private val r: VmRentManager
 ) {
 
     /**
@@ -58,33 +57,15 @@ class VmManager(
      * and the rental history repository (if present),
      * just pass the new entity parameters and it will be updated.
      *
-     * @param id       Unique identifier of the entry `36 chars`;
-     * @param name     Name of the entry `50 chars`;
-     * @param cpu      Amount of CPU cores;
-     * @param ram      Amount of RAM;
-     * @param ssd      Amount of SSD;
-     * @param hdd      Amount of HDD;
-     * @param running  VM's state;
-     * @param fmEntity FM entity on which this virtual machine is hosted;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see VmInsertUpdateForm
      * @since 2024.03.25
      */
-    fun insert(id: String,
-               name: String,
-               cpu: Int,
-               ram: Int,
-               ssd: Int,
-               hdd: Int,
-               running: Boolean,
-               fmEntity: FmEntity,
-               title: String,
-               description: String,
-               token: String
-    ): ResponseEntity<*> {
-        return e.insert(id, name, cpu, ram, ssd, hdd, running, fmEntity, title, description, token)
+    fun insert(form: VmInsertUpdateForm): ResponseEntity<*> {
+        return e.insert(form)
     }
 
     /**
@@ -97,28 +78,15 @@ class VmManager(
      * and the rental history repository (if present),
      * just pass the entity ID and new parameters and it will be updated.
      *
-     * @param id          Unique identifier of the entry `36 chars`;
-     * @param title       Short description of the entry `50 chars`;
-     * @param description Full description of the entry `255 chars`;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see VmInsertUpdateForm
      * @since 2024.03.25
      */
-    fun update(id: String,
-               name: String,
-               cpu: Int,
-               ram: Int,
-               ssd: Int,
-               hdd: Int,
-               running: Boolean,
-               fmEntity: FmEntity,
-               title: String,
-               description: String,
-               token: String
-    ): ResponseEntity<*> {
-        return e.update(id, name, cpu, ram, ssd, hdd, running, fmEntity, title, description, token)
+    fun update(form: VmInsertUpdateForm): ResponseEntity<*> {
+        return e.update(form)
     }
 
     /**
@@ -135,30 +103,23 @@ class VmManager(
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see VmDeleteForm
      * @since 2024.03.25
      */
-    fun delete(id: String,
-               token: String
-    ): ResponseEntity<*> {
-        return e.delete(id, token)
+    fun delete(form: VmDeleteForm): ResponseEntity<*> {
+        return e.delete(form)
     }
 
     /**
      * ## Setting a new renter
      *
-     * @param entityId Unique entity identifier
-     * @param clientId New entity renter value
-     * @param token JWT-Token for identification
-     *
      * @author Anton Kuzmin
+     * @see VmRentForm
      * @since 2024.03.28
      * @since 2024.03.28
      */
-    fun rent(entityId: String,
-             clientId: Long,
-             token: String
-    ): ResponseEntity<*> {
-        return r.rent(entityId, clientId, token)
+    fun rent(form: VmRentForm): ResponseEntity<*> {
+        return r.rent(form)
     }
 
 }

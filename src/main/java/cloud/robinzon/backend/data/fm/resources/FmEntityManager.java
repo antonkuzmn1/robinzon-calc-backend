@@ -18,6 +18,9 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.fm.resources;
 
+import cloud.robinzon.backend.common.DeleteForm;
+import cloud.robinzon.backend.data.fm.FmInsertForm;
+import cloud.robinzon.backend.data.fm.FmUpdateForm;
 import cloud.robinzon.backend.data.fm.resources.history.FmHistory;
 import cloud.robinzon.backend.data.fm.resources.history.FmHistoryRepository;
 import cloud.robinzon.backend.security.jwt.JwtUtil;
@@ -26,6 +29,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import static cloud.robinzon.backend.common.Allow.check;
 import static cloud.robinzon.backend.common.Log.*;
 
 /**
@@ -98,33 +102,30 @@ public class FmEntityManager {
      * just pass the new entity parameters and it will be updated.
      * </p>
      *
-     * @param name           Name of the entity {@code 50 chars};
-     * @param ip             IP address of the entity {@code 15 chars};
-     * @param title          Short description of the entry {@code 50 chars};
-     * @param specifications Specifications of the entry {@code 255 chars};
-     * @param description    Full description of the entry {@code 255 chars};
-     * @param price          Price of the entity;
-     * @param vm             FM can host VM's or not;
+     * @param form FmInsertForm
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see FmInsertForm
      * @since 2024.03.25
      */
-    public ResponseEntity<?> insert(String name,
-                                    String ip,
-                                    String title,
-                                    String specifications,
-                                    String description,
-                                    int price,
-                                    boolean vm,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> insert(FmInsertForm form) {
+        System.out.println(form.toString());
+        String token = form.getToken();
+        String name = form.getName();
+        String ip = form.getIp();
+        String title = form.getTitle();
+        String specifications = form.getSpecifications();
+        String description = form.getDescription();
+        int price = form.getPrice();
+        boolean vm = form.getVm();
 
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", name));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Checks...");
         if (entityRepository.checkUnique(ip))
@@ -153,34 +154,30 @@ public class FmEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id             Unique identifier of the entity;
-     * @param ip             IP address of the entity {@code 15 chars};
-     * @param title          Short description of the entry {@code 50 chars};
-     * @param specifications Specifications of the entry {@code 255 chars};
-     * @param description    Full description of the entry {@code 255 chars};
-     * @param price          Price of the entity;
-     * @param vm             FM can host VM's or not;
+     * @param form FmUpdateForm
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see FmUpdateForm
      * @since 2024.03.25
      */
-    public ResponseEntity<?> update(Long id,
-                                    String name,
-                                    String ip,
-                                    String title,
-                                    String specifications,
-                                    String description,
-                                    int price,
-                                    boolean vm,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> update(FmUpdateForm form) {
+        Long id = form.getId();
+        String token = form.getToken();
+        String name = form.getName();
+        String ip = form.getIp();
+        String title = form.getTitle();
+        String specifications = form.getSpecifications();
+        String description = form.getDescription();
+        int price = form.getPrice();
+        boolean vm = form.getVm();
 
         set(getClass(), "update");
         log(String.join(" ", "Update:", name));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         FmEntity entity = entityRepository.findById(id).orElse(null);
@@ -217,20 +214,21 @@ public class FmEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id Unique identifier of the entity;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see DeleteForm
      * @since 2024.03.25
      */
-    public ResponseEntity<?> delete(Long id,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> delete(DeleteForm form) {
+        Long id = form.getId();
+        String token = form.getToken();
 
         set(getClass(), "delete");
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         FmEntity entity = entityRepository.findById(id).orElse(null);

@@ -29,6 +29,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -57,6 +58,7 @@ public class VpnServerHistory
 
     public VpnServerHistory(VpnServerEntity entity,
                             UserEntity changeBy) {
+        this.timestamp = new Timestamp(System.currentTimeMillis());
         this.entity = entity;
         this.changeBy = changeBy;
         this.title = entity.getTitle();

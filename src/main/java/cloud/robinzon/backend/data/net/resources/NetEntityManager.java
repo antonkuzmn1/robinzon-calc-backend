@@ -18,6 +18,9 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.net.resources;
 
+import cloud.robinzon.backend.common.DeleteForm;
+import cloud.robinzon.backend.data.net.NetInsertForm;
+import cloud.robinzon.backend.data.net.NetUpdateForm;
 import cloud.robinzon.backend.data.net.resources.history.NetHistory;
 import cloud.robinzon.backend.data.net.resources.history.NetHistoryRepository;
 import cloud.robinzon.backend.security.jwt.JwtUtil;
@@ -26,6 +29,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import static cloud.robinzon.backend.common.Allow.check;
 import static cloud.robinzon.backend.common.Log.*;
 
 /**
@@ -98,37 +102,30 @@ public class NetEntityManager {
      * just pass the new entity parameters and it will be updated.
      * </p>
      *
-     * @param domain      Domain name {@code 50 chars};
-     * @param subnet      Subnet IP {@code 15 chars};
-     * @param mask        Mask {@code 15 chars};
-     * @param dns1        1st DNS IP {@code 15 chars};
-     * @param dns2        2nd DNS IP {@code 15 chars};
-     * @param dns3        3rd DNS IP {@code 15 chars};
-     * @param cloud       Net is in cloud or not {@code 15 chars};
-     * @param title       Short description of the entry {@code 50 chars};
-     * @param description Full description of the entry {@code 255 chars};
+     * @param form NetInsertForm
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> insert(String domain,
-                                    String subnet,
-                                    String mask,
-                                    String dns1,
-                                    String dns2,
-                                    String dns3,
-                                    boolean cloud,
-                                    String title,
-                                    String description,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> insert(NetInsertForm form) {
+        String domain = form.getDomain();
+        String subnet = form.getSubnet();
+        String mask = form.getMask();
+        String dns1 = form.getDns1();
+        String dns2 = form.getDns2();
+        String dns3 = form.getDns3();
+        boolean cloud = form.getCloud();
+        String title = form.getTitle();
+        String description = form.getDescription();
+        String token = form.getToken();
 
         set(getClass(), "insert");
         log(String.join(" ", "Insert:", subnet));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Checks...");
         if (entityRepository.checkUnique(subnet))
@@ -159,38 +156,31 @@ public class NetEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id          Unique identifier of the entity;
-     * @param subnet      Subnet IP {@code 15 chars};
-     * @param mask        Mask {@code 15 chars};
-     * @param dns1        1st DNS IP {@code 15 chars};
-     * @param dns2        2nd DNS IP {@code 15 chars};
-     * @param dns3        3rd DNS IP {@code 15 chars};
-     * @param cloud       Net is in cloud or not {@code 15 chars};
-     * @param title       Short description of the entry {@code 50 chars};
-     * @param description Full description of the entry {@code 255 chars};
+     * @param form NetUpdateForm
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
      * @since 2024.03.25
      */
-    public ResponseEntity<?> update(Long id,
-                                    String domain,
-                                    String subnet,
-                                    String mask,
-                                    String dns1,
-                                    String dns2,
-                                    String dns3,
-                                    boolean cloud,
-                                    String title,
-                                    String description,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> update(NetUpdateForm form) {
+        Long id = form.getId();
+        String domain = form.getDomain();
+        String subnet = form.getSubnet();
+        String mask = form.getMask();
+        String dns1 = form.getDns1();
+        String dns2 = form.getDns2();
+        String dns3 = form.getDns3();
+        boolean cloud = form.getCloud();
+        String title = form.getTitle();
+        String description = form.getDescription();
+        String token = form.getToken();
 
         set(getClass(), "update");
         log(String.join(" ", "Update:", subnet));
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         NetEntity entity = entityRepository.findById(id).orElse(null);
@@ -229,20 +219,21 @@ public class NetEntityManager {
      * just pass the entity ID and new parameters and it will be updated.
      * </p>
      *
-     * @param id - the unique identifier of the entity;
      * @return A standard response form
      * that contains the class name,
      * functions, status and text.
      * @author Anton Kuzmin
+     * @see DeleteForm
      * @since 2024.03.25
      */
-    public ResponseEntity<?> delete(Long id,
-                                    String token) {
-        UserEntity changeBy = jwtUtil.extractEntity(token);
-        boolean allow = changeBy.isAdmin();
-        if (!allow) return err("Access denied");
+    public ResponseEntity<?> delete(DeleteForm form) {
+        Long id = form.getId();
+        String token = form.getToken();
 
         set(getClass(), "delete");
+
+        UserEntity changeBy = check(jwtUtil, token);
+        if (changeBy == null) return err("Access denied");
 
         log("Entity search...");
         NetEntity entity = entityRepository.findById(id).orElse(null);

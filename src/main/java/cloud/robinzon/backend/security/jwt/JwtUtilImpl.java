@@ -50,6 +50,7 @@ public class JwtUtilImpl
     @SuppressWarnings("FieldCanBeLocal")
     private final long EXPIRATION_TIME = 3600_000;
 
+    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
     @Autowired
     private Properties properties;
 
@@ -57,8 +58,6 @@ public class JwtUtilImpl
 
     @Override
     public SecretKey getSecretKey() {
-//        System.out.println(properties.getSshFmAdminCommand());
-//        System.out.println(properties.getJwtSecretKey());
         final byte[] secretBytes = properties.getJwtSecretKey().getBytes(StandardCharsets.UTF_8);
         return new SecretKeySpec(secretBytes, 0, secretBytes.length, "HMACSHA256");
     }
@@ -99,17 +98,22 @@ public class JwtUtilImpl
 
     @Override
     public UserEntity extractEntity(String token) {
+
         return userEntityRepository.findUserEntityByUsername(extractUsername(token));
     }
 
 
     @Override
     public boolean validateToken(String token) {
+        try {
+            if (isTokenExpired(token)) return false;
+        } catch (NullPointerException e) {
+            return false;
+        }
         final String username = extractUsername(token);
         UserEntity userEntity = userEntityRepository.findUserEntityByUsername(username);
-        return (userEntity != null
-                && userEntity.isEnabled()
-                && !isTokenExpired(token));
+        if (userEntity == null) return false;
+        return (userEntity.isEnabled());
     }
 
     @Override
