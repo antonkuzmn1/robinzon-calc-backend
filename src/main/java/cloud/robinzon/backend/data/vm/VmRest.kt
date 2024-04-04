@@ -19,6 +19,7 @@ limitations under the License.
 package cloud.robinzon.backend.data.vm
 
 import cloud.robinzon.backend.data.vm.resources.VmEntity
+import cloud.robinzon.backend.data.vm.resources.history.VmHistory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -48,7 +49,17 @@ class VmRest(private val service: VmService) {
 
     @PostMapping("/rent")
     fun update(@RequestBody form: VmRentForm): ResponseEntity<*> {
-        return service.balance(form)
+        return service.rent(form)
+    }
+
+    @PostMapping("/history")
+    fun historyAll(): List<VmHistory> {
+        return service.historyAll()
+    }
+
+    @PostMapping("/ssh/update")
+    fun updateBySsh(): List<ResponseEntity<*>> {
+        return service.updateBySsh()
     }
 
 }

@@ -20,6 +20,7 @@ package cloud.robinzon.backend.data.fm;
 
 import cloud.robinzon.backend.common.DeleteForm;
 import cloud.robinzon.backend.common.RentForm;
+import cloud.robinzon.backend.common.VmRawForm;
 import cloud.robinzon.backend.data.fm.resources.FmEntity;
 import cloud.robinzon.backend.data.fm.resources.FmEntityRepository;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,7 @@ public class FmService {
 
     private FmEntityRepository repository;
     private FmManager manager;
+    private FmSshService fmSshService;
 
     public List<FmEntity> getAll() {
         return repository.findAll();
@@ -41,6 +43,11 @@ public class FmService {
 
     public List<FmEntity> getByVm() {
         return repository.findByVm(true);
+    }
+
+    public FmEntity getFmByName(String name) {
+        List<FmEntity> list = repository.findFmEntitiesByNameAndDeleted(name, false);
+        return list.getFirst();
     }
 
     public ResponseEntity<?> insert(FmInsertForm form) {
@@ -57,6 +64,10 @@ public class FmService {
 
     public ResponseEntity<?> rent(RentForm form) {
         return manager.rent(form);
+    }
+
+    public List<VmRawForm> sshRequest() {
+        return fmSshService.getAllSerialized(getByVm());
     }
 
 }

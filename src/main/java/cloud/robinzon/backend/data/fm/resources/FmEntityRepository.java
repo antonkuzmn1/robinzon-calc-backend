@@ -34,4 +34,6 @@ public interface FmEntityRepository
     @Query("SELECT COUNT(f) > 0 FROM FmEntity f WHERE f.ip = :ip AND f.deleted = false")
     boolean checkUnique(String ip);
 
+    List<FmEntity> findFmEntitiesByNameAndDeleted(String name, boolean deleted);
+
 }

@@ -17,6 +17,8 @@
 package cloud.robinzon.backend.data.fm;
 
 import cloud.robinzon.backend.common.Properties;
+import cloud.robinzon.backend.common.VmRawForm;
+import cloud.robinzon.backend.data.fm.resources.FmEntity;
 import com.jcraft.jsch.*;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import static cloud.robinzon.backend.common.SerializersKt.serializeVm;
 
 @Service
 public class FmSshService {
@@ -60,8 +66,23 @@ public class FmSshService {
         String output = reader.readLine();
         channel.disconnect();
         session.disconnect();
-        System.out.println(output);
         return output;
+    }
+
+    public List<VmRawForm> getAllSerialized(List<FmEntity> fmList) {
+        List<VmRawForm> list = new ArrayList<>();
+
+        for (FmEntity entity : fmList) {
+            try {
+                String jsonString = get(entity.getIp());
+                List<VmRawForm> listPart = serializeVm(jsonString);
+                list.addAll(listPart);
+            } catch (JSchException | IOException e) {
+                //
+            }
+        }
+
+        return list;
     }
 
 }

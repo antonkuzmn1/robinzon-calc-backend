@@ -83,10 +83,11 @@ public class VmEntityManager {
         System.out.println(entity.toMap());
 
         log("Saving entity...");
-        entityRepository.save(entity);
+        VmEntity savedEntity = entityRepository.save(entity);
 
         log("Saving history...");
-        historyRepository.save(new VmHistory(entity, changeBy));
+        VmHistory history = new VmHistory(savedEntity, changeBy);
+        historyRepository.save(history);
 
         log("Success!");
         return ResponseEntity.ok().body(entity);
@@ -141,7 +142,7 @@ public class VmEntityManager {
         VmEntity entity = entityRepository.findById(id).orElse(null);
         if (entity != null) return err("Entity already exists");
 
-        entity = new VmEntity(id)
+        VmEntity newEntity = new VmEntity(id)
                 .update(name,
                         cpu,
                         ram,
@@ -152,7 +153,7 @@ public class VmEntityManager {
                         title,
                         description);
 
-        return ok(entity, changeBy);
+        return ok(newEntity, changeBy);
     }
 
     /**

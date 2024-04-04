@@ -18,15 +18,22 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.vm
 
+import cloud.robinzon.backend.common.VmRawForm
+import cloud.robinzon.backend.data.fm.FmService
 import cloud.robinzon.backend.data.vm.resources.VmEntity
 import cloud.robinzon.backend.data.vm.resources.VmEntityRepository
+import cloud.robinzon.backend.data.vm.resources.history.VmHistory
+import cloud.robinzon.backend.data.vm.resources.history.VmHistoryRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 
 @Service
 class VmService(
     private val repository: VmEntityRepository,
-    private val manager: VmManager
+    private val history: VmHistoryRepository,
+    private val manager: VmManager,
+    private val fmService: FmService,
+    private val vmSshService: VmSshService
 ) {
 
     fun getAll(): List<VmEntity> {
@@ -45,8 +52,17 @@ class VmService(
         return manager.delete(form)
     }
 
-    fun balance(form: VmRentForm): ResponseEntity<*> {
+    fun rent(form: VmRentForm): ResponseEntity<*> {
         return manager.rent(form)
+    }
+
+    fun historyAll(): List<VmHistory> {
+        return history.findAll()
+    }
+
+    fun updateBySsh(): List<ResponseEntity<*>> {
+        val rawList: List<VmRawForm> = fmService.sshRequest()
+        return vmSshService.commit(rawList)
     }
 
 }
