@@ -1,4 +1,4 @@
-# Progress list (est. 80%)
+# Progress list (est. 95%)
 
 > [!TIP]
 > ###### 🔷 Ready
