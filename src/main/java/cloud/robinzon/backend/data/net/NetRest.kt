@@ -16,35 +16,30 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.data.fm
+package cloud.robinzon.backend.data.net
 
 import cloud.robinzon.backend.common.DeleteForm
 import cloud.robinzon.backend.common.RentForm
-import cloud.robinzon.backend.data.fm.resources.FmEntity
+import cloud.robinzon.backend.data.net.resources.NetEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/data/fm")
-class FmRest(private val service: FmService) {
+@RequestMapping("/data/net")
+class NetRest(private val service: NetService) {
 
     @GetMapping
-    fun getAll(): List<FmEntity> {
-        return service.all
-    }
-
-    @GetMapping("/vm")
-    fun getByVm(): List<FmEntity> {
-        return service.byVm
+    fun getAll(): List<NetEntity> {
+        return service.getAll()
     }
 
     @PostMapping("/insert")
-    fun insert(@RequestBody form: FmInsertForm): ResponseEntity<*> {
+    fun insert(@RequestBody form: NetInsertForm): ResponseEntity<*> {
         return service.insert(form)
     }
 
     @PostMapping("/update")
-    fun update(@RequestBody form: FmUpdateForm): ResponseEntity<*> {
+    fun update(@RequestBody form: NetUpdateForm): ResponseEntity<*> {
         return service.update(form)
     }
 
@@ -55,7 +50,7 @@ class FmRest(private val service: FmService) {
 
     @PostMapping("/rent")
     fun update(@RequestBody form: RentForm): ResponseEntity<*> {
-        return service.rent(form)
+        return service.balance(form)
     }
 
 }

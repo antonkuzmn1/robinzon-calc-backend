@@ -19,34 +19,36 @@ limitations under the License.
 package cloud.robinzon.backend.data.vm
 
 import cloud.robinzon.backend.data.vm.resources.VmEntity
-import cloud.robinzon.backend.data.vm.resources.VmEntityRepository
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.*
 
-@Service
-class VmService(
-    private val repository: VmEntityRepository,
-    private val manager: VmManager
-) {
+@RestController
+@RequestMapping("/data/vm")
+class VmRest(private val service: VmService) {
 
+    @GetMapping
     fun getAll(): List<VmEntity> {
-        return repository.findAll()
+        return service.getAll()
     }
 
-    fun insert(form: VmInsertUpdateForm): ResponseEntity<*> {
-        return manager.insert(form)
+    @PostMapping("/insert")
+    fun insert(@RequestBody form: VmInsertUpdateForm): ResponseEntity<*> {
+        return service.insert(form)
     }
 
-    fun update(form: VmInsertUpdateForm): ResponseEntity<*> {
-        return manager.update(form)
+    @PostMapping("/update")
+    fun update(@RequestBody form: VmInsertUpdateForm): ResponseEntity<*> {
+        return service.update(form)
     }
 
-    fun delete(form: VmDeleteForm): ResponseEntity<*> {
-        return manager.delete(form)
+    @PostMapping("/delete")
+    fun update(@RequestBody form: VmDeleteForm): ResponseEntity<*> {
+        return service.delete(form)
     }
 
-    fun balance(form: VmRentForm): ResponseEntity<*> {
-        return manager.rent(form)
+    @PostMapping("/rent")
+    fun update(@RequestBody form: VmRentForm): ResponseEntity<*> {
+        return service.balance(form)
     }
 
 }

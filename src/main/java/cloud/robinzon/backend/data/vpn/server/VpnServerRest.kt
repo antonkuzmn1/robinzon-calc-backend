@@ -20,30 +20,31 @@ package cloud.robinzon.backend.data.vpn.server
 
 import cloud.robinzon.backend.common.DeleteForm
 import cloud.robinzon.backend.data.vpn.server.resources.VpnServerEntity
-import cloud.robinzon.backend.data.vpn.server.resources.VpnServerEntityRepository
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.*
 
-@Service
-class VpnServerService(
-    private val repository: VpnServerEntityRepository,
-    private val manager: VpnServerEntityManager
-) {
+@RestController
+@RequestMapping("/data/vpn/server")
+class VpnServerRest(private val service: VpnServerService) {
 
+    @GetMapping
     fun getAll(): List<VpnServerEntity> {
-        return repository.findAll()
+        return service.getAll()
     }
 
-    fun insert(form: VpnServerInsertForm): ResponseEntity<*> {
-        return manager.insert(form)
+    @PostMapping("/insert")
+    fun insert(@RequestBody form: VpnServerInsertForm): ResponseEntity<*> {
+        return service.insert(form)
     }
 
-    fun update(form: VpnServerUpdateForm): ResponseEntity<*> {
-        return manager.update(form)
+    @PostMapping("/update")
+    fun update(@RequestBody form: VpnServerUpdateForm): ResponseEntity<*> {
+        return service.update(form)
     }
 
-    fun delete(form: DeleteForm): ResponseEntity<*> {
-        return manager.delete(form)
+    @PostMapping("/delete")
+    fun update(@RequestBody form: DeleteForm): ResponseEntity<*> {
+        return service.delete(form)
     }
 
 }

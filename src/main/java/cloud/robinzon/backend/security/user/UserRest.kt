@@ -20,30 +20,31 @@ package cloud.robinzon.backend.security.user
 
 import cloud.robinzon.backend.common.DeleteForm
 import cloud.robinzon.backend.security.user.resources.UserEntity
-import cloud.robinzon.backend.security.user.resources.UserEntityRepository
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.*
 
-@Service
-class UserService(
-    private val repository: UserEntityRepository,
-    private val manager: UserEntityManager
-) {
+@RestController
+@RequestMapping("/security/user")
+class UserRest(private val service: UserService) {
 
+    @GetMapping
     fun getAll(): List<UserEntity> {
-        return repository.findAll()
+        return service.getAll()
     }
 
-    fun insert(form: UserInsertForm): ResponseEntity<*> {
-        return manager.insert(form)
+    @PostMapping("/insert")
+    fun insert(@RequestBody form: UserInsertForm): ResponseEntity<*> {
+        return service.insert(form)
     }
 
-    fun update(form: UserUpdateForm): ResponseEntity<*> {
-        return manager.update(form)
+    @PostMapping("/update")
+    fun update(@RequestBody form: UserUpdateForm): ResponseEntity<*> {
+        return service.update(form)
     }
 
-    fun delete(form: DeleteForm): ResponseEntity<*> {
-        return manager.delete(form)
+    @PostMapping("/delete")
+    fun update(@RequestBody form: DeleteForm): ResponseEntity<*> {
+        return service.delete(form)
     }
 
 }

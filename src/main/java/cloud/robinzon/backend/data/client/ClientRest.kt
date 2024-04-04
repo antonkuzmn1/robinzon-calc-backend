@@ -16,35 +16,29 @@ limitations under the License.
 
 */
 
-package cloud.robinzon.backend.data.fm
+package cloud.robinzon.backend.data.client
 
 import cloud.robinzon.backend.common.DeleteForm
-import cloud.robinzon.backend.common.RentForm
-import cloud.robinzon.backend.data.fm.resources.FmEntity
+import cloud.robinzon.backend.data.client.resources.ClientEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/data/fm")
-class FmRest(private val service: FmService) {
+@RequestMapping("/data/client")
+class ClientRest(private val service: ClientService) {
 
     @GetMapping
-    fun getAll(): List<FmEntity> {
-        return service.all
-    }
-
-    @GetMapping("/vm")
-    fun getByVm(): List<FmEntity> {
-        return service.byVm
+    fun getAll(): List<ClientEntity> {
+        return service.getAll()
     }
 
     @PostMapping("/insert")
-    fun insert(@RequestBody form: FmInsertForm): ResponseEntity<*> {
+    fun insert(@RequestBody form: ClientInsertForm): ResponseEntity<*> {
         return service.insert(form)
     }
 
     @PostMapping("/update")
-    fun update(@RequestBody form: FmUpdateForm): ResponseEntity<*> {
+    fun update(@RequestBody form: ClientUpdateForm): ResponseEntity<*> {
         return service.update(form)
     }
 
@@ -53,9 +47,14 @@ class FmRest(private val service: FmService) {
         return service.delete(form)
     }
 
-    @PostMapping("/rent")
-    fun update(@RequestBody form: RentForm): ResponseEntity<*> {
-        return service.rent(form)
+    @PostMapping("/balance")
+    fun update(@RequestBody form: ClientBalanceForm): ResponseEntity<*> {
+        return service.balance(form)
+    }
+
+    @PostMapping("/pay")
+    fun update(@RequestBody form: ClientPayForm): ResponseEntity<*> {
+        return service.pay(form)
     }
 
 }
