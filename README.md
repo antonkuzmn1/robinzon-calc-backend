@@ -3,8 +3,7 @@
 ## Description
 This API provides functionality for working with data, connections to servers, clients, networks, registration, virtual machines (VMs), and user authentication and management.
 
-## Base URL
-http://localhost:8080/api/
+Base URL: `http://localhost:8080/api/`
 
 ## Authentication
 Authentication is required to access protected resources. Use the `/api/security/auth` endpoint to obtain an authentication token.
