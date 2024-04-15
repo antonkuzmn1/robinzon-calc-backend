@@ -25,6 +25,7 @@ import cloud.robinzon.backend.data.vm.resources.VmEntityRepository
 import cloud.robinzon.backend.data.vm.resources.history.VmHistory
 import cloud.robinzon.backend.data.vm.resources.history.VmHistoryRepository
 import org.springframework.http.ResponseEntity
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
 
@@ -61,6 +62,7 @@ class VmService(
         return history.findAll()
     }
 
+    @Scheduled(fixedDelay = 600000) // every 10 min
     fun updateBySsh(): List<ResponseEntity<*>> {
         val rawList: List<VmRawForm> = fmService.sshRequest()
         return vmSshService.commit(rawList)

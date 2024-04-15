@@ -84,7 +84,7 @@ class VmSshService(
             )
         }
 
-        val oneHourAgo = Timestamp(System.currentTimeMillis() - 3600000)
+        val oneHourAgo = Timestamp(System.currentTimeMillis() - 600000)
         val vmEntityForDeleteList: List<VmEntity> = vmEntityRepository.findAllByTimestampLessThan(oneHourAgo)
         for (vmEntityForDelete in vmEntityForDeleteList) {
             vmManager.delete(
