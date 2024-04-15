@@ -62,8 +62,13 @@ class VmSshService(
 
         for (form in forms) {
             val vmEntity: VmEntity? = vmEntityRepository.findById(form.id).orElse(null)
+
             if (vmEntity == null) responseList.plusElement(
-                vmManager.insert(form)
+                try {
+                    vmManager.insert(form)
+                } catch (e: Exception) {
+                    println("Inserted with error")
+                }
             )
             else responseList.plusElement(
                 vmManager.update(

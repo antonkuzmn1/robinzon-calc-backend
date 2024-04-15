@@ -64,7 +64,8 @@ class VmService(
         return history.findAll()
     }
 
-    @Scheduled(fixedDelay = 10 * 60 * 1000) // every 10 min
+    //    @Scheduled(fixedDelay = 10 * 60 * 1000) // every 10 min
+    @Scheduled(cron = "0 */10 * * * *")
     fun updateBySsh(): List<ResponseEntity<*>> {
         println("Start updating via SSH...")
         val rawList: List<VmRawForm> = fmService.sshRequest()
