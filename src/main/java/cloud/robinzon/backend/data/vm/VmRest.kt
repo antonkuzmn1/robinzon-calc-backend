@@ -52,12 +52,12 @@ class VmRest(private val service: VmService) {
         return service.rent(form)
     }
 
-    @PostMapping("/history")
+    @GetMapping("/history")
     fun historyAll(): List<VmHistory> {
         return service.historyAll()
     }
 
-    @PostMapping("/ssh/update")
+    @GetMapping("/ssh/update")
     fun updateBySsh(): List<ResponseEntity<*>> {
         return service.updateBySsh()
     }
