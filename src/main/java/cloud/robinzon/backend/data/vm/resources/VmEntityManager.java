@@ -196,6 +196,10 @@ public class VmEntityManager {
         VmEntity entity = entityRepository.findById(id).orElse(null);
         if (entity == null) return err("Entity not found");
 
+        // this is timestamp of last checking
+        entity.deleted = false;
+        entityRepository.save(entity);
+
         log("Current values:");
         System.out.println(entity.toMap());
 

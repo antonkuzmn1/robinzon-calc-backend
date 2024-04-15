@@ -457,8 +457,8 @@ paths:
               schema:
                 type: "object"
   /api/data/vm/history:
-    post:
-      summary: "POST api/data/vm/history"
+    get:
+      summary: "GET api/data/vm/history"
       operationId: "historyAll"
       responses:
         "200":
@@ -470,8 +470,8 @@ paths:
                 items:
                   $ref: "#/components/schemas/VmHistory"
   /api/data/vm/ssh/update:
-    post:
-      summary: "POST api/data/vm/ssh/update"
+    get:
+      summary: "GET api/data/vm/ssh/update"
       operationId: "updateBySsh"
       responses:
         "200":

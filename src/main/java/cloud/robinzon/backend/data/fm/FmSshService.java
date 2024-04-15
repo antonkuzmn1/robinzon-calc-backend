@@ -55,7 +55,7 @@ public class FmSshService {
 
     @SuppressWarnings("unused")
     public String get(String fmIp) throws JSchException, IOException {
-        System.out.println("[FmSshService][get]");
+        System.out.println("[FmSshService][get]" + fmIp);
         Session session = session(fmIp);
         session.connect();
         Channel channel = session.openChannel("exec");

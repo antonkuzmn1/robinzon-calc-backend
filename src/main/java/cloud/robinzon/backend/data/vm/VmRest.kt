@@ -62,4 +62,9 @@ class VmRest(private val service: VmService) {
         return service.updateBySsh()
     }
 
+    @GetMapping("/time-to-delete")
+    fun timeToDelete(): List<VmEntity> {
+        return service.getAllByTimestampLessThanHour()
+    }
+
 }

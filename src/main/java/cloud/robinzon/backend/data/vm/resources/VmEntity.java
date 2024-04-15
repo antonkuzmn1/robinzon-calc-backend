@@ -27,7 +27,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -42,8 +41,6 @@ public class VmEntity {
     @Id
     public String id; // replaced cuz string
 
-    @SuppressWarnings("unused")
-    @UpdateTimestamp
     public Timestamp timestamp;
 
     @Setter
@@ -117,8 +114,9 @@ public class VmEntity {
                 && this.running == running
                 && Objects.equals(this.fmEntity.getId(), fmEntity.getId())
                 && Objects.equals(this.title, title)
-                && Objects.equals(this.description, description))
+                && Objects.equals(this.description, description)) {
             return null;
+        }
 
         this.name = name;
         this.cpu = cpu;

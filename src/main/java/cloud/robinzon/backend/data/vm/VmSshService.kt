@@ -25,6 +25,7 @@ import cloud.robinzon.backend.data.vm.resources.VmEntityRepository
 import cloud.robinzon.backend.security.jwt.JwtUtil
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import java.sql.Timestamp
 
 @Service
 class VmSshService(
@@ -79,6 +80,17 @@ class VmSshService(
                         description = vmEntity.description,
                         token = form.token
                     )
+                )
+            )
+        }
+
+        val oneHourAgo = Timestamp(System.currentTimeMillis() - 3600000)
+        val vmEntityForDeleteList: List<VmEntity> = vmEntityRepository.findAllByTimestampLessThan(oneHourAgo)
+        for (vmEntityForDelete in vmEntityForDeleteList) {
+            vmManager.delete(
+                VmDeleteForm(
+                    id = vmEntityForDelete.id,
+                    token = token
                 )
             )
         }

@@ -26,6 +26,7 @@ import cloud.robinzon.backend.data.vm.resources.history.VmHistory
 import cloud.robinzon.backend.data.vm.resources.history.VmHistoryRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import java.sql.Timestamp
 
 @Service
 class VmService(
@@ -37,7 +38,7 @@ class VmService(
 ) {
 
     fun getAll(): List<VmEntity> {
-        return repository.findAll()
+        return repository.findAllByDeletedFalseOrderByNameAsc()
     }
 
     fun insert(form: VmInsertUpdateForm): ResponseEntity<*> {
@@ -63,6 +64,11 @@ class VmService(
     fun updateBySsh(): List<ResponseEntity<*>> {
         val rawList: List<VmRawForm> = fmService.sshRequest()
         return vmSshService.commit(rawList)
+    }
+
+    fun getAllByTimestampLessThanHour(): List<VmEntity> {
+        val oneHourAgo = Timestamp(System.currentTimeMillis() - 3600000)
+        return repository.findAllByTimestampLessThan(oneHourAgo)
     }
 
 }
