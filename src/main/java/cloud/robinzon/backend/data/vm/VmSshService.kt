@@ -57,18 +57,17 @@ class VmSshService(
         val responseList: List<ResponseEntity<*>> = ArrayList()
 
         val token: String = jwtUtil.generateToken("system")
+        if (!jwtUtil.validateToken(token)) throw Error("Invalid JWT")
         val forms: List<VmInsertUpdateForm> = convert(rawList, token)
 
-
+        // insert or update
         for (form in forms) {
             val vmEntity: VmEntity? = vmEntityRepository.findById(form.id).orElse(null)
 
+//            println("\n\n\n\n\nID: ${form.id}\n\n\n\n\n")
+
             if (vmEntity == null) responseList.plusElement(
-                try {
-                    vmManager.insert(form)
-                } catch (e: Exception) {
-                    println("Inserted with error")
-                }
+                vmManager.insert(form)
             )
             else responseList.plusElement(
                 vmManager.update(
@@ -89,6 +88,7 @@ class VmSshService(
             )
         }
 
+        // delete by timestamp
         val oneHourAgo = Timestamp(System.currentTimeMillis() - 600000)
         val vmEntityForDeleteList: List<VmEntity> = vmEntityRepository.findAllByTimestampLessThan(oneHourAgo)
         for (vmEntityForDelete in vmEntityForDeleteList) {

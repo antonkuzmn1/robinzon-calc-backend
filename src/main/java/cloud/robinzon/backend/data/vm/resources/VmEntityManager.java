@@ -29,6 +29,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+
 import static cloud.robinzon.backend.common.Allow.check;
 import static cloud.robinzon.backend.common.Log.*;
 
@@ -83,10 +85,10 @@ public class VmEntityManager {
         System.out.println(entity.toMap());
 
         log("Saving entity...");
-        VmEntity savedEntity = entityRepository.save(entity);
+        entityRepository.save(entity);
 
         log("Saving history...");
-        VmHistory history = new VmHistory(savedEntity, changeBy);
+        VmHistory history = new VmHistory(entity, changeBy);
         historyRepository.save(history);
 
         log("Success!");
@@ -198,6 +200,7 @@ public class VmEntityManager {
 
         // this is timestamp of last checking
         entity.deleted = false;
+        entity.timestamp = new Timestamp(System.currentTimeMillis());
         entityRepository.save(entity);
 
         log("Current values:");

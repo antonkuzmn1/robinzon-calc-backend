@@ -94,6 +94,7 @@ public class VmEntity {
 
     public VmEntity(String id) {
         this.id = id;
+        this.timestamp = new Timestamp(System.currentTimeMillis());
     }
 
     public VmEntity update(String name,

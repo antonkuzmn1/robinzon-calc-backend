@@ -18,11 +18,10 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.vm.resources.history;
 
-//import cloud.robinzon.backend.data.vm.resources.VmEntity;
-//import cloud.robinzon.backend.common.KeyTemplate;
-//import lombok.NoArgsConstructor;
-
-//@NoArgsConstructor
-//public class VmHistoryKey
-//        extends KeyTemplate<VmEntity> {
+//import org.springframework.data.jpa.repository.JpaRepository;
+//import org.springframework.stereotype.Repository;
+//
+//@Repository
+//public interface VmHistoryRepositoryOld
+//        extends JpaRepository<VmHistoryOld, VmHistoryKey> {
 //}
