@@ -1,13 +1,13 @@
 # suppress inspection "SpellCheckingInspection" for whole file
 
-# rootpath
+# root path
 server.servlet.context-path=/api
 
 # mysql
-spring.jpa.hibernate.ddl-auto=create
+spring.jpa.hibernate.ddl-auto=update
 spring.datasource.url=jdbc:mysql://192.168.100.150:3306/calc
 spring.datasource.username=calc
-spring.datasource.password=etwaPass1488
+spring.datasource.password=Pass1234
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.jpa.show-sql=true
 
@@ -16,9 +16,9 @@ spring.session.jdbc.initialize-schema=always
 # server.servlet.session.timeout=
 
 # ssh
-fmadmin.login=etwaLogin
-fmadmin.password=etwaPass1488
-fmadmin.command=powershell.exe "C:\\Distrib\\calc\\calc_v23.12.17.ps1"
+ssh.fm.admin.login=Login222
+ssh.fm.admin.password=Pass4444
+ssh.fm.admin.command=powershell.exe "C:\\Distrib\\calc\\calc_v23.12.17.ps1"
 
 # json web token
 jwt.secret.key=qwerty123example456
