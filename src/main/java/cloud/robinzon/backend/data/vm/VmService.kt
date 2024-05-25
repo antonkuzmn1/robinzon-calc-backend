@@ -22,13 +22,16 @@ import cloud.robinzon.backend.common.VmRawForm
 import cloud.robinzon.backend.data.fm.FmService
 import cloud.robinzon.backend.data.vm.resources.VmEntity
 import cloud.robinzon.backend.data.vm.resources.VmEntityRepository
+import cloud.robinzon.backend.data.vm.resources.VmEntitySpecifications
 import cloud.robinzon.backend.data.vm.resources.history.VmHistory
 import cloud.robinzon.backend.data.vm.resources.history.VmHistoryRepository
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.http.ResponseEntity
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
+
 
 @Service
 @EnableScheduling
@@ -40,8 +43,12 @@ class VmService(
     private val vmSshService: VmSshService
 ) {
 
-    fun getAll(): List<VmEntity> {
-        return repository.findAllByDeletedFalseOrderByNameAsc()
+    fun getAll(form: VmFindByForm): List<VmEntity> {
+//        println("\n\nform:\n\n")
+//        println(form)
+        val spec: Specification<VmEntity?> = VmEntitySpecifications.filterByForm(form)
+        return repository.findAll(spec)
+//        return repository.findAllByDeletedFalseOrderByNameAsc()
     }
 
     fun insert(form: VmInsertUpdateForm): ResponseEntity<*> {
@@ -65,13 +72,15 @@ class VmService(
     }
 
     //    @Scheduled(fixedDelay = 10 * 60 * 1000) // every 10 min
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     fun updateBySsh(): List<ResponseEntity<*>> {
         println("Start updating via SSH...")
         val rawList: List<VmRawForm> = fmService.sshRequest()
+        println(rawList)
         return vmSshService.commit(rawList)
     }
 
+    @Suppress("unused")
     fun getAllByTimestampLessThanHour(): List<VmEntity> {
         val oneHourAgo = Timestamp(System.currentTimeMillis() - 3600000)
         return repository.findAllByTimestampLessThan(oneHourAgo)

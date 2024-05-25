@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/data/vm")
 class VmRest(private val service: VmService) {
 
-    @GetMapping
-    fun getAll(): List<VmEntity> {
-        return service.getAll()
+    @PostMapping
+    fun getAll(@RequestBody form: VmFindByForm): List<VmEntity> {
+        return service.getAll(form)
     }
 
     @PostMapping("/insert")
@@ -57,14 +57,14 @@ class VmRest(private val service: VmService) {
         return service.historyAll()
     }
 
-    @GetMapping("/ssh/update")
-    fun updateBySsh(): List<ResponseEntity<*>> {
-        return service.updateBySsh()
-    }
+//    @GetMapping("/ssh/update")
+//    fun updateBySsh(): List<ResponseEntity<*>> {
+//        return service.updateBySsh()
+//    }
 
-    @GetMapping("/time-to-delete")
-    fun timeToDelete(): List<VmEntity> {
-        return service.getAllByTimestampLessThanHour()
-    }
+//    @GetMapping("/time-to-delete")
+//    fun timeToDelete(): List<VmEntity> {
+//        return service.getAllByTimestampLessThanHour()
+//    }
 
 }

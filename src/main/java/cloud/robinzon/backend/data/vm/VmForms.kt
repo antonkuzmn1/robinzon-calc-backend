@@ -20,6 +20,23 @@ package cloud.robinzon.backend.data.vm
 
 import cloud.robinzon.backend.data.fm.resources.FmEntity
 
+data class VmFindByForm(
+    val name: String,
+    val cpuFrom: Int,
+    val cpuTo: Int,
+    val ramFrom: Int,
+    val ramTo: Int,
+    val ssdFrom: Int,
+    val ssdTo: Int,
+    val hddFrom: Int,
+    val hddTo: Int,
+    val runningTrue: Boolean,
+    val runningFalse: Boolean,
+    val fmEntityIdList: List<Int>,
+    val title: String,
+    val description: String,
+)
+
 data class VmInsertUpdateForm(
     val id: String,
     val name: String,

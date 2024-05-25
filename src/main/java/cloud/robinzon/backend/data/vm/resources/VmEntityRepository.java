@@ -1,6 +1,6 @@
 /*
 
-Copyright 2024 Anton Kuzmin (http://github.com/antonkuzmn1)
+Copyright 2024 Anton Kuzmin (https://github.com/antonkuzmn1)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ limitations under the License.
 
 package cloud.robinzon.backend.data.vm.resources;
 
+import org.jetbrains.annotations.NotNull;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
@@ -26,8 +29,12 @@ import java.util.List;
 
 @Repository
 public interface VmEntityRepository
-        extends JpaRepository<VmEntity, String> {
+        extends JpaRepository<VmEntity, String>, JpaSpecificationExecutor<VmEntity> {
 
+    @NotNull
+    List<VmEntity> findAll(@NotNull Specification<VmEntity> spec);
+
+    @SuppressWarnings("unused")
     List<VmEntity> findAllByDeletedFalseOrderByNameAsc();
 
     List<VmEntity> findAllByTimestampLessThan(Timestamp timestamp);
