@@ -38,6 +38,4 @@ public interface UserEntityRepository
 
     UserEntity findUserEntityByUsername(String username);
 
-//    UserEntity findUserEntityByUsernameAndPassword(String username, String password);
-
 }

@@ -54,11 +54,6 @@ SecurityConfig {
                 .contentSecurityPolicy(cps -> cps
                         .policyDirectives("script-src 'self'")));
 
-        /*
-        http.authorizeHttpRequests((auth) -> auth
-                .anyRequest().authenticated());
-         */
-
         return http.build();
     }
 
